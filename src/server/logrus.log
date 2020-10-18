@@ -1,0 +1,3 @@
+{"level":"error","msg":"Db failure","time":"2020-10-18T21:30:14+05:30"}
+{"level":"error","msg":"open .env: no such file or directory","time":"2020-10-18T21:30:14+05:30"}
+{"level":"error","msg":"Invalid type assertion","time":"2020-10-18T21:30:14+05:30"}
