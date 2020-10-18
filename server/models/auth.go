@@ -3,12 +3,13 @@ package models
 import (
 	"fmt"
 	"gin-starter/config"
-	"github.com/dgrijalva/jwt-go"
-	uuid "github.com/twinj/uuid"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	uuid "github.com/twinj/uuid"
 )
 
 type TokenDetails struct {
@@ -22,7 +23,7 @@ type TokenDetails struct {
 
 type AccessDetails struct {
 	AccessUUID string
-	Email     string
+	Email      string
 }
 
 type Token struct {
@@ -65,8 +66,6 @@ func (m AuthModel) CreateToken(email string) (*TokenDetails, error) {
 	return td, nil
 }
 
-
-
 //ExtractToken ...
 func (m AuthModel) ExtractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
@@ -85,7 +84,7 @@ func (m AuthModel) VerifyToken(r *http.Request) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(config.GetEnvValue("ACCESS_SECRET")), nil
+		return []byte(config.GetConfig().Port), nil
 	})
 	if err != nil {
 		return nil, err
@@ -117,13 +116,11 @@ func (m AuthModel) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
 		if !ok {
 			return nil, err
 		}
-		email :=  claims["user_id"].(string)
+		email := claims["user_id"].(string)
 		return &AccessDetails{
 			AccessUUID: accessUUID,
-			Email:email,
+			Email:      email,
 		}, nil
 	}
 	return nil, err
 }
-
-

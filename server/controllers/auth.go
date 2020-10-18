@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"gin-starter/config"
 	"gin-starter/models"
+	"net/http"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type AuthController struct{}
 type Token struct {
 	RefreshToken string `form:"refresh_token" json:"refresh_token" binding:"required"`
 }
+
 var authModel = new(models.AuthModel)
 
 func (ctl AuthController) IstokenValid(c *gin.Context) {
@@ -39,7 +41,7 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(config.GetEnvValue("REFRESH_SECRET")), nil
+		return []byte(config.GetConfig().Port), nil
 	})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})

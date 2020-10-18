@@ -1,0 +1,41 @@
+package config
+
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
+
+var Config *Configuration
+
+type Configuration struct {
+	Port string
+}
+
+func InitConfig() {
+	var configuration *Configuration
+
+	viper.AddConfigPath("./env")
+	viper.SetConfigType("yml")
+	viper.SetConfigName("dev")
+	viper.AutomaticEnv()
+
+	err := viper.ReadInConfig()
+
+	if err != nil {
+		log.Error(err)
+	}
+
+	notOk := viper.Unmarshal(&configuration)
+	if notOk != nil {
+		log.Error("Invalid config")
+	}
+
+	fmt.Println(configuration)
+	Config = configuration
+}
+
+// GetConfig helps you to get configuration data
+func GetConfig() *Configuration {
+	return Config
+}
