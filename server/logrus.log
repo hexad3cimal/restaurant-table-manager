@@ -51,3 +51,6 @@
 {"level":"error","msg":"Db failure","time":"2020-10-18T22:14:38+05:30"}
 {"level":"error","msg":"Config File \"dev\" Not Found in \"[/home/hexad3cimal/restaurant-table-manager/env]\"","time":"2020-10-18T22:14:38+05:30"}
 {"level":"error","msg":"Db failure","time":"2020-10-18T22:14:56+05:30"}
+{"level":"error","msg":"Db failure","time":"2020-10-20T19:33:37+05:30"}
+{"level":"error","msg":"Db failure","time":"2020-10-20T19:34:29+05:30"}
+{"level":"error","msg":"Db failure","time":"2020-10-20T19:37:09+05:30"}
