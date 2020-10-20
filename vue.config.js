@@ -1,7 +1,7 @@
 module.exports = {
     pages: {
       index: {
-        entry: 'ui/main.js',
+        entry: 'ui/src/main.js',
       },
     }
   }
