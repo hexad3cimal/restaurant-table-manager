@@ -54,5 +54,9 @@ func main() {
 		auth := new(controllers.AuthController)
 		v1.POST("/token/refresh", auth.Refresh)
 	}
+	router.NoRoute(func(c *gin.Context) {
+		c.File("../dist/index.html")
+	})
+
 	router.Run(":" + config.GetConfig().Port)
 }
