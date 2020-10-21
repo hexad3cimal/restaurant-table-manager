@@ -3,5 +3,6 @@ module.exports = {
       index: {
         entry: 'ui/src/main.js',
       },
-    }
+    },
+    lintOnSave: false
   }

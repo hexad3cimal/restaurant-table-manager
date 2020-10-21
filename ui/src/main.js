@@ -1,12 +1,14 @@
 import Vue from 'vue';
+import DashboardPlugin from './plugins/dashboard-plugin';
+
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
 import store from './store';
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import './assets/scss/argon.scss';
 
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
+Vue.use(DashboardPlugin);
+
 
 Vue.config.productionTip = false;
 
