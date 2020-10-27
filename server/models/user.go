@@ -15,8 +15,6 @@ type UserModel struct {
 	Email              string    `db:"email" json:"email"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
-	VerificationCode   string    `db:"verification_code" json:"-"`
-	Verified           bool      `db:"verified" json:"-"`
 	Active             bool      `db:"active" json:"-"`
 	Locked             bool      `db:"locked" json:"-"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
@@ -69,7 +67,6 @@ func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 	user.Name = form.FullName
 	user.Email = form.Email
 	user.Password = hashedPassword
-	user.VerificationCode = uuid.NewV4().String()
 	user.ForgotPasswordCode = uuid.NewV4().String()
 	err = config.GetDB().Save(&u).Error
 	if err != nil {
