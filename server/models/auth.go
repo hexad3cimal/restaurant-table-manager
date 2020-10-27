@@ -2,10 +2,10 @@ package models
 
 import (
 	"fmt"
-	"gin-starter/config"
 	"net/http"
 	"os"
 	"strings"
+	"table-booking/config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"

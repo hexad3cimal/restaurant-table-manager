@@ -8,8 +8,16 @@ import (
 
 var Config *Configuration
 
+type Db struct {
+	Host     string
+	Name     string
+	Port     string
+	UserName string
+	Password string
+}
 type Configuration struct {
 	Port string
+	Db   Db
 }
 
 func InitConfig() {

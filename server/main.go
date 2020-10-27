@@ -1,8 +1,9 @@
 package main
 
 import (
-	"gin-starter/config"
-	"gin-starter/controllers"
+	"table-booking/config"
+	"table-booking/controllers"
+	"table-booking/models"
 
 	"github.com/gin-gonic/contrib/static"
 
@@ -41,8 +42,13 @@ func main() {
 	router.Use(CORS())
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
-	config.InitDB()
 	config.InitConfig()
+	config.InitDB()
+	db := config.GetDB()
+	if db != nil {
+		db.AutoMigrate(&models.OrganizationModel{})
+		db.AutoMigrate(&models.UserModel{})
+	}
 
 	router.Use(static.Serve("/", static.LocalFile("../dist", true)))
 

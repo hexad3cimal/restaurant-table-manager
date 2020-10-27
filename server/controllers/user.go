@@ -1,16 +1,17 @@
 package controllers
 
 import (
-	"gin-starter/mappers"
-	"gin-starter/models"
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"table-booking/mappers"
+	"table-booking/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Api struct{}
 
 var userModel = new(models.User)
-
+var org = new(models.Organization)
 
 func (ctrl Api) Login(c *gin.Context) {
 	var loginForm mappers.LoginForm
@@ -39,7 +40,15 @@ func (ctrl Api) Register(c *gin.Context) {
 		return
 	}
 
-	user, err :=  userModel.Register(registerForm)
+	if registerForm.Org == true {
+		_, err := org.Add(registerForm)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+	user, err := userModel.Register(registerForm)
 
 	if err != nil {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
@@ -48,5 +57,4 @@ func (ctrl Api) Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully registered", "user": user})
-	}
-
+}

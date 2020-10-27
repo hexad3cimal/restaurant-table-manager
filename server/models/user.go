@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
-	"gin-starter/config"
-	"gin-starter/mappers"
+	"table-booking/config"
+	"table-booking/mappers"
 	"time"
 
 	"github.com/twinj/uuid"

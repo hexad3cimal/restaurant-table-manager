@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"gin-starter/config"
-	"gin-starter/models"
 	"net/http"
+	"table-booking/config"
+	"table-booking/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"

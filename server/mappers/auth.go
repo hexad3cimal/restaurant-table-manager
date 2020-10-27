@@ -6,7 +6,8 @@ type LoginForm struct {
 }
 
 type RegisterForm struct {
-	FullName     string `form:"fullname" json:"name" binding:"required,max=100"`
+	FullName string `form:"fullname" json:"name" binding:"required,max=100"`
 	Email    string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required"`
+	Org      bool   `form:"org" json:"org" binding:"required"`
 }
