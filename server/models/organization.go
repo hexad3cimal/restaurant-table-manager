@@ -18,8 +18,8 @@ type OrganizationModel struct {
 	Locked             bool      `db:"locked" json:"-"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
 	Name               string    `db:"name" json:"name"`
-	UpdatedAt          int64     `db:"updated_at" json:"-"`
-	CreatedAt          int64     `db:"created_at" json:"-"`
+	UpdatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
 
 type Organization struct{}
@@ -44,6 +44,17 @@ func (org Organization) Add(form mappers.RegisterForm) (organization Organizatio
 	organization.ForgotPasswordCode = uuid.NewV4().String()
 	err = config.GetDB().Save(&organization).Error
 	if err != nil {
+		return OrganizationModel{}, err
+	}
+
+	return organization, err
+}
+
+func (org Organization) Get(id string) (organization OrganizationModel, err error) {
+
+	err = config.GetDB().Where("WHERE id=LOWER($1) LIMIT 1", id).First(&organization).Error
+	if err != nil {
+
 		return OrganizationModel{}, err
 	}
 

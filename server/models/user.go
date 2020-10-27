@@ -19,8 +19,8 @@ type UserModel struct {
 	Locked             bool      `db:"locked" json:"-"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
 	Name               string    `db:"name" json:"name"`
-	UpdatedAt          int64     `db:"updated_at" json:"-"`
-	CreatedAt          int64     `db:"created_at" json:"-"`
+	UpdatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
 type User struct {
 }
