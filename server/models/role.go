@@ -50,3 +50,14 @@ func (role Role) Get(id string) (roleModel RoleModel, err error) {
 
 	return roleModel, err
 }
+
+func (role Role) GetRoleForOrg(roleName string, orgId string) (roleModel RoleModel, err error) {
+
+	err = config.GetDB().Where("WHERE roleName=LOWER($1)", roleName).Where("WHERE orgId=LOWER($1)", orgId).First(&roleModel).Error
+	if err != nil {
+
+		return RoleModel{}, err
+	}
+
+	return roleModel, err
+}

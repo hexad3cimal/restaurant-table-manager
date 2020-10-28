@@ -13,6 +13,8 @@ import (
 type UserModel struct {
 	ID                 string    `db:"id, primarykey" json:"id"`
 	Email              string    `db:"email" json:"email"`
+	OrgId              string    `db:"orgId" json:"orgId"`
+	RoleId             string    `db:"roleId" json:"roleId"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
 	Active             bool      `db:"active" json:"-"`
@@ -68,6 +70,8 @@ func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 	user.Email = form.Email
 	user.Password = hashedPassword
 	user.ForgotPasswordCode = uuid.NewV4().String()
+	user.RoleId = form.Role
+	user.OrgId = form.OrgId
 	err = config.GetDB().Save(&u).Error
 	if err != nil {
 		return UserModel{}, err

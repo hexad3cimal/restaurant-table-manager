@@ -11,6 +11,7 @@ import (
 
 type OrganizationModel struct {
 	ID                 string    `db:"id, primarykey" json:"id"`
+	Code               string    `db:"code" json:"code"`
 	Email              string    `db:"email" json:"email"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
@@ -42,6 +43,7 @@ func (org Organization) Add(form mappers.RegisterForm) (organization Organizatio
 	organization.Email = form.Email
 	organization.Password = hashedPassword
 	organization.ForgotPasswordCode = uuid.NewV4().String()
+	organization.Code = uuid.NewV4().String()
 	err = config.GetDB().Save(&organization).Error
 	if err != nil {
 		return OrganizationModel{}, err
@@ -53,6 +55,17 @@ func (org Organization) Add(form mappers.RegisterForm) (organization Organizatio
 func (org Organization) Get(id string) (organization OrganizationModel, err error) {
 
 	err = config.GetDB().Where("WHERE id=LOWER($1) LIMIT 1", id).First(&organization).Error
+	if err != nil {
+
+		return OrganizationModel{}, err
+	}
+
+	return organization, err
+}
+
+func (org Organization) GetByCode(code string) (organization OrganizationModel, err error) {
+
+	err = config.GetDB().Where("WHERE code=LOWER($1) LIMIT 1", code).First(&organization).Error
 	if err != nil {
 
 		return OrganizationModel{}, err

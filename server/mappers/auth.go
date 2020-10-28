@@ -10,4 +10,6 @@ type RegisterForm struct {
 	Email    string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required"`
 	Org      bool   `form:"org" json:"org" binding:"required"`
+	OrgId    string `form:"orgId" json:"orgId"`
+	Role     string `form:"role" json:"role"`
 }

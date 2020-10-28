@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"reflect"
 	"table-booking/mappers"
 	"table-booking/models"
 
@@ -12,6 +13,7 @@ type Api struct{}
 
 var userModel = new(models.User)
 var org = new(models.Organization)
+var roleModel = new(models.Role)
 
 func (ctrl Api) Login(c *gin.Context) {
 	var loginForm mappers.LoginForm
@@ -39,15 +41,39 @@ func (ctrl Api) Register(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
+	var userRole models.RoleModel
 	if registerForm.Org == true {
-		_, err := org.Add(registerForm)
+		organization, err := org.Add(registerForm)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+			c.Abort()
+			return
+		}
+		role := mappers.RoleForm{}
+		role.RoleName = "admin"
+		role.OrgId = organization.ID
+		userRole, err = roleModel.Add(role)
 		if err != nil {
 			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
 			c.Abort()
 			return
 		}
 	}
+	if reflect.ValueOf(userRole).IsZero() {
+		userOrg, err := org.GetByCode(registerForm.OrgId)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+			c.Abort()
+			return
+		}
+		userRole, err = roleModel.GetRoleForOrg("table", userOrg.ID)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+	registerForm.Role = userRole.ID
 	user, err := userModel.Register(registerForm)
 
 	if err != nil {
