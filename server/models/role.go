@@ -21,12 +21,6 @@ type Role struct{}
 
 func (role Role) Add(roleForm mappers.RoleForm) (roleModel RoleModel, err error) {
 
-	err = config.GetDB().Where("WHERE name=LOWER($1)", roleForm.RoleName).First(&roleModel).Error
-	if err != nil {
-
-		return RoleModel{}, err
-	}
-
 	roleModel.Active = true
 	roleModel.ID = uuid.NewV4().String()
 	roleModel.Name = roleForm.RoleName
@@ -42,7 +36,7 @@ func (role Role) Add(roleForm mappers.RoleForm) (roleModel RoleModel, err error)
 
 func (role Role) Get(id string) (roleModel RoleModel, err error) {
 
-	err = config.GetDB().Where("WHERE id=LOWER($1) LIMIT 1", id).First(&roleModel).Error
+	err = config.GetDB().Where("id=?", id).First(&roleModel).Error
 	if err != nil {
 
 		return RoleModel{}, err
@@ -53,7 +47,7 @@ func (role Role) Get(id string) (roleModel RoleModel, err error) {
 
 func (role Role) GetRoleForOrg(roleName string, orgId string) (roleModel RoleModel, err error) {
 
-	err = config.GetDB().Where("WHERE roleName=LOWER($1)", roleName).Where("WHERE orgId=LOWER($1)", orgId).First(&roleModel).Error
+	err = config.GetDB().Where("roleName=?", roleName).Where("orgId=?", orgId).First(&roleModel).Error
 	if err != nil {
 
 		return RoleModel{}, err

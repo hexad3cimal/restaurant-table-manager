@@ -31,7 +31,7 @@ var authModel = new(AuthModel)
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err error) {
 
-	config.GetDB().Where("WHERE email=LOWER($1) LIMIT 1", form.Email).First(&user)
+	config.GetDB().Where("email=?", form.Email).First(&user)
 
 	bytePassword := []byte(form.Password)
 	byteHashedPassword := []byte(user.Password)
@@ -54,10 +54,9 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err er
 
 func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 
-	err = config.GetDB().Where("WHERE email=LOWER($1) LIMIT 1", form.Email).First(&u).Error
-	if err != nil {
+	if !config.GetDB().Where("email=?", form.Email).First(&u).RecordNotFound() {
 
-		return UserModel{}, err
+		return UserModel{}, errors.New("email already taken")
 	}
 
 	bytePassword := []byte(form.Password)

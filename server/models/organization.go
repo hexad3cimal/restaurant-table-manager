@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"table-booking/config"
 	"table-booking/mappers"
 	"time"
@@ -27,10 +28,9 @@ type Organization struct{}
 
 func (org Organization) Add(form mappers.RegisterForm) (organization OrganizationModel, err error) {
 
-	err = config.GetDB().Where("WHERE email=LOWER($1) LIMIT 1", form.Email).First(&organization).Error
-	if err != nil {
+	if !config.GetDB().Where("email=?", form.Email).First(&organization).RecordNotFound() {
 
-		return OrganizationModel{}, err
+		return OrganizationModel{}, errors.New("email already taken")
 	}
 
 	bytePassword := []byte(form.Password)
@@ -43,7 +43,7 @@ func (org Organization) Add(form mappers.RegisterForm) (organization Organizatio
 	organization.Email = form.Email
 	organization.Password = hashedPassword
 	organization.ForgotPasswordCode = uuid.NewV4().String()
-	organization.Code = uuid.NewV4().String()
+	organization.ID = uuid.NewV4().String()
 	err = config.GetDB().Save(&organization).Error
 	if err != nil {
 		return OrganizationModel{}, err
@@ -54,7 +54,7 @@ func (org Organization) Add(form mappers.RegisterForm) (organization Organizatio
 
 func (org Organization) Get(id string) (organization OrganizationModel, err error) {
 
-	err = config.GetDB().Where("WHERE id=LOWER($1) LIMIT 1", id).First(&organization).Error
+	err = config.GetDB().Where("id=?", id).First(&organization).Error
 	if err != nil {
 
 		return OrganizationModel{}, err
@@ -65,7 +65,7 @@ func (org Organization) Get(id string) (organization OrganizationModel, err erro
 
 func (org Organization) GetByCode(code string) (organization OrganizationModel, err error) {
 
-	err = config.GetDB().Where("WHERE code=LOWER($1) LIMIT 1", code).First(&organization).Error
+	err = config.GetDB().Where("code=?", code).First(&organization).Error
 	if err != nil {
 
 		return OrganizationModel{}, err

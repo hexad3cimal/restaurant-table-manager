@@ -45,10 +45,9 @@ func main() {
 	config.InitConfig()
 	config.InitDB()
 	db := config.GetDB()
-	if db != nil {
-		db.AutoMigrate(&models.OrganizationModel{})
-		db.AutoMigrate(&models.UserModel{})
-	}
+	db.AutoMigrate(&models.OrganizationModel{})
+	db.AutoMigrate(&models.UserModel{})
+	db.AutoMigrate(&models.RoleModel{})
 
 	router.Use(static.Serve("/", static.LocalFile("../dist", true)))
 
