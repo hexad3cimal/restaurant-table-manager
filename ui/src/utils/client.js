@@ -1,7 +1,7 @@
 export class ServerError extends Error {
-    response: Object;
+    response;
   
-    constructor(message?: string): Error {
+    constructor(message) {
       super(message);
   
       Error.captureStackTrace(this, ServerError);
@@ -12,7 +12,7 @@ export class ServerError extends Error {
     }
   }
   
-  export function parseError(error: string): string {
+  export function parseError(error) {
     return error || 'Something went wrong';
   }
   
@@ -27,7 +27,7 @@ export class ServerError extends Error {
    *
    * @returns {Promise}
    */
-  export function request(url: string, options: Object = {}): Promise<*> {
+  export function request(url, options = {}){
     console.log(options)
   
     const config = {
@@ -54,7 +54,7 @@ export class ServerError extends Error {
       ...config.headers,
     };
   
-    const params: Object = {
+    const params = {
       headers,
       method: config.method,
     };
@@ -67,7 +67,7 @@ export class ServerError extends Error {
       const contentType = response.headers.get('content-type');
   
       if (response.status > 299) {
-        const error: Object = new ServerError(response.statusText);
+        const error = new ServerError(response.statusText);
         error.status = response.status;
   
         if (contentType && contentType.includes('application/json')) {
