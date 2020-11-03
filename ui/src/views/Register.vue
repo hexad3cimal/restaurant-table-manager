@@ -106,6 +106,7 @@
   </div>
 </template>
 <script>
+import {request} from '../utils/client';
 export default {
   name: 'register',
   data() {
@@ -119,7 +120,11 @@ export default {
   },
   methods: {
     onSubmit() {
- this.$data.model
+      this.$data.model.org = true;
+      request('http://localhost:8090/v1/api/user/register',{method: 'POST', payload : this.$data.model}).then( response => {
+        console.log(response)
+      })
+ 
      },
   },
 };

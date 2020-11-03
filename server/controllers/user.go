@@ -66,6 +66,8 @@ func (ctrl Api) Register(c *gin.Context) {
 		}
 	}
 	registerForm.Role = userRole.ID
+	registerForm.OrgId = userRole.OrgId
+
 	user, err := userModel.Register(registerForm)
 
 	if err != nil {

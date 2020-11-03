@@ -54,7 +54,7 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err er
 
 func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 
-	if !config.GetDB().Where("email=?", form.Email).First(&u).RecordNotFound() {
+	if !config.GetDB().Where("email=?", form.Email).First(&user).RecordNotFound() {
 
 		return UserModel{}, errors.New("email already taken")
 	}
@@ -71,7 +71,9 @@ func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 	user.ForgotPasswordCode = uuid.NewV4().String()
 	user.RoleId = form.Role
 	user.OrgId = form.OrgId
-	err = config.GetDB().Save(&u).Error
+	user.ID = uuid.NewV4().String()
+
+	err = config.GetDB().Save(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}
