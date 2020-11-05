@@ -1,12 +1,6 @@
 <template>
   <div class="main-content bg-default">
-    <base-nav
-      v-model="showMenu"
-      :transparent="true"
-      menu-classes="justify-content-end"
-      class="navbar-horizontal navbar-main navbar-top navbar-dark"
-      expand="lg"
-    >
+
       <div slot="brand" class="navbar-wrapper">
         <b-navbar-brand to="/">
           <img src="img/brand/white.png">
@@ -21,32 +15,9 @@
                <img src="img/brand/green.png">
              </router-link>
            </b-col>
-           <b-col cols="6" class="collapse-close">
-             <button type="button" class="navbar-toggler" @click="showMenu = false">
-               <span></span>
-               <span></span>
-             </button>
-           </b-col>
          </b-row>
        </div>
-         <b-navbar-nav  class="align-items-lg-center ml-lg-auto">
-           <b-nav-item to="/dashboard">
-               <i class="ni ni-planet"></i>
-               <span class="nav-link-inner--text">Dashboard</span>
-           </b-nav-item>
-           <b-nav-item to="/register">
-               <i class="ni ni-circle-08"></i>
-               <span class="nav-link-inner--text">Register</span>
-           </b-nav-item>
-           <b-nav-item to="/login">
-               <i class="ni ni-key-25"></i>
-               <span class="nav-link-inner--text">Login</span>
-           </b-nav-item>
-           <b-nav-item to="/profile">
-               <i class="ni ni-single-02"></i>
-               <span class="nav-link-inner--text">Profile</span>
-           </b-nav-item>
-       </b-navbar-nav>
+
      </template>
     </base-nav>
 
@@ -72,15 +43,6 @@
               <b-nav-item href="https://www.creative-tim.com" target="_blank" >
                 Creative Tim
               </b-nav-item>
-              <b-nav-item href="https://www.creative-tim.com/presentation" target="_blank" >
-                About Us
-              </b-nav-item>
-              <b-nav-item href="http://blog.creative-tim.com"  target="_blank">
-                Blog
-              </b-nav-item>
-              <b-nav-item href="https://www.creative-tim.com/license" target="_blank">
-                License
-              </b-nav-item>
             </b-nav>
           </b-col>
         </b-row>
@@ -105,7 +67,6 @@
     },
     data() {
       return {
-        showMenu: false,
         menuTransitionDuration: 250,
         pageTransitionDuration: 200,
         year: new Date().getFullYear(),
@@ -118,14 +79,6 @@
       }
     },
     methods: {
-      toggleNavbar() {
-        document.body.classList.toggle('nav-open');
-        this.showMenu = !this.showMenu;
-      },
-      closeMenu() {
-        document.body.classList.remove('nav-open');
-        this.showMenu = false;
-      },
       setBackgroundColor() {
         document.body.classList.add('bg-default');
       },
