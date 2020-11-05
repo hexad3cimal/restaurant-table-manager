@@ -68,15 +68,14 @@ func (ctrl Api) Register(c *gin.Context) {
 	registerForm.Role = userRole.ID
 	registerForm.OrgId = userRole.OrgId
 
-	user, err := userModel.Register(registerForm)
+	_, err := userModel.Register(registerForm)
 
 	if err != nil {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
 		c.Abort()
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully registered", "user": user})
+	c.JSON(http.StatusOK, gin.H{"data": mappers.Response{Error: nil, Message: "success", ResponseCode: 2000, Data: make([]interface{}, 0)}})
 }
 
 func (ctrl Api) RegisterTable(c *gin.Context) {
