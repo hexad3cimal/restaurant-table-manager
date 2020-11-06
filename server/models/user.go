@@ -42,7 +42,7 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err er
 		return user, token, errors.New("invalid password")
 	}
 
-	tokenDetails, err := authModel.CreateToken(user.Email)
+	tokenDetails, err := authModel.CreateToken(user)
 
 	if err == nil {
 		token.AccessToken = tokenDetails.AccessToken

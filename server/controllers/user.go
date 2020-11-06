@@ -23,9 +23,9 @@ func (ctrl Api) Login(c *gin.Context) {
 		return
 	}
 
-	user, token, err := userModel.Login(loginForm)
+	_, token, err := userModel.Login(loginForm)
 	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "user": user, "token": token})
+		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "token": token})
 	} else {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": err.Error()})
 	}

@@ -23,7 +23,9 @@ type TokenDetails struct {
 
 type AccessDetails struct {
 	AccessUUID string
-	Email      string
+	UserId     string
+	RoleId     string
+	OrgId      string
 }
 
 type Token struct {
@@ -33,7 +35,7 @@ type Token struct {
 
 type AuthModel struct{}
 
-func (m AuthModel) CreateToken(email string) (*TokenDetails, error) {
+func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
@@ -46,7 +48,9 @@ func (m AuthModel) CreateToken(email string) (*TokenDetails, error) {
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["access_uuid"] = td.AccessUUID
-	atClaims["user_id"] = email
+	atClaims["user_id"] = user.ID
+	atClaims["role_id"] = user.RoleId
+	atClaims["org_id"] = user.OrgId
 	atClaims["exp"] = td.AtExpires
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
@@ -56,7 +60,6 @@ func (m AuthModel) CreateToken(email string) (*TokenDetails, error) {
 	}
 	rtClaims := jwt.MapClaims{}
 	rtClaims["refresh_uuid"] = td.RefreshUUID
-	rtClaims["user_id"] = email
 	rtClaims["exp"] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
 	td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("REFRESH_SECRET")))
@@ -112,14 +115,12 @@ func (m AuthModel) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		accessUUID, ok := claims["access_uuid"].(string)
-		if !ok {
-			return nil, err
-		}
-		email := claims["user_id"].(string)
+
 		return &AccessDetails{
-			AccessUUID: accessUUID,
-			Email:      email,
+			AccessUUID: claims["access_uuid"].(string),
+			OrgId:      claims["org_id"].(string),
+			UserId:     claims["user_id"].(string),
+			RoleId:     claims["role_id"].(string),
 		}, nil
 	}
 	return nil, err
