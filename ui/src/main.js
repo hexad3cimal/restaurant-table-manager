@@ -6,7 +6,11 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 import './assets/scss/argon.scss';
+import Notifications from 'vue-notification';
+ 
 
+ 
+Vue.use(Notifications);
 Vue.use(DashboardPlugin);
 
 

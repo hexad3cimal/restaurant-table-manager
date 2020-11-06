@@ -1,15 +1,15 @@
 package mappers
 
 type LoginForm struct {
-	Email    string `form:"email" json:"email" binding:"required,email"`
-	Password string `form:"password" json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 type RegisterForm struct {
-	FullName string `form:"fullname" json:"name" binding:"required,max=100"`
-	Email    string `form:"email" json:"email" binding:"required,email"`
-	Password string `form:"password" json:"password" binding:"required"`
-	Org      bool   `form:"org" json:"org" binding:"required"`
-	OrgId    string `form:"orgId" json:"orgId"`
-	Role     string `form:"role" json:"role"`
+	FullName string `json:"name" binding:"required,max=100"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+	Org      bool   `json:"org" binding:"required"`
+	OrgId    string `json:"orgId"`
+	Role     string `json:"role"`
 }

@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <notifications group="alerts" />
     <div id="nav">
       <router-link to="/">Home</router-link> |
     </div>
