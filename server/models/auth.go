@@ -41,7 +41,7 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUUID = uuid.NewV4().String()
 
-	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
+	td.RtExpires = time.Now().Add(time.Minute * 30).Unix()
 	td.RefreshUUID = uuid.NewV4().String()
 
 	var err error
@@ -71,9 +71,11 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 
 //ExtractToken ...
 func (m AuthModel) ExtractToken(r *http.Request) string {
-	bearToken := r.Header.Get("Authorization")
-	//normally Authorization the_token_xxx
-	strArr := strings.Split(bearToken, " ")
+	bearToken, err := r.Cookie("token")
+	if err != nil {
+		return ""
+	}
+	strArr := strings.Split(bearToken.Value, " ")
 	if len(strArr) == 2 {
 		return strArr[1]
 	}

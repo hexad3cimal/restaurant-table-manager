@@ -11,9 +11,6 @@ import (
 )
 
 type AuthController struct{}
-type Token struct {
-	RefreshToken string `form:"refresh_token" json:"refresh_token" binding:"required"`
-}
 
 var authModel = new(models.AuthModel)
 
@@ -26,18 +23,15 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 	}
 }
 
-//Refresh ...
 func (ctl AuthController) Refresh(c *gin.Context) {
-	var tokenForm Token
 
-	if c.ShouldBindJSON(&tokenForm) != nil {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form", "form": tokenForm})
-		c.Abort()
+	refreshToken, err := c.Cookie("refresh-token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		return
 	}
-
 	//verify the token
-	token, err := jwt.Parse(tokenForm.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -58,9 +52,8 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 			return
 		}
-
-		//Create new pairs of refresh and access tokens
-		ts, createErr := authModel.CreateToken(userID)
+		user := userModel.GetUserById(userID)
+		ts, createErr := authModel.CreateToken(user)
 		if createErr != nil {
 			c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 			return

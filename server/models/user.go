@@ -80,3 +80,9 @@ func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 
 	return user, err
 }
+
+func (u User) GetUserById(userId string) (user UserModel) {
+	config.GetDB().Where("ID=?", userId).First(&user)
+
+	return user
+}
