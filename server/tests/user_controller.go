@@ -2,18 +2,23 @@ package tests
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
-	"gin-starter/config"
-	"gin-starter/controllers"
-	"gin-starter/mappers"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"table-booking/config"
+	"table-booking/controllers"
+	"table-booking/mappers"
 	"testing"
-)
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"gopkg.in/go-playground/assert.v1"
+)
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
@@ -30,7 +35,6 @@ func SetupRouter() *gin.Engine {
 	return r
 }
 
-
 var loginCookie string
 
 var testEmail = "test@gmail.com"
@@ -41,11 +45,10 @@ var refreshToken string
 
 var articleID int
 
-
 func TestIntDB(t *testing.T) {
-config.InitDB()
+	config.InitConfig()
+	config.InitDB()
 }
-
 
 func TestRegister(t *testing.T) {
 	testRouter := SetupRouter()
@@ -53,6 +56,7 @@ func TestRegister(t *testing.T) {
 	registerForm.FullName = "testing"
 	registerForm.Email = testEmail
 	registerForm.Password = testPassword
+	registerForm.Org = true
 	data, _ := json.Marshal(registerForm)
 	req, err := http.NewRequest("POST", "/v1/user/register", bytes.NewBufferString(string(data)))
 	req.Header.Set("Content-Type", "application/json")
@@ -61,12 +65,36 @@ func TestRegister(t *testing.T) {
 	}
 	resp := httptest.NewRecorder()
 	testRouter.ServeHTTP(resp, req)
-	assert.Equal(t, resp.Code, http.StatusOK)
+	assert.Equal(t, http.StatusOK, resp.Code)
 }
-
 
 func main() {
 	r := SetupRouter()
 	config.InitDB()
 	r.Run()
 }
+
+var _ = Describe("Repository", func() {
+	var repository *Repository
+	var mock sqlmock.Sqlmock
+
+	BeforeEach(func() {
+		var db *sql.DB
+		var err error
+
+		db, mock, err = sqlmock.New() // mock sql.DB
+		Expect(err).ShouldNot(HaveOccurred())
+
+		gdb, err := gorm.Open("postgres", db) // open gorm db
+		Expect(err).ShouldNot(HaveOccurred())
+
+		repository = &Repository{db: gdb}
+	})
+	AfterEach(func() {
+		err := mock.ExpectationsWereMet() // make sure all expectations were met
+		Expect(err).ShouldNot(HaveOccurred())
+	})
+
+	It("test something", func() {
+	})
+})

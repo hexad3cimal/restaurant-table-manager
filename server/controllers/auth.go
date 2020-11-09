@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"table-booking/config"
 	"table-booking/models"
 
 	"github.com/dgrijalva/jwt-go"
@@ -30,12 +29,12 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		return
 	}
-	//verify the token
+
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(config.GetConfig().Port), nil
+		return []byte(token.Raw), nil
 	})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
