@@ -12,9 +12,10 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import FacebookIcon from '../../icons/Facebook';
-import GoogleIcon from '../../icons/Google';
 import Page from '../../components/Page';
+import { useDispatch, useSelector } from 'react-redux';
+import { login, hideAlert } from '../../actions';
+import Toast from '../../modules/toast';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,15 +29,22 @@ const useStyles = makeStyles(theme => ({
 const LoginView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const appState = useSelector(state => state.app);
+  const user = useSelector(state => state.user);
 
+  if (appState.alert.show) {
+    Toast({ message: appState.alert.message });
+    if (user.isAuthenticated) navigate('/dashboard', { replace: true });
+  }
   return (
     <Page className={classes.root} title="Login">
       <Box display="flex" flexDirection="column" height="100%" justifyContent="center">
         <Container maxWidth="sm">
           <Formik
             initialValues={{
-              email: 'demo@devias.io',
-              password: 'Password123',
+              email: 'example@gmail.com',
+              password: 'password',
             }}
             validationSchema={Yup.object().shape({
               email: Yup.string()
@@ -47,8 +55,8 @@ const LoginView = () => {
                 .max(255)
                 .required('Password is required'),
             })}
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit={values => {
+              dispatch(login(values));
             }}
           >
             {({
@@ -67,36 +75,6 @@ const LoginView = () => {
                   </Typography>
                   <Typography color="textSecondary" gutterBottom variant="body2">
                     Sign in on the internal platform
-                  </Typography>
-                </Box>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
-                    <Button
-                      color="primary"
-                      fullWidth
-                      startIcon={<FacebookIcon />}
-                      onClick={handleSubmit}
-                      size="large"
-                      variant="contained"
-                    >
-                      Login with Facebook
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Button
-                      fullWidth
-                      startIcon={<GoogleIcon />}
-                      onClick={handleSubmit}
-                      size="large"
-                      variant="contained"
-                    >
-                      Login with Google
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Box mt={3} mb={1}>
-                  <Typography align="center" color="textSecondary" variant="body1">
-                    or login with email address
                   </Typography>
                 </Box>
                 <TextField

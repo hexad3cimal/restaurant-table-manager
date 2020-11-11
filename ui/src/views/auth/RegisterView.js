@@ -13,7 +13,10 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import Page from 'src/components/Page';
+import Page from '../../components/Page';
+import { useDispatch, useSelector } from 'react-redux';
+import { register, hideAlert } from '../../actions';
+import Toast from '../../modules/toast';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,7 +30,11 @@ const useStyles = makeStyles(theme => ({
 const RegisterView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const appState = useSelector(state => state.app);
+  if (appState.alert.show) {
+    Toast({ message: appState.alert.message });
+  }
   return (
     <Page className={classes.root} title="Register">
       <Box display="flex" flexDirection="column" height="100%" justifyContent="center">
@@ -45,19 +52,18 @@ const RegisterView = () => {
                 .email('Must be a valid email')
                 .max(255)
                 .required('Email is required'),
-              firstName: Yup.string()
+              name: Yup.string()
                 .max(255)
-                .required('First name is required'),
-              lastName: Yup.string()
-                .max(255)
-                .required('Last name is required'),
+                .required('Fullname is required'),
               password: Yup.string()
                 .max(255)
                 .required('password is required'),
               policy: Yup.boolean().oneOf([true], 'This field must be checked'),
             })}
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit={values => {
+              //org registration
+              values.org = true;
+              dispatch(register(values));
             }}
           >
             {({
@@ -79,27 +85,15 @@ const RegisterView = () => {
                   </Typography>
                 </Box>
                 <TextField
-                  error={Boolean(touched.firstName && errors.firstName)}
+                  error={Boolean(touched.name && errors.name)}
                   fullWidth
-                  helperText={touched.firstName && errors.firstName}
-                  label="First name"
+                  helperText={touched.name && errors.name}
+                  label="Fullname"
                   margin="normal"
-                  name="firstName"
+                  name="name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.firstName}
-                  variant="outlined"
-                />
-                <TextField
-                  error={Boolean(touched.lastName && errors.lastName)}
-                  fullWidth
-                  helperText={touched.lastName && errors.lastName}
-                  label="Last name"
-                  margin="normal"
-                  name="lastName"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.lastName}
+                  value={values.name}
                   variant="outlined"
                 />
                 <TextField

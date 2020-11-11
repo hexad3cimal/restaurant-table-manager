@@ -1,10 +1,12 @@
 import React, { Suspense } from 'react';
 import { useRoutes } from 'react-router-dom';
 import Loader from './components/Loader';
+import { request } from './modules/client';
 import routes from './routes';
-
+import { useSelector } from 'react-redux';
 export default function RouteHandler() {
-  const routing = useRoutes(routes);
+  const loggedIn = useSelector(state => state.user).isAuthenticated;
+  const routing = useRoutes(routes(loggedIn));
 
   return <Suspense fallback={<Loader />}>{routing}</Suspense>;
 }

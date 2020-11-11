@@ -13,7 +13,7 @@ import { request } from '../modules/client';
  */
 export function* login({ payload }) {
   try {
-    const user = yield request(`${window.geoConfig.api}auth/_`, {
+    const user = yield request(`${window.geoConfig.api}user/login`, {
       method: 'POST',
       payload,
     });
@@ -21,6 +21,10 @@ export function* login({ payload }) {
     yield put({
       type: ActionTypes.USER_LOGIN_SUCCESS,
       payload: user,
+    });
+    yield put({
+      type: ActionTypes.SHOW_ALERT,
+      payload: 'Successfully logged in',
     });
   } catch (err) {
     /* istanbul ignore next */
@@ -37,26 +41,12 @@ export function* login({ payload }) {
   }
 }
 
-const cleanUpRegistrationObject = registrationObject => {
-  delete registrationObject.user;
-  delete registrationObject.registration;
-  if (registrationObject.org) {
-    delete registrationObject.orgCode;
-  } else {
-    delete registrationObject.orgName;
-  }
-  delete registrationObject.org;
-
-  return registrationObject;
-};
 /**
- * Login
+ * Register
  */
 export function* register({ payload }) {
   try {
-    const url = payload.orgName ? `${window.geoConfig.api}org` : `${window.geoConfig.api}user`;
-    payload = cleanUpRegistrationObject(payload);
-    yield request(url, {
+    yield request(`${window.geoConfig.api}user/register`, {
       method: 'POST',
       payload,
     });

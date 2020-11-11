@@ -17,6 +17,7 @@
     "Webpack",
     "ES6"
   ],
+  "proxy": "http://localhost:8090",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -92,6 +93,7 @@
     "case-sensitive-paths-webpack-plugin": "^2.2.0",
     "chalk": "^2.4.2",
     "circular-dependency-plugin": "^5.2.0",
+    "classlist-polyfill": "^1.2.0",
     "constants": "0.0.2",
     "core-js": "^3.2.1",
     "css-loader": "^3.2.0",
@@ -116,6 +118,7 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^2.1.2",
     "eslint-plugin-redux-saga": "^1.1.1",
+    "events-polyfill": "^2.1.2",
     "expose-loader": "^0.7.5",
     "file-loader": "^4.2.0",
     "flow-bin": "^0.109.0",
@@ -151,6 +154,7 @@
     "postcss-safe-parser": "^4.0.1",
     "prettier": "^1.18.2",
     "raw-loader": "^3.1.0",
+    "react-app-polyfill": "^2.0.0",
     "react-dev-utils": "^9.1.0",
     "react-error-overlay": "^6.0.3",
     "react-hot-loader": "^4.12.14",

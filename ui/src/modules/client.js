@@ -4,6 +4,8 @@
  * @module Client
  */
 
+import { get } from './cacheManager';
+
 export class ServerError extends Error {
   response: Object;
 
@@ -34,8 +36,6 @@ export function parseError(error: string): string {
  * @returns {Promise}
  */
 export function request(url: string, options: Object = {}): Promise<*> {
-  console.log(options);
-
   const config = {
     method: 'GET',
     ...options,
@@ -59,6 +59,8 @@ export function request(url: string, options: Object = {}): Promise<*> {
     'Content-Type': 'application/json',
     ...config.headers,
   };
+
+  if (!(url.includes('/login') || url.includes('/register'))) headers.Authorization = get('token');
 
   const params: Object = {
     headers,

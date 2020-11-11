@@ -1,6 +1,7 @@
 import { handleActions } from '../modules/helpers';
 
 import { STATUS, ActionTypes } from '../constants/index';
+import { set } from '../modules/cacheManager';
 
 export const userState = {
   isAuthenticated: false,
@@ -24,6 +25,7 @@ export default {
         draft.isAuthenticated = true;
         draft.status = STATUS.READY;
         draft.data.user = payload;
+        set('user', payload);
       },
       [ActionTypes.USER_LOGOUT]: draft => {
         draft.status = STATUS.RUNNING;
