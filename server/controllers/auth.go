@@ -20,6 +20,8 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	c.JSON(http.StatusAccepted, gin.H{"message": "valid"})
+
 }
 
 func (ctl AuthController) Refresh(c *gin.Context) {

@@ -3,7 +3,7 @@ package main
 import (
 	"table-booking/config"
 	"table-booking/models"
-	"table-booking/utils"
+	"table-booking/router"
 )
 
 func main() {
@@ -17,5 +17,5 @@ func main() {
 	db.AutoMigrate(&models.UserModel{})
 	db.AutoMigrate(&models.RoleModel{})
 
-	utils.InitRouter()
+	router.InitRouter()
 }

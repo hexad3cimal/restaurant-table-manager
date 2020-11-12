@@ -23,11 +23,11 @@ func (ctrl Api) Login(c *gin.Context) {
 		return
 	}
 
-	_, token, err := userModel.Login(loginForm)
+	user, token, err := userModel.Login(loginForm)
 	if err == nil {
-		c.SetCookie("token", token.AccessToken, 60*60*15, "/", "127.0.0.1", false, false)
-		c.SetCookie("refresh-token", token.RefreshToken, 60*60*30, "/", "127.0.0.1", false, false)
-		c.JSON(http.StatusOK, gin.H{"message": "User signed in"})
+		// c.SetCookie("okten", token.AccessToken, 60*60*15, "/", "127.0.0.1", false, false)
+		// c.SetCookie("refresh-token", token.RefreshToken, 60*60*30, "/", "127.0.0.1", false, false)
+		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 	} else {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": err.Error()})
 	}
@@ -60,6 +60,14 @@ func (ctrl Api) Register(c *gin.Context) {
 			return
 		}
 		role.RoleName = "table"
+		_, err = roleModel.Add(role)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+			c.Abort()
+			return
+		}
+
+		role.RoleName = "kitchen"
 		_, err = roleModel.Add(role)
 		if err != nil {
 			c.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})

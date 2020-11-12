@@ -17,7 +17,7 @@ import Page from '../../components/Page';
 import { useDispatch, useSelector } from 'react-redux';
 import { register, hideAlert } from '../../actions';
 import Toast from '../../modules/toast';
-
+import {isFormValid} from '../../modules/helpers';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -32,8 +32,14 @@ const RegisterView = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
+  const user = useSelector(state => state.user);
+
+
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
+    dispatch(hideAlert());
+
+    if(user.registered) navigate('/login', { replace: true });
   }
   return (
     <Page className={classes.root} title="Register">
@@ -61,7 +67,6 @@ const RegisterView = () => {
               policy: Yup.boolean().oneOf([true], 'This field must be checked'),
             })}
             onSubmit={values => {
-              //org registration
               values.org = true;
               dispatch(register(values));
             }}
@@ -143,7 +148,7 @@ const RegisterView = () => {
                 <Box my={2}>
                   <Button
                     color="primary"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !isFormValid(errors, touched)}
                     fullWidth
                     size="large"
                     type="submit"

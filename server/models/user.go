@@ -42,6 +42,9 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err er
 		return user, token, errors.New("invalid password")
 	}
 
+	if user.Locked == true {
+		return user, token, errors.New("user is locked")
+	}
 	tokenDetails, err := authModel.CreateToken(user)
 
 	if err == nil {
@@ -62,7 +65,7 @@ func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
 	bytePassword := []byte(form.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if err != nil {
-		panic(err) //Something really went wrong here...
+		return UserModel{}, errors.New("error occured while password hash generation")
 	}
 
 	user.Name = form.FullName

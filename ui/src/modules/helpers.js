@@ -23,6 +23,24 @@ export function datasetToObject(elem: Element): Object {
   return data;
 }
 
+export const isFormValid = (errors, touched) => {
+  let bool = true;
+  for (let key in errors) {
+    if (Boolean(errors[key])) {
+      bool = false;
+      break;
+    }
+  }
+  if (bool) {
+    for (let key in touched) {
+      if (!Boolean(touched[key])) {
+        bool = false;
+        break;
+      }
+    }
+  }
+  return bool;
+};
 export function handleActions(actionsMap: Object, defaultState: Object): Function {
   return (state = defaultState, { type, ...rest }: Object = {}): Function =>
     produce(state, (draft): Object => {

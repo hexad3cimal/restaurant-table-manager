@@ -20,6 +20,7 @@ export default {
       [ActionTypes.USER_LOGIN_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;
         draft.error = payload;
+        draft.isAuthenticated = false;
       },
       [ActionTypes.USER_LOGIN_SUCCESS]: (draft, { payload }) => {
         draft.isAuthenticated = true;
@@ -39,6 +40,7 @@ export default {
       },
       [ActionTypes.USER_REGISTER_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;
+        draft.registered = false,
         draft.error = payload;
       },
       [ActionTypes.USER_REGISTER_SUCCESS]: draft => {

@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   Container,
-  Grid,
   Link,
   TextField,
   Typography,
@@ -16,6 +15,7 @@ import Page from '../../components/Page';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, hideAlert } from '../../actions';
 import Toast from '../../modules/toast';
+import {isFormValid} from '../../modules/helpers';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,7 +35,8 @@ const LoginView = () => {
 
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
-    if (user.isAuthenticated) navigate('/dashboard', { replace: true });
+    dispatch(hideAlert());
+    if (user.isAuthenticated) navigate('/app/dashboard', { replace: true });
   }
   return (
     <Page className={classes.root} title="Login">
@@ -55,8 +56,9 @@ const LoginView = () => {
                 .max(255)
                 .required('Password is required'),
             })}
-            onSubmit={values => {
+            onSubmit={(values, formik) => {
               dispatch(login(values));
+              formik.setSubmitting(false);
             }}
           >
             {({
@@ -106,7 +108,7 @@ const LoginView = () => {
                 <Box my={2}>
                   <Button
                     color="primary"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !isFormValid(errors, touched)}
                     fullWidth
                     size="large"
                     type="submit"

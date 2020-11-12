@@ -1,1 +1,1 @@
-window.geoConfig = { api: '/v1/api/' };
+window.geoConfig = ({ 'api' : '/v1/api/' })

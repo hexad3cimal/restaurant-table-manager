@@ -1,4 +1,4 @@
-package utils
+package router
 
 import (
 	"table-booking/config"
@@ -39,7 +39,7 @@ func InitRouter() {
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	router.Use(static.Serve("/", static.LocalFile("../dist", true)))
+	router.Use(static.Serve("/", static.LocalFile("../ui/build", true)))
 
 	v1 := router.Group("/v1/api")
 	{
@@ -48,9 +48,11 @@ func InitRouter() {
 		v1.POST("/user/register", user.Register)
 		auth := new(controllers.AuthController)
 		v1.POST("/token/refresh", auth.Refresh)
+		v1.GET("/token/_", auth.IstokenValid)
+
 	}
 	router.NoRoute(func(c *gin.Context) {
-		c.File("../dist/index.html")
+		c.File("../ui/build/index.html")
 	})
 	router.Run(":" + config.GetConfig().Port)
 }
