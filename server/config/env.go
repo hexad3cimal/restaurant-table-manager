@@ -16,8 +16,9 @@ type Db struct {
 	Password string
 }
 type Configuration struct {
-	Port string
-	Db   Db
+	Port   string
+	Db     Db
+	Secret string
 }
 
 func InitConfig() {

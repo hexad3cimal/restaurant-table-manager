@@ -33,6 +33,14 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
+var auth = new(controllers.AuthController)
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth.IstokenValid(c)
+		c.Next()
+	}
+}
 func InitRouter() {
 	router := gin.Default()
 	router.Use(CORS())
@@ -46,12 +54,11 @@ func InitRouter() {
 		user := new(controllers.Api)
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
-		auth := new(controllers.AuthController)
 		v1.POST("/token/refresh", auth.Refresh)
 		v1.GET("/token/_", auth.IstokenValid)
 		table := new(controllers.TableController)
-		v1.POST("/table", table.Add)
-		v1.GET("/table/org", table.GetTablesOfOrg)
+		v1.POST("/table", AuthMiddleware(), table.Add)
+		v1.GET("/table/org", AuthMiddleware(), table.GetTablesOfOrg)
 	}
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")

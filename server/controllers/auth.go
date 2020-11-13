@@ -20,7 +20,15 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.JSON(http.StatusAccepted, gin.H{"message": "valid"})
+	accessDetails, err := authModel.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
+		c.Abort()
+		return
+	}
+	c.Writer.Header().Set("orgId", accessDetails.OrgId)
+	c.Writer.Header().Set("roleId", accessDetails.RoleId)
+	c.Writer.Header().Set("userId", accessDetails.UserId)
 
 }
 

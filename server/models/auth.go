@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"table-booking/config"
 	"time"
@@ -54,7 +53,7 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 	atClaims["exp"] = td.AtExpires
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	td.AccessToken, err = at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+	td.AccessToken, err = at.SignedString([]byte(config.GetConfig().Secret))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +61,7 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 	rtClaims["refresh_uuid"] = td.RefreshUUID
 	rtClaims["exp"] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-	td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("REFRESH_SECRET")))
+	td.RefreshToken, err = rt.SignedString([]byte(config.GetConfig().Secret))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func (m AuthModel) VerifyToken(r *http.Request) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(config.GetConfig().Port), nil
+		return []byte(config.GetConfig().Secret), nil
 	})
 	if err != nil {
 		return nil, err
