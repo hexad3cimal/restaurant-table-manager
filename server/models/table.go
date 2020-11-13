@@ -13,6 +13,7 @@ type TableModel struct {
 	OrgId     string    `db:"org_id" json:"org_id"`
 	Active    bool      `db:"active" json:"-"`
 	Name      string    `db:"name" json:"name"`
+	Occupied  bool      `db:"occupied" json:"occupied"`
 	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
@@ -26,6 +27,7 @@ func (table Table) Add(tableForm mappers.TableForm) (tableModel TableModel, err 
 	tableModel.Name = tableForm.TableName
 	tableModel.CreatedAt = time.Now()
 	tableModel.OrgId = tableForm.OrgId
+	tableModel.Occupied = false
 	err = config.GetDB().Save(&tableModel).Error
 	if err != nil {
 		return TableModel{}, err
@@ -54,4 +56,15 @@ func (table Table) GetTableForOrg(ID string, orgId string) (tableModel TableMode
 	}
 
 	return tableModel, err
+}
+
+func (table Table) GetTablesForOrg(orgId string) (tableModels []TableModel, err error) {
+
+	err = config.GetDB().Where("orgId=?", orgId).Find(&tableModels).Error
+	if err != nil {
+
+		return []TableModel{}, err
+	}
+
+	return tableModels, err
 }

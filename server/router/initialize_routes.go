@@ -49,7 +49,9 @@ func InitRouter() {
 		auth := new(controllers.AuthController)
 		v1.POST("/token/refresh", auth.Refresh)
 		v1.GET("/token/_", auth.IstokenValid)
-
+		table := new(controllers.TableController)
+		v1.POST("/table", table.Add)
+		v1.GET("/table/org", table.GetTablesOfOrg)
 	}
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")
