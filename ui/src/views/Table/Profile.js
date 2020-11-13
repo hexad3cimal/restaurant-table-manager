@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Profile = ({ className, ...rest }) => {
+const AddTable = ({ className, ...rest }) => {
   const classes = useStyles();
 
   return (
@@ -60,8 +60,8 @@ const Profile = ({ className, ...rest }) => {
   );
 };
 
-Profile.propTypes = {
+AddTable.propTypes = {
   className: PropTypes.string,
 };
 
-export default Profile;
+export default AddTable;
