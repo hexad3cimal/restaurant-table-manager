@@ -10,7 +10,7 @@ export const branchState = {
 };
 
 export default {
-  user: handleActions(
+  branch: handleActions(
     {
       [ActionTypes.BRANCH_ADD]: draft => {
         draft.status = STATUS.RUNNING;
@@ -19,7 +19,7 @@ export default {
         draft.status = STATUS.ERROR;
         draft.error = payload;
       },
-      [ActionTypes.BRANCH_ADD_SUCCESS]: (draft, { payload }) => {
+      [ActionTypes.BRANCH_ADD_SUCCESS]: draft => {
         draft.isAuthenticated = true;
         draft.status = STATUS.READY;
       },
@@ -30,7 +30,7 @@ export default {
         draft.status = STATUS.ERROR;
         draft.error = payload;
       },
-      [ActionTypes.BRANCH_EDIT_SUCCESS]: (draft, { payload }) => {
+      [ActionTypes.BRANCH_EDIT_SUCCESS]: draft => {
         draft.isAuthenticated = true;
         draft.status = STATUS.READY;
       },
@@ -41,7 +41,7 @@ export default {
         draft.status = STATUS.ERROR;
         draft.error = payload;
       },
-      [ActionTypes.BRANCH_DELETE_SUCCESS]: (draft, { payload }) => {
+      [ActionTypes.BRANCH_DELETE_SUCCESS]: draft => {
         draft.isAuthenticated = true;
         draft.status = STATUS.READY;
       },

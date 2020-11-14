@@ -8,19 +8,20 @@ const LoginView = lazy(() => import('./views/auth/LoginView'));
 const RegisterView = lazy(() => import('./views/auth/RegisterView'));
 const DashboardView = lazy(() => import('./views/DashboardView'));
 const NotFoundView = lazy(() => import('./views/errors/NotFoundView'));
+const BranchView = lazy(() => import('./views/Branch/AddBranch'));
 
 const routes = isLoggedIn => [
   {
     path: 'app',
-    element: isLoggedIn ? <DashboardLayout /> : <Navigate to="/404" /> ,
+    element: isLoggedIn ? <DashboardLayout /> : <Navigate to="/404" />,
     children: [
       // { path: 'account', element: <AccountView /> },
       // { path: 'customers', element: <CustomerListView /> },
       { path: 'dashboard', element: <DashboardView /> },
-      // { path: 'products', element: <ProductListView /> },
+      { path: 'branch', element: <BranchView /> },
       // { path: 'settings', element: <SettingsView /> },
-      { path: '*', element: <Navigate to="/404" /> }
-    ]
+      { path: '*', element: <Navigate to="/404" /> },
+    ],
   },
   {
     path: '/',
@@ -29,7 +30,7 @@ const routes = isLoggedIn => [
       { path: 'login', element: <LoginView /> },
       { path: 'register', element: <RegisterView /> },
       { path: '404', element: <NotFoundView /> },
-      { path: '*', element: <Navigate to="/404" /> }
+      { path: '*', element: <Navigate to="/404" /> },
     ],
   },
 ];

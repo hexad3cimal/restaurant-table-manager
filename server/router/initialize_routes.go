@@ -59,6 +59,9 @@ func InitRouter() {
 		table := new(controllers.TableController)
 		v1.POST("/table", AuthMiddleware(), table.Add)
 		v1.GET("/table/org", AuthMiddleware(), table.GetTablesOfOrg)
+		branch := new(controllers.BranchController)
+		v1.POST("/branch", AuthMiddleware(), branch.Add)
+		v1.GET("/branch/org", AuthMiddleware(), branch.GetBranchesOfOrg)
 	}
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")
