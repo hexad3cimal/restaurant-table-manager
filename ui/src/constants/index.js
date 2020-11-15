@@ -22,6 +22,7 @@ export const ActionTypes = keyMirror({
   USER_REGISTER_FAILURE: undefined,
   SHOW_ALERT: undefined,
   HIDE_ALERT: undefined,
+  BRANCH_ADD_INITIATE: undefined,
   BRANCH_ADD: undefined,
   BRANCH_ADD_SUCCESS: undefined,
   BRANCH_ADD_FAILURE: undefined,

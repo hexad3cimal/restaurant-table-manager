@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"table-booking/config"
 	"time"
 
@@ -70,12 +69,17 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 
 //ExtractToken ...
 func (m AuthModel) ExtractToken(r *http.Request) string {
-	bearToken := r.Header.Get("Authorization")
-	strArr := strings.Split(bearToken, " ")
-	if len(strArr) == 2 {
-		return strArr[1]
+	// bearToken := r.Header.Get("Authorization")
+	// strArr := strings.Split(bearToken, " ")
+	// if len(strArr) == 2 {
+	// 	return strArr[1]
+	// }
+	token, err := r.Cookie("token")
+	if err != nil {
+		return ""
 	}
-	return ""
+	return token.Value
+
 }
 
 //VerifyToken ...

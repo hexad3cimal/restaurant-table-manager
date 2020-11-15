@@ -4,7 +4,7 @@
  * @module Client
  */
 
-import { get } from './cacheManager';
+import { getUser } from './cacheManager';
 
 export class ServerError extends Error {
   response: Object;
@@ -60,7 +60,7 @@ export function request(url: string, options: Object = {}): Promise<*> {
     ...config.headers,
   };
 
-  if (!(url.includes('/login') || url.includes('/register'))) headers.Authorization = get('token');
+  if (!(url.includes('/login') || url.includes('/register'))) headers.Authorization = `Bearer ${getUser().token}`;
 
   const params: Object = {
     headers,
@@ -75,6 +75,8 @@ export function request(url: string, options: Object = {}): Promise<*> {
     const contentType = response.headers.get('content-type');
 
     if (response.status > 299) {
+      console.log(response.status)
+      if([401,403].includes(response.status)){window.location.href ="/login"; return}
       const error: Object = new ServerError(response.statusText);
       error.status = response.status;
 

@@ -3,7 +3,7 @@
  * @desc Branch
  */
 
-import { all, put, takeEvery } from 'redux-saga/effects';
+import { all, put, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../constants/index';
 import { request } from '../modules/client';
@@ -11,20 +11,21 @@ import { request } from '../modules/client';
 /**
  * Add new branch
  */
-export function* add({ payload }) {
+export function* add({payload}) {
   try {
     yield request(`${window.geoConfig.api}branch`, {
       method: 'POST',
       payload,
     });
-
+    yield all([
     yield put({
       type: ActionTypes.BRANCH_ADD_SUCCESS,
-    });
+    }),
     yield put({
       type: ActionTypes.SHOW_ALERT,
       payload: `Added ${payload.name} successfully!`,
-    });
+    }),
+  ]);
   } catch (err) {
     /* istanbul ignore next */
     yield all([
@@ -80,14 +81,14 @@ export function* getForOrg() {
     yield all([
       put({
         type: ActionTypes.BRANCHES_GET_SUCCESS,
-        payload: branches,
+        payload: branches && branches.data,
       }),
     ]);
   } catch (err) {
     /* istanbul ignore next */
     yield all([
       put({
-        type: ActionTypes.BRANCHES_GET_SUCCESS_FAILURE,
+        type: ActionTypes.BRANCHES_GET_FAILURE,
         payload: err,
       }),
       put({
@@ -103,8 +104,8 @@ export function* getForOrg() {
  */
 export default function* root() {
   yield all([
-    takeEvery(ActionTypes.BRANCH_ADD, add),
-    takeEvery(ActionTypes.BRANCH_GET, getById),
-    takeEvery(ActionTypes.BRANCHES_GET, getForOrg),
+    takeLatest(ActionTypes.BRANCH_ADD, add),
+    takeLatest(ActionTypes.BRANCH_GET, getById),
+    takeLatest(ActionTypes.BRANCHES_GET, getForOrg),
   ]);
 }

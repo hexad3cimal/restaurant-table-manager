@@ -8,7 +8,7 @@ const LoginView = lazy(() => import('./views/auth/LoginView'));
 const RegisterView = lazy(() => import('./views/auth/RegisterView'));
 const DashboardView = lazy(() => import('./views/DashboardView'));
 const NotFoundView = lazy(() => import('./views/errors/NotFoundView'));
-const BranchView = lazy(() => import('./views/Branch/AddBranch'));
+const BranchView = lazy(() => import('./views/Branch'));
 
 const routes = isLoggedIn => [
   {

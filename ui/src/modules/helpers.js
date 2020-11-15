@@ -5,6 +5,7 @@
  */
 import produce from 'immer';
 import { format } from 'date-fns';
+import { request } from './client';
 
 /**
  * Convert data attributes to Object
@@ -111,3 +112,8 @@ export function logger(type: string, title: string, data: any, options: Object =
 
 // $FlowFixMe
 export const spread = produce(Object.assign);
+
+
+export const handleRefreshToken = (url) => {
+  setTimeout( () => { request(url, {method: 'GET'})},1000*60*1)
+}

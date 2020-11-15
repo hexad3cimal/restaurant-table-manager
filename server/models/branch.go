@@ -22,41 +22,41 @@ type BranchModel struct {
 
 type Branch struct{}
 
-func (org Branch) Add(form mappers.BranchForm) (branch BranchModel, err error) {
+func (branch Branch) Add(form mappers.BranchForm) (branchModel BranchModel, err error) {
 
-	if !config.GetDB().Where("name=?", form.Name).Where("orgId=?", form.OrgId).First(&branch).RecordNotFound() {
+	if !config.GetDB().Where("name=?", form.Name).Where("org_id=?", form.OrgId).First(&branchModel).RecordNotFound() {
 
 		return BranchModel{}, errors.New("branch name already taken")
 	}
 
-	branch.Name = form.Name
-	branch.Address = form.Address
-	branch.Contact = form.Contact
-	branch.OrgId = form.OrgId
+	branchModel.Name = form.Name
+	branchModel.Address = form.Address
+	branchModel.Contact = form.Contact
+	branchModel.OrgId = form.OrgId
 
-	branch.ID = uuid.NewV4().String()
-	err = config.GetDB().Save(&branch).Error
+	branchModel.ID = uuid.NewV4().String()
+	err = config.GetDB().Save(&branchModel).Error
 	if err != nil {
 		return BranchModel{}, err
 	}
 
-	return branch, err
+	return branchModel, err
 }
 
-func (org Branch) Get(id string) (branch BranchModel, err error) {
+func (branch Branch) Get(id string) (branchModel BranchModel, err error) {
 
-	err = config.GetDB().Where("id=?", id).First(&branch).Error
+	err = config.GetDB().Where("id=?", id).First(&branchModel).Error
 	if err != nil {
 
 		return BranchModel{}, err
 	}
 
-	return branch, err
+	return branchModel, err
 }
 
-func (org Branch) GetBranchesOfOrg(orgId string) (branches []BranchModel, err error) {
+func (branch Branch) GetBranchesOfOrg(orgId string) (branches []BranchModel, err error) {
 
-	err = config.GetDB().Where("orgId=?", orgId).Find(&branches).Error
+	err = config.GetDB().Where("org_id=?", orgId).Find(&branches).Error
 	if err != nil {
 
 		return []BranchModel{}, err

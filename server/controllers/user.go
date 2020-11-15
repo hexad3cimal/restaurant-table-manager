@@ -25,9 +25,10 @@ func (ctrl Api) Login(c *gin.Context) {
 
 	user, token, err := userModel.Login(loginForm)
 	if err == nil {
-		// c.SetCookie("okten", token.AccessToken, 60*60*15, "/", "127.0.0.1", false, false)
-		// c.SetCookie("refresh-token", token.RefreshToken, 60*60*30, "/", "127.0.0.1", false, false)
-		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
+		c.SetCookie("token", token.AccessToken, 300, "/", "localhost", false, true)
+		c.SetCookie("refresh-token", token.RefreshToken, 60*60*24, "/", "localhost", false, true)
+		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name})
+		// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 	} else {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": err.Error()})
 	}

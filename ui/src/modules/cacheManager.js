@@ -3,8 +3,13 @@ export const set = (key, value) => {
 };
 
 export const get = key => {
-  return JSON.stringify(sessionStorage.getItem(key));
+  return JSON.parse(sessionStorage.getItem(key));
 };
+
+export const getUser = () => {
+  return JSON.parse(sessionStorage.getItem('user'));
+};
+
 
 export const remove = key => {
   return sessionStorage.removeItem(key);

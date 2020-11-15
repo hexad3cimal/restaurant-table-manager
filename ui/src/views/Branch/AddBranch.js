@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import {
   Box,
@@ -50,7 +50,7 @@ const AddBranch = ({ className, ...rest }) => {
           {...rest}
         >
           <Card>
-            <CardHeader subheader="Add new table" title="Add table" />
+            <CardHeader subheader="Add new branch of your organisation" title="Add new branch" />
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
@@ -69,7 +69,7 @@ const AddBranch = ({ className, ...rest }) => {
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
-                  <TextareaAutosize
+                  <TextField
                     error={Boolean(touched.address && errors.address)}
                     fullWidth
                     helperText={touched.address && errors.address}
@@ -80,6 +80,8 @@ const AddBranch = ({ className, ...rest }) => {
                     onChange={handleChange}
                     value={values.address}
                     variant="outlined"
+                    multiline={true}
+                    rows={5}
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>

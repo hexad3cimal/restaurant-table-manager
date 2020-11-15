@@ -54,7 +54,7 @@ func InitRouter() {
 		user := new(controllers.Api)
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
-		v1.POST("/token/refresh", auth.Refresh)
+		v1.GET("/token/refresh", auth.Refresh)
 		v1.GET("/token/_", auth.IstokenValid)
 		table := new(controllers.TableController)
 		v1.POST("/table", AuthMiddleware(), table.Add)
