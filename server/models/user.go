@@ -6,7 +6,6 @@ import (
 	"table-booking/mappers"
 	"time"
 
-	"github.com/twinj/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -55,26 +54,16 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err er
 	return user, token, nil
 }
 
-func (u User) Register(form mappers.RegisterForm) (user UserModel, err error) {
+func (u User) EmailTaken(email string) (status bool, err error) {
+	var user UserModel
+	if !config.GetDB().Where("email=?", email).First(&user).RecordNotFound() {
 
-	if !config.GetDB().Where("email=?", form.Email).First(&user).RecordNotFound() {
-
-		return UserModel{}, errors.New("email already taken")
+		return false, errors.New("email already taken")
 	}
+	return true, nil
+}
 
-	bytePassword := []byte(form.Password)
-	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
-	if err != nil {
-		return UserModel{}, errors.New("error occured while password hash generation")
-	}
-
-	user.Name = form.FullName
-	user.Email = form.Email
-	user.Password = hashedPassword
-	user.ForgotPasswordCode = uuid.NewV4().String()
-	user.RoleId = form.Role
-	user.OrgId = form.OrgId
-	user.ID = uuid.NewV4().String()
+func (u User) Register(user UserModel) (addedUser UserModel, err error) {
 
 	err = config.GetDB().Save(&user).Error
 	if err != nil {

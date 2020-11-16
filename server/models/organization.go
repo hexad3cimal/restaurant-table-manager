@@ -3,10 +3,7 @@ package models
 import (
 	"errors"
 	"table-booking/config"
-	"table-booking/mappers"
 	"time"
-
-	uuid "github.com/twinj/uuid"
 )
 
 type OrganizationModel struct {
@@ -21,19 +18,8 @@ type OrganizationModel struct {
 
 type Organization struct{}
 
-func (org Organization) Add(form mappers.RegisterForm) (organization OrganizationModel, err error) {
+func (org Organization) Add(organization OrganizationModel) (returnObject OrganizationModel, err error) {
 
-	if !config.GetDB().Where("email=?", form.Email).First(&organization).RecordNotFound() {
-
-		return OrganizationModel{}, errors.New("email already taken")
-	}
-
-	organization.Name = form.FullName
-	organization.Email = form.Email
-	organization.Address = form.Address
-	organization.Contact = form.Contact
-
-	organization.ID = uuid.NewV4().String()
 	err = config.GetDB().Save(&organization).Error
 	if err != nil {
 		return OrganizationModel{}, err
@@ -51,6 +37,26 @@ func (org Organization) Get(id string) (organization OrganizationModel, err erro
 	}
 
 	return organization, err
+}
+
+func (org Organization) DeleteById(id string) (organization OrganizationModel, err error) {
+
+	err = config.GetDB().Where("id=?", id).Delete(&organization).Error
+	if err != nil {
+
+		return OrganizationModel{}, err
+	}
+
+	return organization, err
+}
+
+func (org Organization) GetByEmail(email string) (organization OrganizationModel, err error) {
+
+	if !config.GetDB().Where("email=?", email).First(&organization).RecordNotFound() {
+
+		return OrganizationModel{}, errors.New("email already taken")
+	}
+	return organization, nil
 }
 
 func (org Organization) GetByCode(code string) (organization OrganizationModel, err error) {

@@ -31,12 +31,20 @@ const AddBranch = ({ className, ...rest }) => {
       initialValues={{
         name: '',
         address: '',
+        password: '',
+        email: '',
         contact: '',
       }}
       validationSchema={Yup.object().shape({
         name: Yup.string()
           .max(255)
           .required('Branch name is required'),
+        email: Yup.string()
+          .email('Must be a valid email')
+          .max(255),
+        password: Yup.string()
+          .max(255)
+          .required('password is required'),
       })}
       onSubmit={values => {
         dispatch(add(values));
@@ -70,18 +78,32 @@ const AddBranch = ({ className, ...rest }) => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.address && errors.address)}
+                    error={Boolean(touched.email && errors.email)}
                     fullWidth
-                    helperText={touched.address && errors.address}
-                    label="Branch Address"
+                    helperText={touched.email && errors.email}
+                    label="Email"
                     margin="normal"
-                    name="address"
+                    name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.address}
+                    value={values.email}
                     variant="outlined"
-                    multiline={true}
-                    rows={5}
+                    type="email"
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.password && errors.password)}
+                    fullWidth
+                    helperText={touched.password && errors.password}
+                    label="Password"
+                    margin="normal"
+                    name="password"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.password}
+                    variant="outlined"
+                    type="password"
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -96,6 +118,22 @@ const AddBranch = ({ className, ...rest }) => {
                     onChange={handleChange}
                     value={values.contact}
                     variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    error={Boolean(touched.address && errors.address)}
+                    fullWidth
+                    helperText={touched.address && errors.address}
+                    label="Branch Address"
+                    margin="normal"
+                    name="address"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.address}
+                    variant="outlined"
+                    multiline={true}
+                    rows={5}
                   />
                 </Grid>
               </Grid>

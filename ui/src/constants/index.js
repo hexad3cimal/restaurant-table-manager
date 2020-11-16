@@ -32,6 +32,7 @@ export const ActionTypes = keyMirror({
   BRANCHES_GET: undefined,
   BRANCHES_GET_SUCCESS: undefined,
   BRANCHES_GET_FAILURE: undefined,
+  TABLE_ADD_INITIATE: undefined,
   TABLE_ADD: undefined,
   TABLE_ADD_SUCCESS: undefined,
   TABLE_ADD_FAILURE: undefined,

@@ -22,14 +22,14 @@ type BranchModel struct {
 
 type Branch struct{}
 
-func (branch Branch) Add(form mappers.BranchForm) (branchModel BranchModel, err error) {
+func (branch Branch) Add(form mappers.RegisterForm) (branchModel BranchModel, err error) {
 
-	if !config.GetDB().Where("name=?", form.Name).Where("org_id=?", form.OrgId).First(&branchModel).RecordNotFound() {
+	if !config.GetDB().Where("name=?", form.FullName).Where("org_id=?", form.OrgId).First(&branchModel).RecordNotFound() {
 
 		return BranchModel{}, errors.New("branch name already taken")
 	}
 
-	branchModel.Name = form.Name
+	branchModel.Name = form.FullName
 	branchModel.Address = form.Address
 	branchModel.Contact = form.Contact
 	branchModel.OrgId = form.OrgId
@@ -40,6 +40,21 @@ func (branch Branch) Add(form mappers.BranchForm) (branchModel BranchModel, err 
 		return BranchModel{}, err
 	}
 
+	var user = new(User)
+
+	if form.Email == "" {
+		var org = new(Organization)
+		organization, err := org.Get(form.OrgId)
+		if err != nil {
+			return BranchModel{}, err
+		}
+		form.Email = organization.Email
+	}
+	_, userError := user.Register(form)
+
+	if userError != nil {
+		return BranchModel{}, userError
+	}
 	return branchModel, err
 }
 
