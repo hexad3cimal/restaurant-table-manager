@@ -3,10 +3,7 @@ package models
 import (
 	"errors"
 	"table-booking/config"
-	"table-booking/mappers"
 	"time"
-
-	uuid "github.com/twinj/uuid"
 )
 
 type BranchModel struct {
@@ -22,40 +19,19 @@ type BranchModel struct {
 
 type Branch struct{}
 
-func (branch Branch) Add(form mappers.RegisterForm) (branchModel BranchModel, err error) {
+func (branch Branch) Add(branchModel BranchModel) (returnModel BranchModel, err error) {
 
-	if !config.GetDB().Where("name=?", form.FullName).Where("org_id=?", form.OrgId).First(&branchModel).RecordNotFound() {
+	if !config.GetDB().Where("name=?", branchModel.Name).Where("org_id=?", branchModel.OrgId).First(&branchModel).RecordNotFound() {
 
 		return BranchModel{}, errors.New("branch name already taken")
 	}
 
-	branchModel.Name = form.FullName
-	branchModel.Address = form.Address
-	branchModel.Contact = form.Contact
-	branchModel.OrgId = form.OrgId
-
-	branchModel.ID = uuid.NewV4().String()
 	err = config.GetDB().Save(&branchModel).Error
 	if err != nil {
 		return BranchModel{}, err
 	}
 
-	var user = new(User)
-
-	if form.Email == "" {
-		var org = new(Organization)
-		organization, err := org.Get(form.OrgId)
-		if err != nil {
-			return BranchModel{}, err
-		}
-		form.Email = organization.Email
-	}
-	_, userError := user.Register(form)
-
-	if userError != nil {
-		return BranchModel{}, userError
-	}
-	return branchModel, err
+	return branchModel, nil
 }
 
 func (branch Branch) Get(id string) (branchModel BranchModel, err error) {

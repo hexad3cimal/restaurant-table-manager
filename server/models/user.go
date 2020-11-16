@@ -73,8 +73,20 @@ func (u User) Register(user UserModel) (addedUser UserModel, err error) {
 	return user, err
 }
 
-func (u User) GetUserById(userId string) (user UserModel) {
-	config.GetDB().Where("ID=?", userId).First(&user)
+func (u User) GetUserById(userId string) (user UserModel, err error) {
+	config.GetDB().Where("ID=?", userId).First(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
 
-	return user
+	return user, nil
+}
+
+func (u User) DeleteById(userId string) (user UserModel, err error) {
+	config.GetDB().Where("ID=?", userId).Delete(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
+
+	return user, nil
 }
