@@ -4,6 +4,7 @@ import (
 	"errors"
 	"table-booking/config"
 	"table-booking/mappers"
+	"table-booking/utils"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,9 +27,9 @@ type UserModel struct {
 type User struct {
 }
 
-var authModel = new(AuthModel)
+var auth = new(utils.Auth)
 
-func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err error) {
+func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
 	config.GetDB().Where("email=?", form.Email).First(&user)
 
@@ -38,20 +39,14 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, token Token, err er
 	err = bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
 
 	if err != nil {
-		return user, token, errors.New("invalid password")
+		return user, errors.New("invalid password")
 	}
 
 	if user.Locked == true {
-		return user, token, errors.New("user is locked")
-	}
-	tokenDetails, err := authModel.CreateToken(user)
-
-	if err == nil {
-		token.AccessToken = tokenDetails.AccessToken
-		token.RefreshToken = tokenDetails.RefreshToken
+		return user, errors.New("user is locked")
 	}
 
-	return user, token, nil
+	return user, nil
 }
 
 func (u User) EmailTaken(email string) (status bool, err error) {
@@ -74,7 +69,7 @@ func (u User) Register(user UserModel) (addedUser UserModel, err error) {
 }
 
 func (u User) GetUserById(userId string) (user UserModel, err error) {
-	config.GetDB().Where("ID=?", userId).First(&user).Error
+	err = config.GetDB().Where("ID=?", userId).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}
@@ -83,7 +78,7 @@ func (u User) GetUserById(userId string) (user UserModel, err error) {
 }
 
 func (u User) DeleteById(userId string) (user UserModel, err error) {
-	config.GetDB().Where("ID=?", userId).Delete(&user).Error
+	err = config.GetDB().Where("ID=?", userId).Delete(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}

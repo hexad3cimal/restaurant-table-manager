@@ -1,4 +1,4 @@
-package models
+package utils
 
 import (
 	"fmt"
@@ -31,9 +31,9 @@ type Token struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type AuthModel struct{}
+type Auth struct{}
 
-func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
+func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*TokenDetails, error) {
 
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
@@ -46,9 +46,9 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["access_uuid"] = td.AccessUUID
-	atClaims["user_id"] = user.ID
-	atClaims["role_id"] = user.RoleId
-	atClaims["org_id"] = user.OrgId
+	atClaims["user_id"] = userId
+	atClaims["role_id"] = userRoleId
+	atClaims["org_id"] = orgId
 	atClaims["exp"] = td.AtExpires
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
@@ -68,7 +68,7 @@ func (m AuthModel) CreateToken(user UserModel) (*TokenDetails, error) {
 }
 
 //ExtractToken ...
-func (m AuthModel) ExtractToken(r *http.Request) string {
+func (m Auth) ExtractToken(r *http.Request) string {
 	// bearToken := r.Header.Get("Authorization")
 	// strArr := strings.Split(bearToken, " ")
 	// if len(strArr) == 2 {
@@ -83,7 +83,7 @@ func (m AuthModel) ExtractToken(r *http.Request) string {
 }
 
 //VerifyToken ...
-func (m AuthModel) VerifyToken(r *http.Request) (*jwt.Token, error) {
+func (m Auth) VerifyToken(r *http.Request) (*jwt.Token, error) {
 	tokenString := m.ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -98,7 +98,7 @@ func (m AuthModel) VerifyToken(r *http.Request) (*jwt.Token, error) {
 }
 
 //TokenValid ...
-func (m AuthModel) TokenValid(r *http.Request) error {
+func (m Auth) TokenValid(r *http.Request) error {
 	token, err := m.VerifyToken(r)
 	if err != nil {
 		return err
@@ -110,7 +110,7 @@ func (m AuthModel) TokenValid(r *http.Request) error {
 }
 
 //ExtractTokenMetadata ...
-func (m AuthModel) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
+func (m Auth) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 	token, err := m.VerifyToken(r)
 	if err != nil {
 		return nil, err

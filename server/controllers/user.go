@@ -5,20 +5,22 @@ import (
 	"table-booking/config"
 	"table-booking/mappers"
 	"table-booking/models"
+	"table-booking/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Api struct{}
+type UserController struct{}
 
 var user = new(models.User)
 var org = new(models.Organization)
 var role = new(models.Role)
 var logger = config.InitLogger()
+var auth = new(utils.Auth)
 
-func (ctrl Api) Login(c *gin.Context) {
+func (ctrl UserController) Login(c *gin.Context) {
 	var loginForm mappers.LoginForm
 
 	if c.ShouldBindJSON(&loginForm) != nil {
@@ -27,10 +29,13 @@ func (ctrl Api) Login(c *gin.Context) {
 		return
 	}
 
-	loggerInUser, token, err := user.Login(loginForm)
+	loggerInUser, err := user.Login(loginForm)
+
+	tokenDetails, err := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, useloggerInUserr.OrgId)
+
 	if err == nil {
-		c.SetCookie("token", token.AccessToken, 300, "/", "localhost", false, true)
-		c.SetCookie("refresh-token", token.RefreshToken, 60*60*24, "/", "localhost", false, true)
+		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
+		c.SetCookie("refresh-token", toktokenDetailsen.RefreshToken, 60*60*24, "/", "localhost", false, true)
 		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
 		// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 	} else {
@@ -40,7 +45,7 @@ func (ctrl Api) Login(c *gin.Context) {
 
 }
 
-func (ctrl Api) Register(c *gin.Context) {
+func (ctrl UserController) Register(c *gin.Context) {
 	var registerForm mappers.RegisterForm
 	var roleModel models.RoleModel
 	var organization models.OrganizationModel
