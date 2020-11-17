@@ -38,15 +38,8 @@ func (ctrl TableController) Add(c *gin.Context) {
 }
 
 func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
-	var tableForm mappers.GetTableForm
 
-	if c.ShouldBindJSON(&tableForm) != nil {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
-		c.Abort()
-		return
-	}
-
-	tables, err := table.GetTablesOfOrg(tableForm.OrgId)
+	tables, err := table.GetTablesOfOrg(c.GetHeader("org_id"))
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})
 	} else {

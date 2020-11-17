@@ -2,7 +2,7 @@ import { handleActions } from '../modules/helpers';
 
 import { STATUS, ActionTypes } from '../constants/index';
 
-export const branchState = {
+export const tableState = {
   status: STATUS.IDLE,
   add: false,
   new: false,
@@ -13,7 +13,7 @@ export const branchState = {
 };
 
 export default {
-  branch: handleActions(
+  table: handleActions(
     {
       [ActionTypes.TABLE_ADD_INITIATE]: draft => {
         draft.add = true;
@@ -91,6 +91,6 @@ export default {
         draft.error = payload;
       },
     },
-    branchState,
+    tableState,
   ),
 };

@@ -1,8 +1,12 @@
-import React from 'react';
-import { Container, Grid, makeStyles } from '@material-ui/core';
-import Page from '../../components/Page';
-import AddTable from './AddTable';
+import React, { useEffect, useState } from 'react';
+import { Box, Container, makeStyles } from '@material-ui/core';
+import { useDispatch, useSelector } from 'react-redux';
 
+import Page from '../../components/Page';
+import TableList from './TableList';
+import Toolbar from './Toolbar';
+import { getTablesOfOrg } from '../../actions';
+import AddTable from './AddTable';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -12,20 +16,35 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Account = () => {
+const Branch = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const appState = useSelector(state => state.app);
+  const tableState = useSelector(state => state.table);
 
+  if (tableState && tableState.new) {
+    dispatch(getTablesOfOrg());
+  }
+  useEffect(() => {
+    dispatch(getTablesOfOrg());
+  }, []);
   return (
     <Page className={classes.root} title="Tables">
-      <Container maxWidth="lg">
-        <Grid container spacing={3}>
-          <Grid item lg={12} md={12} xs={12}>
+      <Container maxWidth={false}>
+        {tableState && tableState.add ? (
+          <Box mt={3}>
             <AddTable />
-          </Grid>
-        </Grid>
+          </Box>
+        ) : (
+          <Box mt={3}>
+            <Toolbar />
+
+            <TableList />
+          </Box>
+        )}
       </Container>
     </Page>
   );
 };
 
-export default Account;
+export default Branch;
