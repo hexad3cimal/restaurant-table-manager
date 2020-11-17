@@ -9,6 +9,7 @@ const RegisterView = lazy(() => import('./views/auth/RegisterView'));
 const DashboardView = lazy(() => import('./views/DashboardView'));
 const NotFoundView = lazy(() => import('./views/errors/NotFoundView'));
 const BranchView = lazy(() => import('./views/Branch'));
+const TableView = lazy(() => import('./views/Table'));
 
 const routes = isLoggedIn => [
   {
@@ -19,7 +20,7 @@ const routes = isLoggedIn => [
       // { path: 'customers', element: <CustomerListView /> },
       { path: 'dashboard', element: <DashboardView /> },
       { path: 'branch', element: <BranchView /> },
-      // { path: 'settings', element: <SettingsView /> },
+      { path: 'table', element: <TableView /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },

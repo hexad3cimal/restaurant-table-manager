@@ -15,7 +15,7 @@ import {
   makeStyles,
   TextareaAutosize,
 } from '@material-ui/core';
-import { add } from '../../actions';
+import { addBranch } from '../../actions';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 const useStyles = makeStyles(() => ({
@@ -47,7 +47,7 @@ const AddBranch = ({ className, ...rest }) => {
           .required('password is required'),
       })}
       onSubmit={values => {
-        dispatch(add(values));
+        dispatch(addBranch(values));
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (

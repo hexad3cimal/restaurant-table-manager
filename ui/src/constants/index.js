@@ -42,6 +42,9 @@ export const ActionTypes = keyMirror({
   TABLES_GET: undefined,
   TABLES_GET_SUCCESS: undefined,
   TABLES_GET_FAILURE: undefined,
+  TABLES_GET_ORG: undefined,
+  TABLES_GET_ORG_SUCCESS: undefined,
+  TABLES_GET_ORG_FAILURE: undefined,
 });
 
 /**

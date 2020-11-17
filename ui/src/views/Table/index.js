@@ -16,10 +16,10 @@ const Account = () => {
   const classes = useStyles();
 
   return (
-    <Page className={classes.root} title="Account">
+    <Page className={classes.root} title="Tables">
       <Container maxWidth="lg">
         <Grid container spacing={3}>
-          <Grid item lg={4} md={6} xs={12}>
+          <Grid item lg={12} md={12} xs={12}>
             <AddTable />
           </Grid>
         </Grid>

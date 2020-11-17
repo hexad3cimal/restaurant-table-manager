@@ -7,9 +7,11 @@ export const {
   tableAdd: addTable,
   tableGet: getTableById,
   tablesGet: getTablesForBranch,
+  tablesGetOrg: getTablesOfOrg,
 } = createActions({
   [ActionTypes.TABLE_ADD_INITIATE]: () => ({}),
   [ActionTypes.TABLE_ADD]: payload => payload,
   [ActionTypes.TABLE_GET]: payload => payload,
   [ActionTypes.TABLES_GET]: payload => payload,
+  [ActionTypes.TABLES_GET_ORG]: () => ({}),
 });

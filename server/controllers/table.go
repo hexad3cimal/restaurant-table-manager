@@ -26,6 +26,7 @@ func (ctrl TableController) Add(c *gin.Context) {
 	tableModel.CreatedAt = time.Now()
 	tableModel.OrgId = c.GetHeader("org_id")
 	tableModel.BranchId = tableForm.BranchId
+	tableModel.BranchName = tableForm.BranchName
 	tableModel.Occupied = false
 	_, err := table.Add(tableModel)
 	if err == nil {

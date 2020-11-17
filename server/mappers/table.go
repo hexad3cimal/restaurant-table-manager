@@ -1,8 +1,9 @@
 package mappers
 
 type TableForm struct {
-	TableName string `json:"tableName" binding:"required"`
-	BranchId  string `json:"branchId" binding:"required"`
+	TableName  string `json:"tableName" binding:"required"`
+	BranchId   string `json:"branchId" binding:"required"`
+	BranchName string `json:"branchName" binding:"required"`
 }
 
 type GetTableForm struct {

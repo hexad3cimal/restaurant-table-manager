@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { getBranchesOFOrg, addTable } from '../../actions';
+
 import {
   Box,
   Button,
@@ -13,20 +16,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 
-const states = [
-  {
-    value: 'alabama',
-    label: 'Alabama',
-  },
-  {
-    value: 'new-york',
-    label: 'New York',
-  },
-  {
-    value: 'san-francisco',
-    label: 'San Francisco',
-  },
-];
+import * as Yup from 'yup';
+import { Formik } from 'formik';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -34,29 +25,39 @@ const useStyles = makeStyles(() => ({
 
 const AddTable = ({ className, ...rest }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const appState = useSelector(state => state.app);
+  const branchState = useSelector(state => state.branch);
 
-  useEffect(() => {});
+  const branches = (branchState && branchState.branches) || [];
+
+  useEffect(() => {
+    dispatch(getBranchesOFOrg());
+  }, []);
   return (
     <Formik
       initialValues={{
-        email: '',
-        firstName: '',
-        lastName: '',
-        password: '',
-        policy: false,
+        tableName: '',
+        branchId: '',
+        branchName: '',
       }}
       validationSchema={Yup.object().shape({
-        name: Yup.string()
+        tableName: Yup.string()
           .max(255)
-          .required('Tablename is is required'),
+          .required('Tablename  is required'),
 
-        branch: Yup.string()
+        branchId: Yup.string()
           .max(255)
-          .required('Branch name is is required'),
+          .required('Branch is required'),
       })}
       onSubmit={values => {
-        values.org = true;
-        dispatch(register(values));
+        values.branchName = branches.reduce(function(branchNameArray, branch) {
+          if (branch.id === values.branchId) {
+            branchNameArray.push(branch.name);
+          }
+          return branchNameArray;
+        }, [])[0];
+        dispatch(addTable(values));
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -74,15 +75,15 @@ const AddTable = ({ className, ...rest }) => {
               <Grid container spacing={3}>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.name && errors.name)}
+                    error={Boolean(touched.tableName && errors.tableName)}
                     fullWidth
-                    helperText={touched.name && errors.name}
+                    helperText={touched.tableName && errors.tableName}
                     label="Table Name"
                     margin="normal"
-                    name="name"
+                    name="tableName"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.name}
+                    value={values.tableName}
                     variant="outlined"
                   />
                 </Grid>
@@ -91,12 +92,14 @@ const AddTable = ({ className, ...rest }) => {
                   <TextField
                     fullWidth
                     label="Select Branch"
-                    name="branch"
+                    name="branchId"
+                    error={Boolean(touched.branchId && errors.branchId)}
+                    helperText={touched.branchId && errors.branchId}
                     onChange={handleChange}
                     required
                     select
                     SelectProps={{ native: true }}
-                    value={values.state}
+                    value={values.branchId}
                     variant="outlined"
                   >
                     {branches.map(branch => (
@@ -110,7 +113,7 @@ const AddTable = ({ className, ...rest }) => {
             </CardContent>
             <Divider />
             <Box display="flex" justifyContent="flex-end" p={2}>
-              <Button color="primary" variant="contained">
+              <Button color="primary" type="submit" variant="contained">
                 Save details
               </Button>
             </Box>

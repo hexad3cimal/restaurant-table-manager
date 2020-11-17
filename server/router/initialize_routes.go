@@ -51,20 +51,26 @@ func InitRouter() {
 
 	v1 := router.Group("/v1/api")
 	{
+		//user related routes
 		user := new(controllers.UserController)
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
 		v1.GET("/token/refresh", auth.Refresh)
 		v1.GET("/token/_", auth.IstokenValid)
+
+		//table related routes
 		table := new(controllers.TableController)
 		v1.POST("/table", AuthMiddleware(), table.Add)
 		v1.GET("/table/org", AuthMiddleware(), table.GetTablesOfOrg)
 		v1.POST("/table/branch", AuthMiddleware(), table.GetTablesOfBranch)
 
+		//branch related routes
 		branch := new(controllers.BranchController)
 		v1.POST("/branch", AuthMiddleware(), branch.Add)
 		v1.GET("/branch/org", AuthMiddleware(), branch.GetBranchesOfOrg)
 	}
+
+	//for react
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")
 	})

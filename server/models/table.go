@@ -6,14 +6,15 @@ import (
 )
 
 type TableModel struct {
-	ID        string    `db:"id, primarykey" json:"id"`
-	OrgId     string    `db:"org_id" json:"org_id"`
-	BranchId  string    `db:"branch_id" json:"branch_id"`
-	Active    bool      `db:"active" json:"-"`
-	Name      string    `db:"name" json:"name"`
-	Occupied  bool      `db:"occupied" json:"occupied"`
-	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	ID         string    `db:"id, primarykey" json:"id"`
+	OrgId      string    `db:"org_id" json:"orgId"`
+	BranchId   string    `db:"branch_id" json:"branchId"`
+	Active     bool      `db:"active" json:"-"`
+	Name       string    `db:"name" json:"name"`
+	BranchName string    `db:"branch_name" json:"branchName"`
+	Occupied   bool      `db:"occupied" json:"occupied"`
+	UpdatedAt  time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt  time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
 
 type Table struct{}

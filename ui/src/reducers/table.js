@@ -8,6 +8,7 @@ export const branchState = {
   new: false,
   error: null,
   tables: [],
+  orgTables: [],
   selectedTable: null,
 };
 
@@ -57,7 +58,7 @@ export default {
       },
       [ActionTypes.TABLE_GET_SUCCESS]: (draft, { payload }) => {
         draft.status = STATUS.READY;
-        draft.selectedBranch = payload;
+        draft.selectedTable = payload;
         draft.new = false;
       },
       [ActionTypes.TABLE_GET_FAILURE]: (draft, { payload }) => {
@@ -71,9 +72,21 @@ export default {
       },
       [ActionTypes.TABLES_GET_SUCCESS]: (draft, { payload }) => {
         draft.status = STATUS.READY;
-        draft.branches = payload;
+        draft.tables = payload;
       },
       [ActionTypes.TABLES_GET_FAILURE]: (draft, { payload }) => {
+        draft.status = STATUS.ERROR;
+        draft.error = payload;
+      },
+      [ActionTypes.TABLES_GET_ORG]: draft => {
+        draft.status = STATUS.RUNNING;
+        draft.new = false;
+      },
+      [ActionTypes.TABLES_GET_ORG_SUCCESS]: (draft, { payload }) => {
+        draft.status = STATUS.READY;
+        draft.orgTables = payload;
+      },
+      [ActionTypes.TABLES_GET_ORG_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;
         draft.error = payload;
       },
