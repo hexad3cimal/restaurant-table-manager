@@ -1,10 +1,12 @@
 package config
 
 import (
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"os"
+
+	runtime "github.com/banzaicloud/logrus-runtime-formatter"
+	"github.com/sirupsen/logrus"
 )
 
 var Log logrus.Logger
@@ -13,7 +15,6 @@ type WriterHook struct {
 	Writer    io.Writer
 	LogLevels []logrus.Level
 }
-
 
 func (hook *WriterHook) Fire(entry *logrus.Entry) error {
 	line, err := entry.String()
@@ -28,13 +29,15 @@ func (hook *WriterHook) Levels() []logrus.Level {
 	return hook.LogLevels
 }
 
-func InitLogger() 	*logrus.Logger  {
+func InitLogger() *logrus.Logger {
 
 	Log := logrus.New()
-	Log.SetFormatter(&logrus.JSONFormatter{})
+	formatter := runtime.Formatter{ChildFormatter: &logrus.JSONFormatter{}}
+	formatter.Line = true
+	Log.SetFormatter(&formatter)
 	Log.SetOutput(ioutil.Discard)
 
-	file, err := os.OpenFile("logrus.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err == nil {
 		Log.AddHook(&WriterHook{
 			Writer: file,
@@ -56,8 +59,6 @@ func InitLogger() 	*logrus.Logger  {
 			logrus.DebugLevel,
 		},
 	})
-		return Log
-
+	return Log
 
 }
-

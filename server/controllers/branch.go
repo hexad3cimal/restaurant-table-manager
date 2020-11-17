@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 	"table-booking/mappers"
-	"table-booking/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
@@ -13,13 +11,12 @@ import (
 
 type BranchController struct{}
 
-var branch = new(models.Branch)
-var branchModel models.BranchModel
-
 func (ctrl BranchController) Add(c *gin.Context) {
-	var branchForm mappers.BranchForm
+	var branchForm mappers.RegisterForm
 
 	if c.ShouldBindJSON(&branchForm) != nil {
+		logger.Error("inavlid branch form ")
+
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
 		c.Abort()
 		return
@@ -28,45 +25,46 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	branchModel.Address = branchForm.Address
 	branchModel.Contact = branchForm.Contact
 	branchModel.Email = branchForm.Email
-	branchModel.Name = branchForm.Name
-	branchModel.OrgId = c.GetHeader("org-id")
+	branchModel.Name = branchForm.FullName
+	branchModel.OrgId = c.GetHeader("org_id")
 	branchModel.ID = uuid.NewV4().String()
-	_, err := branch.Add(branchModel)
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success"})
-	} else {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+	_, branchAddErr := branch.Add(branchModel)
+	if branchAddErr != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
 
-	var user = new(models.User)
-	var userModel models.UserModel
-	userModel.RoleId = role.ID
-	userModel.OrgId = addedOrganization.ID
+	//get branch role for current organisation
+	roleModel, roleGetError := role.GetRoleForOrg("branch", branchModel.OrgId)
+	if roleGetError != nil {
+		branch.DeleteBranchById(branchModel.ID)
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	}
+
+	//add new user with branch role
+	userModel.RoleId = roleModel.ID
+	userModel.OrgId = branchModel.OrgId
 	bytePassword := []byte(branchForm.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if err != nil {
-		//delete created admin role
-		role
-		//delete created organization
-		org.DeleteById(addedOrganization.ID)
-		return UserModel{}, errors.New("error occured while password hash generation")
+		branch.DeleteBranchById(branchModel.ID)
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
-
-	user.Name = registerForm.FullName
-	user.Email = registerForm.Email
-	user.Password = hashedPassword
-	user.ForgotPasswordCode = uuid.NewV4().String()
-	user.ID = uuid.NewV4().String()
-	_, userError := userModel.Register(user)
+	userModel.Name = branchForm.FullName
+	userModel.Email = branchForm.Email
+	userModel.Password = hashedPassword
+	userModel.ForgotPasswordCode = uuid.NewV4().String()
+	userModel.ID = uuid.NewV4().String()
+	_, userError := user.Register(userModel)
 
 	if userError != nil {
-		return BranchModel{}, userError
+		branch.DeleteBranchById(branchModel.ID)
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
-
+	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 }
 
 func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
-	branches, err := branchModel.GetBranchesOfOrg(c.GetHeader("orgId"))
+	branches, err := branch.GetBranchesOfOrg(c.GetHeader("orgId"))
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
 	} else {

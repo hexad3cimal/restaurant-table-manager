@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"table-booking/config"
-	"table-booking/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -12,17 +11,17 @@ import (
 
 type AuthController struct{}
 
-var authModel = new(models.AuthModel)
-
 func (ctl AuthController) IstokenValid(c *gin.Context) {
-	err := authModel.TokenValid(c.Request)
+	err := auth.TokenValid(c.Request)
 	if err != nil {
+		logger.Error(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		c.Abort()
 		return
 	}
-	accessDetails, err := authModel.ExtractTokenMetadata(c.Request)
+	accessDetails, err := auth.ExtractTokenMetadata(c.Request)
 	if err != nil {
+		logger.Error(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		c.Abort()
 		return
@@ -62,8 +61,12 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 			return
 		}
-		user := userModel.GetUserById(userID)
-		token, createErr := authModel.CreateToken(user)
+		user, getUserErr := user.GetUserById(userID)
+		if getUserErr != nil {
+			c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
+			return
+		}
+		token, createErr := auth.CreateToken(user.ID, user.RoleId, user.OrgId)
 		if createErr != nil {
 			c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 			return

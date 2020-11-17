@@ -55,3 +55,14 @@ func (branch Branch) GetBranchesOfOrg(orgId string) (branches []BranchModel, err
 
 	return branches, err
 }
+
+func (branch Branch) DeleteBranchById(branchId string) (branchModel BranchModel, err error) {
+
+	err = config.GetDB().Where("id=?", branchId).Delete(&branch).Error
+	if err != nil {
+
+		return BranchModel{}, err
+	}
+
+	return branchModel, err
+}

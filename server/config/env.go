@@ -37,7 +37,7 @@ func InitConfig() {
 
 	notOk := viper.Unmarshal(&configuration)
 	if notOk != nil {
-		log.Error("Invalid config")
+		log.Error("Invalid config" + notOk.Error())
 	}
 
 	fmt.Println(configuration)

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"table-booking/config"
 	"table-booking/mappers"
 	"table-booking/models"
 	"table-booking/utils"
@@ -14,10 +13,7 @@ import (
 
 type UserController struct{}
 
-var user = new(models.User)
 var org = new(models.Organization)
-var role = new(models.Role)
-var logger = config.InitLogger()
 var auth = new(utils.Auth)
 
 func (ctrl UserController) Login(c *gin.Context) {
@@ -31,11 +27,11 @@ func (ctrl UserController) Login(c *gin.Context) {
 
 	loggerInUser, err := user.Login(loginForm)
 
-	tokenDetails, err := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, useloggerInUserr.OrgId)
+	tokenDetails, err := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, loggerInUser.OrgId)
 
 	if err == nil {
 		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
-		c.SetCookie("refresh-token", toktokenDetailsen.RefreshToken, 60*60*24, "/", "localhost", false, true)
+		c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
 		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
 		// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 	} else {
@@ -73,7 +69,7 @@ func (ctrl UserController) Register(c *gin.Context) {
 	roleModel.Name = "admin"
 	roleModel.OrgId = addedOrganization.ID
 	roleModel.ID = uuid.NewV4().String()
-	_, roleAddErr = role.Add(roleModel)
+	_, roleAddErr := role.Add(roleModel)
 	if roleAddErr != nil {
 		org.DeleteById(addedOrganization.ID)
 
@@ -118,9 +114,9 @@ func (ctrl UserController) Register(c *gin.Context) {
 	}
 
 	//add table role
-	role.RoleName = "table"
-	role.ID = uuid.NewV4().String()
-	tableRole, tableRoleAddErr = role.Add(role)
+	roleModel.Name = "table"
+	roleModel.ID = uuid.NewV4().String()
+	tableRole, tableRoleAddErr := role.Add(roleModel)
 	if tableRoleAddErr != nil {
 		//delete admin user
 		user.DeleteById(adminUser.ID)
@@ -134,9 +130,9 @@ func (ctrl UserController) Register(c *gin.Context) {
 		return
 	}
 
-	role.ID = uuid.NewV4().String()
-	role.RoleName = "manager"
-	managerRole, managerRoleAddErr = role.Add(role)
+	roleModel.ID = uuid.NewV4().String()
+	roleModel.Name = "manager"
+	managerRole, managerRoleAddErr := role.Add(roleModel)
 	if managerRoleAddErr != nil {
 		//delete admin user
 		user.DeleteById(adminUser.ID)
@@ -152,9 +148,10 @@ func (ctrl UserController) Register(c *gin.Context) {
 		return
 	}
 
-	role.RoleName = "kitchen"
-	_, err = roleModel.Add(role)
-	if err != nil {
+	roleModel.Name = "kitchen"
+	roleModel.ID = uuid.NewV4().String()
+	_, kitchenRoleAddErr := role.Add(roleModel)
+	if kitchenRoleAddErr != nil {
 		//delete admin user
 		user.DeleteById(adminUser.ID)
 		//delete admin role
