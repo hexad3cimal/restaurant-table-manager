@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"table-booking/auth_utils"
 	"table-booking/mappers"
 	"table-booking/models"
-	"table-booking/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
@@ -14,7 +14,7 @@ import (
 type UserController struct{}
 
 var org = new(models.Organization)
-var auth = new(utils.Auth)
+var auth = new(auth_utils.Auth)
 
 func (ctrl UserController) Login(c *gin.Context) {
 	var loginForm mappers.LoginForm

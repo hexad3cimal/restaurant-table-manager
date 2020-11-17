@@ -2,9 +2,10 @@ package models
 
 import (
 	"errors"
+	"table-booking/auth_utils"
 	"table-booking/config"
 	"table-booking/mappers"
-	"table-booking/utils"
+
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -27,7 +28,7 @@ type UserModel struct {
 type User struct {
 }
 
-var auth = new(utils.Auth)
+var auth = new(auth_utils.Auth)
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
