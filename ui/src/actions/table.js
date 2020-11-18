@@ -6,12 +6,12 @@ export const {
   tableAddInitiate: initiateTableAdd,
   tableAdd: addTable,
   tableGet: getTableById,
-  tablesGet: getTablesForBranch,
-  tablesGetOrg: getTablesOfOrg,
+  tablesGet: getTables,
+  tablesGetBranch: getTablesOfBranch,
 } = createActions({
   [ActionTypes.TABLE_ADD_INITIATE]: () => ({}),
   [ActionTypes.TABLE_ADD]: payload => payload,
   [ActionTypes.TABLE_GET]: payload => payload,
-  [ActionTypes.TABLES_GET]: payload => payload,
-  [ActionTypes.TABLES_GET_ORG]: () => ({}),
+  [ActionTypes.TABLES_GET]: () => ({}),
+  [ActionTypes.TABLES_GET_BRANCH]: () => ({}),
 });

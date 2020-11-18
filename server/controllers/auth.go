@@ -26,9 +26,9 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.Writer.Header().Set("orgId", accessDetails.OrgId)
-	c.Writer.Header().Set("roleId", accessDetails.RoleId)
-	c.Writer.Header().Set("userId", accessDetails.UserId)
+	c.Request.Header.Set("org_id", accessDetails.OrgId)
+	c.Request.Header.Set("role_id", accessDetails.RoleId)
+	c.Request.Header.Set("user_id", accessDetails.UserId)
 
 }
 

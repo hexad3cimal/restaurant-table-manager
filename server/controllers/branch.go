@@ -31,13 +31,17 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	_, branchAddErr := branch.Add(branchModel)
 	if branchAddErr != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
 
 	//get branch role for current organisation
-	roleModel, roleGetError := role.GetRoleForOrg("branch", branchModel.OrgId)
+	roleModel, roleGetError := role.GetRoleForOrg("manager", branchModel.OrgId)
 	if roleGetError != nil {
 		branch.DeleteBranchById(branchModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
 
 	//add new user with branch role
@@ -48,6 +52,8 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	if err != nil {
 		branch.DeleteBranchById(branchModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
 	userModel.Name = branchForm.FullName
 	userModel.Email = branchForm.Email
@@ -59,12 +65,14 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	if userError != nil {
 		branch.DeleteBranchById(branchModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
 	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 }
 
 func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
-	branches, err := branch.GetBranchesOfOrg(c.GetHeader("orgId"))
+	branches, err := branch.GetBranchesOfOrg(c.GetHeader("org_id"))
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
 	} else {

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from '../../components/Page';
 import TableList from './TableList';
 import Toolbar from './Toolbar';
-import { getTables } from '../../actions';
+import { getTablesOfOrg } from '../../actions';
 import AddTable from './AddTable';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,10 +23,10 @@ const Branch = () => {
   const tableState = useSelector(state => state.table);
 
   if (tableState && tableState.new) {
-    dispatch(getTables());
+    dispatch(getTablesOfOrg());
   }
   useEffect(() => {
-    dispatch(getTables());
+    dispatch(getTablesOfOrg());
   }, []);
   return (
     <Page className={classes.root} title="Tables">

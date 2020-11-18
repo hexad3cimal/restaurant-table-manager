@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import { useDispatch } from 'react-redux';
+
 import {
   Box,
   Button,
@@ -12,7 +14,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Search as SearchIcon } from 'react-feather';
-
+import { initiateTableAdd } from '../../actions';
 const useStyles = makeStyles(theme => ({
   root: {},
   importButton: {
@@ -25,14 +27,15 @@ const useStyles = makeStyles(theme => ({
 
 const Toolbar = ({ className, ...rest }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Box display="flex" justifyContent="flex-end">
         <Button className={classes.importButton}>Import</Button>
         <Button className={classes.exportButton}>Export</Button>
-        <Button color="primary" variant="contained">
-          Add product
+        <Button onClick={() => dispatch(initiateTableAdd())} color="primary" variant="contained">
+          Add Table
         </Button>
       </Box>
       <Box mt={3}>
@@ -50,7 +53,7 @@ const Toolbar = ({ className, ...rest }) => {
                     </InputAdornment>
                   ),
                 }}
-                placeholder="Search product"
+                placeholder="Search Table"
                 variant="outlined"
               />
             </Box>

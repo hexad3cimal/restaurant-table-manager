@@ -100,6 +100,36 @@ export function* getTablesForBranch({ payload }) {
 }
 
 /**
+ * Get all the tables 
+ */
+export function* getTables() {
+  try {
+    const tables = yield request(`${window.geoConfig.api}tables`, {
+      method: 'GET',
+    });
+
+    yield all([
+      put({
+        type: ActionTypes.TABLES_GET_SUCCESS,
+        payload: tables && tables.data,
+      }),
+    ]);
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.TABLES_GET_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: 'Error while gettting tables, please retry',
+      }),
+    ]);
+  }
+}
+
+/**
  * Get all the tables for org
  */
 export function* getTablesForOrg() {
@@ -136,7 +166,7 @@ export default function* root() {
   yield all([
     takeLatest(ActionTypes.TABLE_ADD, addTable),
     takeLatest(ActionTypes.TABLE_GET, getTableById),
-    takeLatest(ActionTypes.TABLES_GET, getTablesForBranch),
-    takeLatest(ActionTypes.TABLES_GET_ORG, getTablesForOrg),
+    takeLatest(ActionTypes.TABLES_GET, getTables),
+    takeLatest(ActionTypes.TABLES_GET_BRANCH, getTablesForOrg),
   ]);
 }

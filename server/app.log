@@ -8,3 +8,27 @@
 {"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-17T20:38:03+05:30"}
 {"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-17T21:18:25+05:30"}
 {"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-17T21:28:00+05:30"}
+{"function":"GetTables","level":"error","line":"58","msg":"Get rolename failed for   record not found","time":"2020-11-18T21:02:37+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:14:14+05:30"}
+{"function":"GetTables","level":"error","line":"58","msg":"Get rolename failed for   record not found","time":"2020-11-18T21:14:30+05:30"}
+{"function":"GetTables","level":"error","line":"58","msg":"Get rolename failed for   record not found","time":"2020-11-18T21:17:27+05:30"}
+{"function":"GetTables","level":"error","line":"58","msg":"Get rolename failed for   record not found","time":"2020-11-18T21:19:13+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:21:49+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:30:12+05:30"}
+{"function":"GetTables","level":"error","line":"58","msg":"Get rolename failed for   record not found","time":"2020-11-18T21:30:56+05:30"}
+{"function":"IstokenValid","level":"error","line":"32","msg":"org_id","time":"2020-11-18T21:32:33+05:30"}
+{"function":"GetTables","level":"error","line":"58","msg":"Get rolename failed for   record not found","time":"2020-11-18T21:32:33+05:30"}
+{"function":"IstokenValid","level":"error","line":"32","msg":"org_idb6533d28-9c4c-443f-8d64-e82b889c8e43","time":"2020-11-18T21:35:00+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:35:44+05:30"}
+{"function":"IstokenValid","level":"error","line":"32","msg":"org_idb6533d28-9c4c-443f-8d64-e82b889c8e43","time":"2020-11-18T21:35:59+05:30"}
+{"function":"IstokenValid","level":"error","line":"32","msg":"org_idb6533d28-9c4c-443f-8d64-e82b889c8e43","time":"2020-11-18T21:36:04+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:43:41+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T21:51:06+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:59:24+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T21:59:24+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T22:01:27+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T22:04:30+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T22:07:45+05:30"}
+{"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T22:07:45+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T22:11:16+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T22:11:49+05:30"}

@@ -35,8 +35,14 @@ func InitLogger() *logrus.Logger {
 	formatter := runtime.Formatter{ChildFormatter: &logrus.JSONFormatter{}}
 	formatter.Line = true
 	Log.SetFormatter(&formatter)
-	Log.SetOutput(ioutil.Discard)
-
+	Log.SetOutput(io.MultiWriter(ioutil.Discard, os.Stdout))
+	Log.AddHook(&WriterHook{
+		Writer: os.Stdout,
+		LogLevels: []logrus.Level{
+			logrus.InfoLevel,
+			logrus.DebugLevel,
+		},
+	})
 	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err == nil {
 		Log.AddHook(&WriterHook{
@@ -52,13 +58,6 @@ func InitLogger() *logrus.Logger {
 		Log.Info("Failed to log to file, using default stderr")
 	}
 
-	Log.AddHook(&WriterHook{
-		Writer: os.Stdout,
-		LogLevels: []logrus.Level{
-			logrus.InfoLevel,
-			logrus.DebugLevel,
-		},
-	})
 	return Log
 
 }

@@ -1,8 +1,10 @@
 package router
 
 import (
+	"net/http"
 	"table-booking/config"
 	"table-booking/controllers"
+	"table-booking/helpers"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
@@ -41,6 +43,20 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func isAdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		isAdmin := helpers.IsAdmin(c.GetHeader("role_id"), c.GetHeader("org_id"))
+		if isAdmin == true {
+			c.Next()
+			return
+		}
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization"})
+		c.Abort()
+		return
+	}
+}
+
 func InitRouter() {
 	router := gin.Default()
 	router.Use(CORS())
@@ -61,13 +77,14 @@ func InitRouter() {
 		//table related routes
 		table := new(controllers.TableController)
 		v1.POST("/table", AuthMiddleware(), table.Add)
-		v1.GET("/table/org", AuthMiddleware(), table.GetTablesOfOrg)
+		v1.GET("/table/org", AuthMiddleware(), isAdminMiddleware(), table.GetTablesOfOrg)
 		v1.POST("/table/branch", AuthMiddleware(), table.GetTablesOfBranch)
+		v1.GET("/tables", AuthMiddleware(), table.GetTables)
 
 		//branch related routes
 		branch := new(controllers.BranchController)
 		v1.POST("/branch", AuthMiddleware(), branch.Add)
-		v1.GET("/branch/org", AuthMiddleware(), branch.GetBranchesOfOrg)
+		v1.GET("/branch/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 	}
 
 	//for react
