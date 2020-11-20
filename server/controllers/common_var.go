@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"table-booking/authutils"
 	"table-booking/config"
 	"table-booking/models"
 )
@@ -18,3 +19,6 @@ var table = new(models.Table)
 var tableModel models.TableModel
 
 var logger = config.InitLogger()
+
+var org = new(models.Organization)
+var auth = new(authutils.Auth)

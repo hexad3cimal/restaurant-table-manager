@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"table-booking/auth_utils"
 	"table-booking/mappers"
 	"table-booking/models"
 
@@ -13,9 +12,6 @@ import (
 
 type UserController struct{}
 
-var org = new(models.Organization)
-var auth = new(auth_utils.Auth)
-
 func (ctrl UserController) Login(c *gin.Context) {
 	var loginForm mappers.LoginForm
 
@@ -25,18 +21,21 @@ func (ctrl UserController) Login(c *gin.Context) {
 		return
 	}
 
-	loggerInUser, err := user.Login(loginForm)
+	loggerInUser, loginErr := user.Login(loginForm)
+	if loginErr != nil {
+		logger.Error(" login failed for " + loginForm.Email)
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": loginErr.Error()})
+	}
+	tokenDetails, tokenError := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, loggerInUser.OrgId)
 
-	tokenDetails, err := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, loggerInUser.OrgId)
-
-	if err == nil {
+	if tokenError == nil {
 		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
 		c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
 		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
 		// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 	} else {
 		logger.Error(" login failed for " + loginForm.Email)
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": err.Error()})
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})
 	}
 
 }

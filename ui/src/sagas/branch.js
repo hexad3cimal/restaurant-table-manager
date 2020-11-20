@@ -74,6 +74,7 @@ export function* getById({ id }) {
  */
 export function* getForOrg() {
   try {
+    console.log("get for org")
     const branches = yield request(`${window.geoConfig.api}branch/org`, {
       method: 'GET',
     });
@@ -86,6 +87,7 @@ export function* getForOrg() {
     ]);
   } catch (err) {
     /* istanbul ignore next */
+    console.log("error",err)
     yield all([
       put({
         type: ActionTypes.BRANCHES_GET_FAILURE,

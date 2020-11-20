@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 	"table-booking/config"
 	"table-booking/controllers"
@@ -47,6 +48,7 @@ func AuthMiddleware() gin.HandlerFunc {
 func isAdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		isAdmin := helpers.IsAdmin(c.GetHeader("role_id"), c.GetHeader("org_id"))
+		fmt.Println("Isadmin", isAdmin)
 		if isAdmin == true {
 			c.Next()
 			return

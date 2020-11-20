@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"table-booking/auth_utils"
 	"table-booking/config"
 	"table-booking/mappers"
 
@@ -27,8 +26,6 @@ type UserModel struct {
 }
 type User struct {
 }
-
-var auth = new(auth_utils.Auth)
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 

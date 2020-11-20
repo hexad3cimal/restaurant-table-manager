@@ -32,3 +32,11 @@
 {"function":"IstokenValid","level":"error","line":"17","msg":"token contains an invalid number of segments","time":"2020-11-18T22:07:45+05:30"}
 {"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T22:11:16+05:30"}
 {"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-18T22:11:49+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T22:19:05+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T22:21:30+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T22:50:21+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T23:01:36+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-20T23:07:10+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-20T23:07:10+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T23:08:59+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T23:11:00+05:30"}

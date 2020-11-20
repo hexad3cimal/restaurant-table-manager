@@ -142,7 +142,6 @@ const Results = ({ className, branches, ...rest }) => {
 
 Results.propTypes = {
   className: PropTypes.string,
-  customers: PropTypes.array.isRequired,
 };
 
 export default Results;

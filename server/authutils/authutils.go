@@ -1,4 +1,4 @@
-package auth_utils
+package authutils
 
 import (
 	"fmt"
@@ -14,7 +14,6 @@ type TokenDetails struct {
 	AccessToken  string
 	RefreshToken string
 	AccessUUID   string
-	RefreshUUID  string
 	AtExpires    int64
 	RtExpires    int64
 }
@@ -34,13 +33,11 @@ type Token struct {
 type Auth struct{}
 
 func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*TokenDetails, error) {
-
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUUID = uuid.NewV4().String()
 
 	td.RtExpires = time.Now().Add(time.Minute * 30).Unix()
-	td.RefreshUUID = uuid.NewV4().String()
 
 	var err error
 	atClaims := jwt.MapClaims{}
@@ -56,8 +53,13 @@ func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*Toke
 	if err != nil {
 		return nil, err
 	}
+	td.AccessUUID = uuid.NewV4().String()
+
 	rtClaims := jwt.MapClaims{}
-	rtClaims["refresh_uuid"] = td.RefreshUUID
+	rtClaims["access_uuid"] = td.AccessUUID
+	atClaims["user_id"] = userId
+	atClaims["role_id"] = userRoleId
+	atClaims["org_id"] = orgId
 	rtClaims["exp"] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
 	td.RefreshToken, err = rt.SignedString([]byte(config.GetConfig().Secret))
@@ -68,13 +70,22 @@ func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*Toke
 }
 
 //ExtractToken ...
-func (m Auth) ExtractToken(r *http.Request) string {
+func (m Auth) ExtractToken(r *http.Request, refreshToken bool) string {
 	// bearToken := r.Header.Get("Authorization")
 	// strArr := strings.Split(bearToken, " ")
 	// if len(strArr) == 2 {
 	// 	return strArr[1]
 	// }
-	token, err := r.Cookie("token")
+	var token *http.Cookie
+	var err error
+
+	if refreshToken == true {
+		token, err = r.Cookie("refresh-token")
+	} else {
+		token, err = r.Cookie("token")
+
+	}
+
 	if err != nil {
 		return ""
 	}
@@ -83,8 +94,8 @@ func (m Auth) ExtractToken(r *http.Request) string {
 }
 
 //VerifyToken ...
-func (m Auth) VerifyToken(r *http.Request) (*jwt.Token, error) {
-	tokenString := m.ExtractToken(r)
+func (m Auth) VerifyToken(r *http.Request, refreshToken bool) (*jwt.Token, error) {
+	tokenString := m.ExtractToken(r, refreshToken)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -98,8 +109,8 @@ func (m Auth) VerifyToken(r *http.Request) (*jwt.Token, error) {
 }
 
 //TokenValid ...
-func (m Auth) TokenValid(r *http.Request) error {
-	token, err := m.VerifyToken(r)
+func (m Auth) TokenValid(r *http.Request, refreshToken bool) error {
+	token, err := m.VerifyToken(r, refreshToken)
 	if err != nil {
 		return err
 	}
@@ -110,8 +121,8 @@ func (m Auth) TokenValid(r *http.Request) error {
 }
 
 //ExtractTokenMetadata ...
-func (m Auth) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
-	token, err := m.VerifyToken(r)
+func (m Auth) ExtractTokenMetadata(r *http.Request, refreshToken bool) (*AccessDetails, error) {
+	token, err := m.VerifyToken(r, refreshToken)
 	if err != nil {
 		return nil, err
 	}
