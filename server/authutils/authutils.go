@@ -57,9 +57,9 @@ func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*Toke
 
 	rtClaims := jwt.MapClaims{}
 	rtClaims["access_uuid"] = td.AccessUUID
-	atClaims["user_id"] = userId
-	atClaims["role_id"] = userRoleId
-	atClaims["org_id"] = orgId
+	rtClaims["user_id"] = userId
+	rtClaims["role_id"] = userRoleId
+	rtClaims["org_id"] = orgId
 	rtClaims["exp"] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
 	td.RefreshToken, err = rt.SignedString([]byte(config.GetConfig().Secret))

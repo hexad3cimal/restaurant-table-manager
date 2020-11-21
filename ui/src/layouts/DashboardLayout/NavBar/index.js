@@ -42,9 +42,9 @@ const items = [
     title: 'Branch',
   },
   {
-    href: '/app/products',
+    href: '/app/table',
     icon: ShoppingBagIcon,
-    title: 'Products',
+    title: 'Table',
   },
   {
     href: '/app/account',

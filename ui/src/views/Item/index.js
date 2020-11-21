@@ -16,13 +16,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Branch = () => {
+const Products = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
-  const tableState = useSelector(state => state.table);
+  const productState = useSelector(state => state.product);
 
-  if (tableState && tableState.new) {
+  if (productState && productState.new) {
     dispatch(getTablesOfOrg());
   }
   useEffect(() => {
@@ -47,4 +47,4 @@ const Branch = () => {
   );
 };
 
-export default Branch;
+export default Item;

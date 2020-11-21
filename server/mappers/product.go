@@ -1,8 +1,9 @@
 package mappers
 
-type ItemForm struct {
-	ItemName    string  `json:"itemName" binding:"required"`
-	OrgId       string  `json:"orgId" binding:"required"`
+type ProductForm struct {
+	ProductName string  `json:"itemName" binding:"required"`
+	OrgId       string  `json:"orgId"`
+	BranchId    string  `json:"branchId" binding:"required"`
 	Description string  `json:"decription" binding:"required"`
 	Image       string  `json:"image"`
 	Price       float32 `json:"price" binding:"required"`

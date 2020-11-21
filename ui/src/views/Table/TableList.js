@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 const TableList = () => {
   const classes = useStyles();
   const tableState = useSelector(state => state.table);
-  const tables = (tableState && tableState.orgTables) || [];
+  const tables = (tableState && tableState.tables) || [];
   return (
     <Page className={classes.root} title="Products">
       <Container maxWidth={false}>

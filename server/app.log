@@ -40,3 +40,8 @@
 {"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-20T23:07:10+05:30"}
 {"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T23:08:59+05:30"}
 {"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-20T23:11:00+05:30"}
+{"function":"Login","level":"error","line":"26","msg":" login failed for 4jovin@gmail.com","time":"2020-11-21T21:33:47+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-21T21:33:57+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-21T21:34:32+05:30"}
+{"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-21T21:34:52+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-21T21:40:16+05:30"}
