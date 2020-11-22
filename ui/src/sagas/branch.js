@@ -70,12 +70,11 @@ export function* getById({ id }) {
 }
 
 /**
- * Get all the branches for the current org
+ * Get branches
  */
-export function* getForOrg() {
+export function* getBranches() {
   try {
-    console.log("get for org")
-    const branches = yield request(`${window.geoConfig.api}branch/org`, {
+    const branches = yield request(`${window.geoConfig.api}branch`, {
       method: 'GET',
     });
 
@@ -108,6 +107,6 @@ export default function* root() {
   yield all([
     takeLatest(ActionTypes.BRANCH_ADD, add),
     takeLatest(ActionTypes.BRANCH_GET, getById),
-    takeLatest(ActionTypes.BRANCHES_GET, getForOrg),
+    takeLatest(ActionTypes.BRANCHES_GET, getBranches),
   ]);
 }

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from '../../components/Page';
 import Results from './Results';
 import Toolbar from './Toolbar';
-import { getBranchesOFOrg } from '../../actions';
+import { getBranches } from '../../actions';
 import AddBranch from './AddBranch';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,10 +23,10 @@ const Branch = () => {
   const branchState = useSelector(state => state.branch);
 
   if (branchState.new) {
-    dispatch(getBranchesOFOrg());
+    dispatch(getBranches());
   }
   useEffect(() => {
-    dispatch(getBranchesOFOrg());
+    dispatch(getBranches());
   }, []);
   return (
     <Page className={classes.root} title="Branches">

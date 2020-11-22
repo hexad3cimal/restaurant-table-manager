@@ -23,5 +23,5 @@ var logger = config.InitLogger()
 var org = new(models.Organization)
 var auth = new(authutils.Auth)
 
-var productModel = models.ProductModel
+var productModel models.ProductModel
 var product = new(models.Product)

@@ -86,6 +86,7 @@ func InitRouter() {
 		//branch related routes
 		branch := new(controllers.BranchController)
 		v1.POST("/branch", AuthMiddleware(), branch.Add)
+		v1.POST("/branches", AuthMiddleware(), branch.GetBranches)
 		v1.GET("/branch/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 	}
 

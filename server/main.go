@@ -18,7 +18,7 @@ func main() {
 	db.AutoMigrate(&models.RoleModel{})
 	db.AutoMigrate(&models.TableModel{})
 	db.AutoMigrate(&models.BranchModel{})
-	db.AutoMigrate(&models.ItemModel{})
+	db.AutoMigrate(&models.ProductModel{})
 
 	router.InitRouter()
 }

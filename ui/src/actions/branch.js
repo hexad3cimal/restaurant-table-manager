@@ -6,7 +6,7 @@ export const {
   branchAddInitiate: initiateBranchAdd,
   branchAdd: addBranch,
   branchGet: getBranchById,
-  branchesGet: getBranchesOFOrg,
+  branchesGet: getBranches,
 } = createActions({
   [ActionTypes.BRANCH_ADD_INITIATE]: () => ({}),
   [ActionTypes.BRANCH_ADD]: payload => payload,

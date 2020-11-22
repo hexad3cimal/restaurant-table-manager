@@ -11,7 +11,7 @@ type BranchModel struct {
 	OrgId     string    `db:"org_id" json:"orgId"`
 	Name      string    `db:"name" json:"name"`
 	Email     string    `db:"email" json:"email"`
-	Address   string    `db:"name" json:"address"`
+	Address   string    `db:"address" json:"address"`
 	Contact   string    `db:"contact" json:"contact"`
 	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
@@ -54,6 +54,17 @@ func (branch Branch) GetBranchesOfOrg(orgId string) (branches []BranchModel, err
 	}
 
 	return branches, err
+}
+
+func (branch Branch) GetBrancheByOrgIdAndBranchName(orgId string, branchName string) (returnModel BranchModel, err error) {
+
+	err = config.GetDB().Where("org_id=?", orgId).Where("name=?", branchName).First(&returnModel).Error
+	if err != nil {
+
+		return BranchModel{}, err
+	}
+
+	return returnModel, err
 }
 
 func (branch Branch) DeleteBranchById(branchId string) (branchModel BranchModel, err error) {

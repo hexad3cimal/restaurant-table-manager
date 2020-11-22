@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"table-booking/helpers"
 	"table-booking/mappers"
+	"table-booking/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
@@ -76,7 +78,46 @@ func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
 	} else {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	}
+
+}
+
+func (ctrl BranchController) GetBranches(c *gin.Context) {
+
+	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("role_id"), c.GetHeader("org_id"))
+
+	if getRoleError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	var branches []models.BranchModel
+	var error error
+	if userRoleName == "admin" {
+		branches, error = branch.GetBranchesOfOrg(c.GetHeader("org_id"))
+	} else {
+
+		currentUser, getCurrentUserError := user.GetUserById(c.GetHeader("user_id"))
+		if getCurrentUserError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		currentBranch, getCurrentBranchError := branch.GetBrancheByOrgIdAndBranchName(c.GetHeader("org_id"), currentUser.Name)
+
+		if getCurrentBranchError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		branches = append(branches, currentBranch)
+
+	}
+	if error == nil {
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
+	} else {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
 
 }

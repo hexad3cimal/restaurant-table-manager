@@ -52,9 +52,9 @@ func (product Product) GetProductForOrg(ID string, orgId string) (productModel P
 	return productModel, err
 }
 
-func (product Product) GetProductsOfBranch(ID string, branchId string) (productModels []ProductModel, err error) {
+func (product Product) GetProductsOfBranch(branchId string) (productModels []ProductModel, err error) {
 
-	err = config.GetDB().Where("ID=?", ID).Where("branch_id=?", branchId).Find(&productModels).Error
+	err = config.GetDB().Where("branch_id=?", branchId).Find(&productModels).Error
 	if err != nil {
 
 		return []ProductModel{}, err

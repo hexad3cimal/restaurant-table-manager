@@ -13,8 +13,9 @@ import (
 type UserModel struct {
 	ID                 string    `db:"id, primarykey" json:"id"`
 	Email              string    `db:"email" json:"email"`
-	OrgId              string    `db:"orgId" json:"orgId"`
-	RoleId             string    `db:"roleId" json:"roleId"`
+	OrgId              string    `db:"org_id" json:"orgId"`
+	BranchId           string    `db:"branch_id" json:"branchId"`
+	RoleId             string    `db:"role_id" json:"roleId"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
 	Active             bool      `db:"active" json:"-"`
@@ -68,6 +69,15 @@ func (u User) Register(user UserModel) (addedUser UserModel, err error) {
 
 func (u User) GetUserById(userId string) (user UserModel, err error) {
 	err = config.GetDB().Where("ID=?", userId).First(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
+
+	return user, nil
+}
+
+func (u User) GetUserByBranchId(branchId string) (user UserModel, err error) {
+	err = config.GetDB().Where("branch_id=?", branchId).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}

@@ -37,18 +37,23 @@ const AddItem = ({ className, ...rest }) => {
   return (
     <Formik
       initialValues={{
-        tableName: '',
+        productName: '',
         branchId: '',
-        branchName: '',
+        price: '',
+        description: '',
+        discount:'',
+        image:''
       }}
       validationSchema={Yup.object().shape({
-        tableName: Yup.string()
+        productName: Yup.string()
           .max(255)
-          .required('Tablename  is required'),
+          .required('Product name  is required'),
 
         branchId: Yup.string()
           .max(255)
           .required('Branch is required'),
+        price: Yup.number()
+          .required('Price is required'),
       })}
       onSubmit={values => {
         values.branchName = branches.reduce(function(branchNameArray, branch) {

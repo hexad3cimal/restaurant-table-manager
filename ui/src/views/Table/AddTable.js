@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBranchesOFOrg, addTable } from '../../actions';
+import { getBranches, addTable } from '../../actions';
 
 import {
   Box,
@@ -32,7 +32,7 @@ const AddTable = ({ className, ...rest }) => {
   const branches = (branchState && branchState.branches) || [];
 
   useEffect(() => {
-    dispatch(getBranchesOFOrg());
+    dispatch(getBranches());
   }, []);
   return (
     <Formik
