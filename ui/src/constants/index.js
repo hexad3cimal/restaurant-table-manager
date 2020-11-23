@@ -45,6 +45,16 @@ export const ActionTypes = keyMirror({
   TABLES_GET_BRANCH: undefined,
   TABLES_GET_ORG_SUCCESS: undefined,
   TABLES_GET_ORG_FAILURE: undefined,
+  PRODUCT_ADD_INITIATE: undefined,
+  PRODUCT_ADD: undefined,
+  PRODUCT_ADD_SUCCESS: undefined,
+  PRODUCT_ADD_FAILURE: undefined,
+  PRODUCT_GET: undefined,
+  PRODUCT_GET_SUCCESS: undefined,
+  PRODUCT_GET_FAILURE: undefined,
+  PRODUCTS_GET: undefined,
+  PRODUCTS_GET_SUCCESS: undefined,
+  PRODUCTS_GET_FAILURE: undefined,
 });
 
 /**

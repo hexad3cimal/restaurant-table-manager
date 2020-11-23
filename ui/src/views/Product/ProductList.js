@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
   Avatar,
@@ -25,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Results = ({ className, items, ...rest }) => {
+const ProductList = ({ className, products, ...rest }) => {
   const classes = useStyles();
   // const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
@@ -95,10 +94,10 @@ const Results = ({ className, items, ...rest }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items && items.slice(0, limit).map(item => (
+              {products && products.slice(0, limit).map(product => (
                 <TableRow
                   hover
-                  key={item.id}
+                  key={product.id}
                   // selected={selectedCustomerIds.indexOf(customer.id) !== -1}
                 >
                   {/* <TableCell padding="checkbox">
@@ -114,12 +113,12 @@ const Results = ({ className, items, ...rest }) => {
                         {getInitials(customer.name)}
                       </Avatar> */}
                       <Typography color="textPrimary" variant="body1">
-                        {item.name}
+                        {product.name}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{item.price}</TableCell>
-                  <TableCell>{item.availability}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>{product.availability}</TableCell>
                   {/* <TableCell>{moment(customer.createdAt).format('DD/MM/YYYY')}</TableCell> */}
                 </TableRow>
               ))}
@@ -129,7 +128,7 @@ const Results = ({ className, items, ...rest }) => {
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={branches.length}
+        count={products.length}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitChange}
         page={page}
@@ -140,9 +139,9 @@ const Results = ({ className, items, ...rest }) => {
   );
 };
 
-Results.propTypes = {
+ProductList.propTypes = {
   className: PropTypes.string,
-  customers: PropTypes.array.isRequired,
+  products: PropTypes.array.isRequired,
 };
 
-export default Results;
+export default ProductList;

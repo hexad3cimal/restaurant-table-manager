@@ -47,9 +47,9 @@ const items = [
     title: 'Table',
   },
   {
-    href: '/app/account',
+    href: '/app/product',
     icon: UserIcon,
-    title: 'Account',
+    title: 'Product',
   },
   {
     href: '/app/settings',

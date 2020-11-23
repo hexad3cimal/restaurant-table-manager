@@ -1,6 +1,6 @@
 /**
- * @module Sagas/Branch
- * @desc Branch
+ * @module Sagas/Product
+ * @desc Product
  */
 
 import { all, put, takeLatest } from 'redux-saga/effects';
@@ -9,17 +9,17 @@ import { ActionTypes } from '../constants/index';
 import { request } from '../modules/client';
 
 /**
- * Add new branch
+ * Add new product
  */
 export function* add({payload}) {
   try {
-    yield request(`${window.geoConfig.api}branch`, {
+    yield request(`${window.geoConfig.api}product`, {
       method: 'POST',
       payload,
     });
     yield all([
     yield put({
-      type: ActionTypes.BRANCH_ADD_SUCCESS,
+      type: ActionTypes.PRODUCT_ADD_SUCCESS,
     }),
     yield put({
       type: ActionTypes.SHOW_ALERT,
@@ -30,70 +30,71 @@ export function* add({payload}) {
     /* istanbul ignore next */
     yield all([
       put({
-        type: ActionTypes.BRANCH_ADD_FAILURE,
+        type: ActionTypes.PRODUCT_ADD_FAILURE,
         payload: err,
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Could not add branch,please retry',
+        payload: 'Could not add product,please retry',
       }),
     ]);
   }
 }
 
 /**
- * Get branch details by id
+ * Get product details by id
  */
 export function* getById({ id }) {
   try {
-    const branch = yield request(`${window.geoConfig.api}branch?id=${id}`, {
+    const product = yield request(`${window.geoConfig.api}product?id=${id}`, {
       method: 'GET',
     });
 
     yield put({
-      type: ActionTypes.BRANCH_GET_SUCCESS,
-      payload: branch,
+      type: ActionTypes.PRODUCT_GET_SUCCESS,
+      payload: product,
     });
   } catch (err) {
     /* istanbul ignore next */
     yield all([
       put({
-        type: ActionTypes.BRANCH_GET_FAILURE,
+        type: ActionTypes.PRODUCT_GET_FAILURE,
         payload: err,
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting branch details, please retry',
+        payload: 'Error while gettting product details, please retry',
       }),
     ]);
   }
 }
 
 /**
- * Get branches
+ * Get products
  */
-export function* getBranches() {
+export function* getProducts() {
   try {
-    const branches = yield request(`${window.geoConfig.api}branches`, {
+    const products = yield request(`${window.geoConfig.api}product`, {
       method: 'GET',
     });
 
     yield all([
       put({
-        type: ActionTypes.BRANCHES_GET_SUCCESS,
-        payload: branches && branches.data,
+        type: ActionTypes.PRODUCTS_GET_SUCCESS,
+        payload: products && products.data,
       }),
     ]);
   } catch (err) {
     /* istanbul ignore next */
+    console.log("error",err)
     yield all([
       put({
-        type: ActionTypes.BRANCHES_GET_FAILURE,
+        type: ActionTypes.PRODUCTS_GET_FAILURE,
         payload: err,
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting branches, please retry',
+        payload: 'Error while gettting products, please retry',
       }),
     ]);
   }
@@ -104,8 +105,8 @@ export function* getBranches() {
  */
 export default function* root() {
   yield all([
-    takeLatest(ActionTypes.BRANCH_ADD, add),
-    takeLatest(ActionTypes.BRANCH_GET, getById),
-    takeLatest(ActionTypes.BRANCHES_GET, getBranches),
+    takeLatest(ActionTypes.PRODUCT_ADD, add),
+    takeLatest(ActionTypes.PRODUCT_GET, getById),
+    takeLatest(ActionTypes.PRODUCTS_GET, getProducts),
   ]);
 }

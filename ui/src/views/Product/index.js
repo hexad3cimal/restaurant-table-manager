@@ -3,10 +3,10 @@ import { Box, Container, makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Page from '../../components/Page';
-import TableList from './TableList';
+import AddProduct from './AddProduct';
 import Toolbar from './Toolbar';
-import { getTablesOfOrg } from '../../actions';
-import AddTable from './AddTable';
+import { getProducts } from '../../actions';
+import ProductList from './ProductList';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -23,23 +23,23 @@ const Products = () => {
   const productState = useSelector(state => state.product);
 
   if (productState && productState.new) {
-    dispatch(getTablesOfOrg());
+    dispatch(getProducts());
   }
   useEffect(() => {
-    dispatch(getTablesOfOrg());
+    dispatch(getProducts());
   }, []);
   return (
-    <Page className={classes.root} title="Tables">
+    <Page className={classes.root} title="Products">
       <Container maxWidth={false}>
-        {tableState && tableState.add ? (
+        {productState && productState.add ? (
           <Box mt={3}>
-            <AddTable />
+            <AddProduct />
           </Box>
         ) : (
           <Box mt={3}>
             <Toolbar />
 
-            <TableList />
+            <ProductList products={productState.products || []} />
           </Box>
         )}
       </Container>
@@ -47,4 +47,4 @@ const Products = () => {
   );
 };
 
-export default Item;
+export default Products;

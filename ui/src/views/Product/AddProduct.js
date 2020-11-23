@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBranchesOFOrg, addTable } from '../../actions';
+import { getBranches, addProduct } from '../../actions';
 
 import {
   Box,
@@ -32,13 +32,13 @@ const AddItem = ({ className, ...rest }) => {
   const branches = (branchState && branchState.branches) || [];
 
   useEffect(() => {
-    dispatch(getBranchesOFOrg());
+    dispatch(getBranches());
   }, []);
   return (
     <Formik
       initialValues={{
         productName: '',
-        branchId: '',
+        branchId: ((branches && branches.length ===1) ? branches[0].id : null),
         price: '',
         description: '',
         discount:'',
@@ -62,7 +62,7 @@ const AddItem = ({ className, ...rest }) => {
           }
           return branchNameArray;
         }, [])[0];
-        dispatch(addTable(values));
+        dispatch(addProduct(values));
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -74,21 +74,21 @@ const AddItem = ({ className, ...rest }) => {
           {...rest}
         >
           <Card>
-            <CardHeader subheader="Add new table" title="Add table" />
+            <CardHeader subheader="Add new product" title="Add product" />
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.tableName && errors.tableName)}
+                    error={Boolean(touched.productName && errors.productName)}
                     fullWidth
-                    helperText={touched.tableName && errors.tableName}
-                    label="Table Name"
+                    helperText={touched.productName && errors.productName}
+                    label="Product Name"
                     margin="normal"
-                    name="tableName"
+                    name="productName"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.tableName}
+                    value={values.productName}
                     variant="outlined"
                   />
                 </Grid>
@@ -105,6 +105,7 @@ const AddItem = ({ className, ...rest }) => {
                     select
                     SelectProps={{ native: true }}
                     value={values.branchId}
+                    disabled={(branches && branches.length ===1)}
                     variant="outlined"
                   >
                     {branches.map(branch => (
@@ -113,6 +114,48 @@ const AddItem = ({ className, ...rest }) => {
                       </option>
                     ))}
                   </TextField>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.price && errors.price)}
+                    fullWidth
+                    helperText={touched.price && errors.price}
+                    label="Price"
+                    margin="normal"
+                    name="price"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.price}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.description && errors.description)}
+                    fullWidth
+                    helperText={touched.description && errors.description}
+                    label="Product Description"
+                    margin="normal"
+                    name="description"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.description}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.discount && errors.discount)}
+                    fullWidth
+                    helperText={touched.discount && errors.discount}
+                    label="Discount"
+                    margin="normal"
+                    name="discount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.discount}
+                    variant="outlined"
+                  />
                 </Grid>
               </Grid>
             </CardContent>
