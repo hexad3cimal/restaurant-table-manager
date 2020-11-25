@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Container, makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -22,6 +22,7 @@ const Branch = () => {
   const appState = useSelector(state => state.app);
   const tableState = useSelector(state => state.table);
 
+  
   if (tableState && tableState.new) {
     dispatch(getTables());
   }

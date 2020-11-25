@@ -45,3 +45,7 @@
 {"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-21T21:34:32+05:30"}
 {"function":"IsAdmin","level":"error","line":"18","msg":"fetchedRole.Nameadmin","time":"2020-11-21T21:34:52+05:30"}
 {"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-21T21:40:16+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-25T21:32:31+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-25T21:32:31+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-25T21:47:34+05:30"}
+{"function":"Add","level":"error","line":"21","msg":"inavlid branch form ","time":"2020-11-25T22:21:43+05:30"}

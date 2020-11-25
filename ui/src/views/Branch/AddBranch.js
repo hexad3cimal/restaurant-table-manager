@@ -18,6 +18,7 @@ import {
 import { addBranch } from '../../actions';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import { request } from '../../modules/client';
 const useStyles = makeStyles(() => ({
   root: {},
 }));
@@ -31,6 +32,7 @@ const AddBranch = ({ className, ...rest }) => {
       initialValues={{
         name: '',
         address: '',
+        userName: '',
         password: '',
         email: '',
         contact: '',
@@ -42,6 +44,22 @@ const AddBranch = ({ className, ...rest }) => {
         email: Yup.string()
           .email('Must be a valid email')
           .max(255),
+          userName: Yup.string()
+          .test('checkUsername', 'Username already taken', function(username) {
+            return new Promise((resolve, reject) => {
+              request(`${window.geoConfig.api}/user/validate?username=${username}`)
+                .then(response => {
+                  if (response.data === true) resolve(true);
+                  else {
+                    resolve(false);
+                  }
+                })
+                .catch(error => {
+                  resolve(false);
+                });
+            });
+          })
+          .required('username is required'), 
         password: Yup.string()
           .max(255)
           .required('password is required'),
@@ -90,6 +108,21 @@ const AddBranch = ({ className, ...rest }) => {
                     variant="outlined"
                     type="email"
                   />
+                </Grid>
+                <Grid item md={6} xs={12}>
+
+                <TextField
+                  error={Boolean(touched.userName && errors.userName)}
+                  fullWidth
+                  helperText={touched.userName && errors.userName}
+                  label="Username"
+                  margin="normal"
+                  name="userName"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.userName}
+                  variant="outlined"
+                />
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField

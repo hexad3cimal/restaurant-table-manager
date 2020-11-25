@@ -1,12 +1,13 @@
 package mappers
 
 type LoginForm struct {
-	Email    string `json:"email" binding:"required,email"`
+	UserName string `json:"userName" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
 type RegisterForm struct {
-	FullName string `json:"name" binding:"required,max=100"`
+	UserName string `json:"userName" binding:"required,max=100"`
+	FullName string `json:"name"`
 	Address  string `json:"address"`
 	Contact  string `json:"contact"`
 	Email    string `json:"email" binding:"required,email"`

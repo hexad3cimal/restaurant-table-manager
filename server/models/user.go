@@ -22,6 +22,8 @@ type UserModel struct {
 	Locked             bool      `db:"locked" json:"-"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
 	Name               string    `db:"name" json:"name"`
+	UserName           string    `db:"user_name" json:"userName"`
+	UserNameLowerCase  string    `db:"user_name_lower" json:"userNameLower"`
 	UpdatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
@@ -30,7 +32,7 @@ type User struct {
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
-	config.GetDB().Where("email=?", form.Email).First(&user)
+	config.GetDB().Where("user_name=?", form.UserName).First(&user)
 
 	bytePassword := []byte(form.Password)
 	byteHashedPassword := []byte(user.Password)
@@ -69,6 +71,24 @@ func (u User) Register(user UserModel) (addedUser UserModel, err error) {
 
 func (u User) GetUserById(userId string) (user UserModel, err error) {
 	err = config.GetDB().Where("ID=?", userId).First(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
+
+	return user, nil
+}
+
+func (u User) GetUserByUsername(userName string) (user UserModel, err error) {
+	err = config.GetDB().Where("user_name_lower=?", userName).First(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
+
+	return user, nil
+}
+
+func (u User) GetUserByEmail(email string) (user UserModel, err error) {
+	err = config.GetDB().Where("email=?", email).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}

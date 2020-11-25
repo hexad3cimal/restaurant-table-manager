@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 	"table-booking/helpers"
 	"table-booking/mappers"
 	"table-booking/models"
@@ -58,9 +59,13 @@ func (ctrl BranchController) Add(c *gin.Context) {
 		return
 	}
 	userModel.Name = branchForm.FullName
+	userModel.UserName = branchForm.UserName
+	userModel.UserNameLowerCase = strings.ToLower(branchForm.UserName)
+
 	userModel.Email = branchForm.Email
 	userModel.Password = hashedPassword
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
+	userModel.BranchId = branchModel.ID
 	userModel.ID = uuid.NewV4().String()
 	_, userError := user.Register(userModel)
 

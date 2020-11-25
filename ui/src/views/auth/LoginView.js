@@ -44,14 +44,13 @@ const LoginView = () => {
         <Container maxWidth="sm">
           <Formik
             initialValues={{
-              email: 'example@gmail.com',
+              userName: 'username',
               password: 'password',
             }}
             validationSchema={Yup.object().shape({
-              email: Yup.string()
-                .email('Must be a valid email')
+              userName: Yup.string()
                 .max(255)
-                .required('Email is required'),
+                .required('UserName is required'),
               password: Yup.string()
                 .max(255)
                 .required('Password is required'),
@@ -80,16 +79,15 @@ const LoginView = () => {
                   </Typography>
                 </Box>
                 <TextField
-                  error={Boolean(touched.email && errors.email)}
+                  error={Boolean(touched.userName && errors.userName)}
                   fullWidth
-                  helperText={touched.email && errors.email}
-                  label="Email Address"
+                  helperText={touched.userName && errors.userName}
+                  label="Username"
                   margin="normal"
-                  name="email"
+                  name="userName"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  type="email"
-                  value={values.email}
+                  value={values.userName}
                   variant="outlined"
                 />
                 <TextField

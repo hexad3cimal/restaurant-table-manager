@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 	"table-booking/mappers"
 	"table-booking/models"
 
@@ -23,7 +24,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 
 	loggerInUser, loginErr := user.Login(loginForm)
 	if loginErr != nil {
-		logger.Error(" login failed for " + loginForm.Email)
+		logger.Error(" login failed for " + loginForm.UserName)
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": loginErr.Error()})
 	}
 	tokenDetails, tokenError := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, loggerInUser.OrgId)
@@ -34,7 +35,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
 		// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 	} else {
-		logger.Error(" login failed for " + loginForm.Email)
+		logger.Error(" login failed for " + loginForm.UserName)
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})
 	}
 
@@ -80,6 +81,8 @@ func (ctrl UserController) Register(c *gin.Context) {
 	//create admin user
 	userModel.RoleId = roleModel.ID
 	userModel.OrgId = addedOrganization.ID
+	userModel.UserName = registerForm.UserName
+	userModel.UserNameLowerCase = strings.ToLower(registerForm.UserName)
 	bytePassword := []byte(registerForm.Password)
 	hashedPassword, passwordHashErr := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if passwordHashErr != nil {
@@ -167,4 +170,32 @@ func (ctrl UserController) Register(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": mappers.Response{Error: nil, Message: "success", ResponseCode: 2000, Data: make([]interface{}, 0)}})
+}
+
+func (ctrl UserController) Validate(c *gin.Context) {
+	username, gotUsername := c.GetQuery("username")
+	if gotUsername == true {
+		_, getUserError := user.GetUserByUsername(strings.ToLower(username))
+		if getUserError == nil {
+			c.JSON(http.StatusOK, gin.H{"data": false})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": true})
+		c.Abort()
+		return
+	}
+	email, gotEmail := c.GetQuery("email")
+	if gotEmail == true {
+		_, getEmailError := user.GetUserByEmail(email)
+		if getEmailError == nil {
+			c.JSON(http.StatusOK, gin.H{"data": false})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": true})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": false})
 }

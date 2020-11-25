@@ -102,6 +102,9 @@ const AddTable = ({ className, ...rest }) => {
                     value={values.branchId}
                     variant="outlined"
                   >
+                      <option key="" value="">
+                        Select a branch
+                      </option>
                     {branches.map(branch => (
                       <option key={branch.id} value={branch.id}>
                         {branch.name}

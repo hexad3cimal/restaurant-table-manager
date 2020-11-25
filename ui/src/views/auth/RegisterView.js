@@ -17,7 +17,8 @@ import Page from '../../components/Page';
 import { useDispatch, useSelector } from 'react-redux';
 import { register, hideAlert } from '../../actions';
 import Toast from '../../modules/toast';
-import {isFormValid} from '../../modules/helpers';
+import { isFormValid } from '../../modules/helpers';
+import { request } from '../../modules/client';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -34,12 +35,11 @@ const RegisterView = () => {
   const appState = useSelector(state => state.app);
   const user = useSelector(state => state.user);
 
-
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
 
-    if(user.registered) navigate('/login', { replace: true });
+    if (user.registered) navigate('/login', { replace: true });
   }
   return (
     <Page className={classes.root} title="Register">
@@ -48,7 +48,8 @@ const RegisterView = () => {
           <Formik
             initialValues={{
               email: '',
-              firstName: '',
+              name: '',
+              userName: '',
               lastName: '',
               password: '',
               policy: false,
@@ -56,11 +57,37 @@ const RegisterView = () => {
             validationSchema={Yup.object().shape({
               email: Yup.string()
                 .email('Must be a valid email')
-                .max(255)
+                .test('checkEmail', 'Email already taken', function(email) {
+                  return new Promise((resolve, reject) => {
+                    request(`${window.geoConfig.api}/user/validate?email=${email}`)
+                      .then(response => {
+                        if (response.data === true) resolve(true);
+                        else {
+                          resolve(false);
+                        }
+                      })
+                      .catch(error => {
+                        resolve(false);
+                      });
+                  });
+                })
                 .required('Email is required'),
-              name: Yup.string()
-                .max(255)
-                .required('Fullname is required'),
+              userName: Yup.string()
+                .test('checkUsername', 'Username already taken', function(username) {
+                  return new Promise((resolve, reject) => {
+                    request(`${window.geoConfig.api}/user/validate?username=${username}`)
+                      .then(response => {
+                        if (response.data === true) resolve(true);
+                        else {
+                          resolve(false);
+                        }
+                      })
+                      .catch(error => {
+                        resolve(false);
+                      });
+                  });
+                })
+                .required('username is required'),
               password: Yup.string()
                 .max(255)
                 .required('password is required'),
@@ -112,6 +139,18 @@ const RegisterView = () => {
                   onChange={handleChange}
                   type="email"
                   value={values.email}
+                  variant="outlined"
+                />
+                <TextField
+                  error={Boolean(touched.userName && errors.userName)}
+                  fullWidth
+                  helperText={touched.userName && errors.userName}
+                  label="Username"
+                  margin="normal"
+                  name="userName"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.userName}
                   variant="outlined"
                 />
                 <TextField
