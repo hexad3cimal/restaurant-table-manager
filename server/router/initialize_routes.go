@@ -92,7 +92,7 @@ func InitRouter() {
 
 		product := new(controllers.ProductController)
 		v1.POST("/product", AuthMiddleware(), product.Add)
-		v1.GET("/products", AuthMiddleware(), product.GetProductsOfBranch)
+		v1.GET("/products", AuthMiddleware(), product.GetProducts)
 		v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 	}
 

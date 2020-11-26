@@ -109,7 +109,7 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		currentBranch, getCurrentBranchError := branch.GetBrancheByOrgIdAndBranchName(c.GetHeader("org_id"), currentUser.Name)
+		currentBranch, getCurrentBranchError := branch.Get(currentUser.BranchId)
 
 		if getCurrentBranchError != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})

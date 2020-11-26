@@ -74,7 +74,7 @@ export function* getById({ id }) {
  */
 export function* getProducts() {
   try {
-    const products = yield request(`${window.geoConfig.api}product`, {
+    const products = yield request(`${window.geoConfig.api}products`, {
       method: 'GET',
     });
 

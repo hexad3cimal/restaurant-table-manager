@@ -90,7 +90,7 @@ const ProductList = ({ className, products, ...rest }) => {
                 </TableCell> */}
                 <TableCell>Name</TableCell>
                 <TableCell>Price</TableCell>
-                <TableCell>Availability</TableCell>
+                <TableCell>Description</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -113,12 +113,12 @@ const ProductList = ({ className, products, ...rest }) => {
                         {getInitials(customer.name)}
                       </Avatar> */}
                       <Typography color="textPrimary" variant="body1">
-                        {product.name}
+                        {product.productName}
                       </Typography>
                     </Box>
                   </TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.availability}</TableCell>
+                  <TableCell>{product.description}</TableCell>
                   {/* <TableCell>{moment(customer.createdAt).format('DD/MM/YYYY')}</TableCell> */}
                 </TableRow>
               ))}

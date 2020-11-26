@@ -38,11 +38,12 @@ const AddItem = ({ className, ...rest }) => {
     <Formik
       initialValues={{
         productName: '',
-        branchId: ((branches && branches.length ===1) ? branches[0].id : null),
+        branchId:  '',
         price: '',
         description: '',
         discount:'',
-        image:''
+        image:'',
+        quantity:0
       }}
       validationSchema={Yup.object().shape({
         productName: Yup.string()
@@ -50,12 +51,22 @@ const AddItem = ({ className, ...rest }) => {
           .required('Product name  is required'),
 
         branchId: Yup.string()
-          .max(255)
-          .required('Branch is required'),
+          .test("branchIdtest","Please select a branch",function(value){
+            if(branches && branches.length === 1){
+              return true
+            }else{
+              if(value.length > 10) return true
+            }
+            return false
+          })
+        ,
         price: Yup.number()
           .required('Price is required'),
       })}
       onSubmit={values => {
+        if(branches && branches.length === 1){
+          values.branchId = branches && branches[0].id;
+        }
         values.branchName = branches.reduce(function(branchNameArray, branch) {
           if (branch.id === values.branchId) {
             branchNameArray.push(branch.name);
@@ -65,7 +76,7 @@ const AddItem = ({ className, ...rest }) => {
         dispatch(addProduct(values));
       }}
     >
-      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values}) => (
         <form
           onSubmit={handleSubmit}
           autoComplete="off"
@@ -108,6 +119,8 @@ const AddItem = ({ className, ...rest }) => {
                     disabled={(branches && branches.length ===1)}
                     variant="outlined"
                   >
+                     <option key="" value="">
+                      </option>
                     {branches.map(branch => (
                       <option key={branch.id} value={branch.id}>
                         {branch.name}
@@ -115,7 +128,7 @@ const AddItem = ({ className, ...rest }) => {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={4} xs={12}>
                   <TextField
                     error={Boolean(touched.price && errors.price)}
                     fullWidth
@@ -127,6 +140,36 @@ const AddItem = ({ className, ...rest }) => {
                     onChange={handleChange}
                     value={values.price}
                     variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={4} xs={12}>
+                  <TextField
+                    error={Boolean(touched.discount && errors.discount)}
+                    fullWidth
+                    helperText={touched.discount && errors.discount}
+                    label="Discount"
+                    margin="normal"
+                    name="discount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.discount}
+                    variant="outlined"
+                    type="number"
+                  />
+                </Grid>
+                <Grid item md={4} xs={12}>
+                  <TextField
+                    error={Boolean(touched.quantity && errors.quantity)}
+                    fullWidth
+                    helperText={touched.quantity && errors.quantity}
+                    label="Quantity"
+                    margin="normal"
+                    name="quantity"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.quantity}
+                    variant="outlined"
+                    type="number"
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -143,20 +186,7 @@ const AddItem = ({ className, ...rest }) => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    error={Boolean(touched.discount && errors.discount)}
-                    fullWidth
-                    helperText={touched.discount && errors.discount}
-                    label="Discount"
-                    margin="normal"
-                    name="discount"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.discount}
-                    variant="outlined"
-                  />
-                </Grid>
+               
               </Grid>
             </CardContent>
             <Divider />
