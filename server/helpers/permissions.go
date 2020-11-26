@@ -7,6 +7,8 @@ import (
 
 var role = new(models.Role)
 var roleModel models.RoleModel
+var user = new(models.User)
+var userModel models.UserModel
 var logger = config.InitLogger()
 
 func IsAdmin(roleId string, orgId string) (isAdmin bool) {
@@ -24,8 +26,13 @@ func IsAdmin(roleId string, orgId string) (isAdmin bool) {
 
 }
 
-func GetRoleName(roleId string, orgId string) (roleName string, err error) {
-	fetchedRole, err := role.GetRoleByIdAndOrg(roleId, orgId)
+func GetRoleName(userId string, orgId string) (roleName string, err error) {
+
+	userObject, getUserError := user.GetUserById(userId)
+	if getUserError != nil {
+		return "", getUserError
+	}
+	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, orgId)
 
 	if err != nil {
 		return "", err

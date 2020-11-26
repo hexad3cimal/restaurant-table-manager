@@ -81,9 +81,9 @@ func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
 
 func (ctrl TableController) GetTables(c *gin.Context) {
 
-	roleName, roleNameGetError := helpers.GetRoleName(c.GetHeader("role_id"), c.GetHeader("org_id"))
+	roleName, roleNameGetError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
 	if roleNameGetError != nil {
-		logger.Error("Get rolename failed for " + c.GetHeader("role_id") + " " + c.GetHeader("org_id") + " " + roleNameGetError.Error())
+		logger.Error("Get rolename failed for " + c.GetHeader("user_id") + " " + c.GetHeader("org_id") + " " + roleNameGetError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		return
 	}

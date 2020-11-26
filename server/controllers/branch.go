@@ -90,7 +90,7 @@ func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
 
 func (ctrl BranchController) GetBranches(c *gin.Context) {
 
-	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("role_id"), c.GetHeader("org_id"))
+	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
 
 	if getRoleError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
