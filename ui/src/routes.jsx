@@ -10,6 +10,8 @@ const DashboardView = lazy(() => import('./views/DashboardView'));
 const NotFoundView = lazy(() => import('./views/errors/NotFoundView'));
 const BranchView = lazy(() => import('./views/Branch'));
 const TableView = lazy(() => import('./views/Table'));
+const TableDetailedView = lazy(() => import('./views/Table/Table'));
+
 const ProductView = lazy(() => import('./views/Product'));
 
 const routes = isLoggedIn => [
@@ -21,8 +23,12 @@ const routes = isLoggedIn => [
       // { path: 'customers', element: <CustomerListView /> },
       { path: 'dashboard', element: <DashboardView /> },
       { path: 'branch', element: <BranchView /> },
-      { path: 'table', element: <TableView /> },
+      {
+        path: 'table',
+        element: <TableView />
+            },
       { path: 'product', element: <ProductView /> },
+      { path: 'table-details', element: <TableDetailedView /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },

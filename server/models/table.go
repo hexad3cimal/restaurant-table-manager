@@ -83,3 +83,14 @@ func (table Table) GetTablesOfBranch(branchId string) (tableModels []TableModel,
 
 	return tableModels, err
 }
+
+func (table Table) GetTableById(tableId string) (tableModel TableModel, err error) {
+
+	err = config.GetDB().Where("id=?", tableId).Find(&tableModel).Error
+	if err != nil {
+
+		return TableModel{}, err
+	}
+
+	return tableModel, err
+}

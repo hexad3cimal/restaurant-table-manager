@@ -33,6 +33,7 @@ export const ActionTypes = keyMirror({
   BRANCHES_GET_SUCCESS: undefined,
   BRANCHES_GET_FAILURE: undefined,
   TABLE_ADD_INITIATE: undefined,
+  SET_SELECTED_TABLE: undefined,
   TABLE_ADD: undefined,
   TABLE_ADD_SUCCESS: undefined,
   TABLE_ADD_FAILURE: undefined,
@@ -55,6 +56,16 @@ export const ActionTypes = keyMirror({
   PRODUCTS_GET: undefined,
   PRODUCTS_GET_SUCCESS: undefined,
   PRODUCTS_GET_FAILURE: undefined,
+  ORDER_ADD_INITIATE: undefined,
+  ORDER_ADD: undefined,
+  ORDER_ADD_SUCCESS: undefined,
+  ORDER_ADD_FAILURE: undefined,
+  ORDER_GET: undefined,
+  ORDER_GET_SUCCESS: undefined,
+  ORDER_GET_FAILURE: undefined,
+  ORDERS_GET: undefined,
+  ORDERS_GET_SUCCESS: undefined,
+  ORDERS_GET_FAILURE: undefined,
 });
 
 /**

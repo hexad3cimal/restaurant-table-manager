@@ -12,16 +12,12 @@ import {
   Divider,
   Typography,
   makeStyles,
+  Container
 } from '@material-ui/core';
+import { useDispatch, useSelector } from 'react-redux';
+import Order from './Order';
+import { getProducts, initiateOrderAdd } from '../../actions';
 
-const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  city: 'Los Angeles',
-  country: 'USA',
-  jobTitle: 'Senior Developer',
-  name: 'Katarina Smith',
-  timezone: 'GTM-7',
-};
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -31,37 +27,51 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const AddTable = ({ className, ...rest }) => {
+const Table = ({ className, ...rest }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const appState = useSelector(state => state.app);
+  const orderState = useSelector(state => state.order);
+  const tableState = useSelector(state => state.table);
+  const table= tableState && tableState.selectedTable || {}
 
+  const onClick = () => {
+    dispatch(getProducts())
+    dispatch(initiateOrderAdd())
+  }
   return (
-    <Card className={clsx(classes.root, className)} {...rest}>
-      <CardContent>
+    <Container maxWidth={false}>
+
+      {
+         orderState && orderState.add?( <Order table={table} />) :
+        (<Card className={clsx(classes.root, className)} {...rest}>
+        <CardContent>
         <Box alignItems="center" display="flex" flexDirection="column">
-          <Avatar className={classes.avatar} src={user.avatar} />
+          {/* <Avatar className={classes.avatar} src={user.avatar} /> */}
           <Typography color="textPrimary" gutterBottom variant="h3">
-            {user.name}
+            {table.name}
           </Typography>
           <Typography color="textSecondary" variant="body1">
-            {`${user.city} ${user.country}`}
+            {`${table.branchName}`}
           </Typography>
-          <Typography className={classes.dateText} color="textSecondary" variant="body1">
-            {`${moment().format('hh:mm A')} ${user.timezone}`}
-          </Typography>
+         
         </Box>
       </CardContent>
       <Divider />
       <CardActions>
-        <Button color="primary" fullWidth variant="text">
-          Upload picture
+        <Button color="primary"  onClick={() => {onClick()}} fullWidth variant="text">
+          Place order
         </Button>
       </CardActions>
-    </Card>
+      </Card>)
+    }
+    </Container>
+
   );
 };
 
-AddTable.propTypes = {
+Table.propTypes = {
   className: PropTypes.string,
 };
 
-export default AddTable;
+export default Table;

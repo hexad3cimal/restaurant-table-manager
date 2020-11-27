@@ -12,7 +12,10 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { selectedTable } from '../../actions/table';
+import { useNavigate } from "react-router-dom";
+import { ta } from 'date-fns/locale';
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -32,13 +35,18 @@ const useStyles = makeStyles(theme => ({
 
 const TableCard = ({ className, table, ...rest }) => {
   const classes = useStyles();
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const onClick = (table) =>{
+    dispatch(selectedTable(table))
+    navigate("/app/table-details", { replace: true })
+  }
   return (
     <Card
       className={clsx(classes.root, className, !table.occupied ? classes.occupied : null)}
       {...rest}
     >
-      <CardContent>
+      <CardContent onClick={() => {onClick(table)}}>
         {/* <Box display="flex" justifyContent="center" mb={3}>
           <Avatar alt="Product" src={product.media} variant="square" />
         </Box> */}

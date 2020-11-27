@@ -25,3 +25,6 @@ var auth = new(authutils.Auth)
 
 var productModel models.ProductModel
 var product = new(models.Product)
+
+var orderModel models.OrderModel
+var order = new(models.Order)

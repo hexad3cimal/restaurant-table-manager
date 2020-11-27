@@ -90,6 +90,9 @@ export default {
         draft.status = STATUS.ERROR;
         draft.error = payload;
       },
+      [ActionTypes.SET_SELECTED_TABLE]: (draft, { payload }) => {
+        draft.selectedTable = payload;
+      },
     },
     tableState,
   ),

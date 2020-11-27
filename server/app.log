@@ -69,3 +69,7 @@
 {"function":"Add","level":"error","line":"18","msg":"inavlid product form EOF","time":"2020-11-26T21:21:28+05:30"}
 {"function":"Add","level":"error","line":"18","msg":"inavlid product form EOF","time":"2020-11-26T21:21:44+05:30"}
 {"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-26T21:45:56+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T20:58:17+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T21:17:37+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T21:30:30+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T21:41:58+05:30"}

@@ -1,8 +1,10 @@
 package mappers
 
 type OrderForm struct {
-	ItemName string `json:"itemName" binding:"required"`
-	OrgId    string `json:"orgId" binding:"required"`
-	ItemId   string `json:"itemId" binding:"required"`
-	TableId  string `json:"tableId" binding:"required"`
+	ProductName string `json:"productName" binding:"required"`
+	ProductId   string `json:"productId" binding:"required"`
+	Quantity    int32  `json:"quantity" binding:"required"`
+	Notes       string `json:"notes"`
+	TableId     string `json:"tableId" binding:"required"`
+	Status      string `json:"status" binding:"required"`
 }

@@ -94,6 +94,11 @@ func InitRouter() {
 		v1.POST("/product", AuthMiddleware(), product.Add)
 		v1.GET("/products", AuthMiddleware(), product.GetProducts)
 		v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
+
+		order := new(controllers.OrderController)
+		v1.POST("/order", AuthMiddleware(), order.Add)
+		// v1.GET("/orders", AuthMiddleware(), order.GetProducts)
+		// v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 	}
 
 	//for react
