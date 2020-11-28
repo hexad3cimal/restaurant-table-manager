@@ -73,3 +73,10 @@
 {"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T21:17:37+05:30"}
 {"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T21:30:30+05:30"}
 {"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-27T21:41:58+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-28T19:24:08+05:30"}
+{"function":"Login","level":"error","line":"27","msg":" login failed for Table2","time":"2020-11-28T19:27:49+05:30"}
+{"function":"Login","level":"error","line":"27","msg":" login failed for Table2","time":"2020-11-28T19:29:15+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-28T21:32:46+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-28T21:41:25+05:30"}
+{"function":"IstokenValid","level":"error","line":"14","msg":"token contains an invalid number of segments","time":"2020-11-28T21:49:00+05:30"}
+{"function":"Add","level":"error","line":"47","msg":"Crreate order failed: pq: relation \"order_models\" does not exist","time":"2020-11-28T21:49:40+05:30"}

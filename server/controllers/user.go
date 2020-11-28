@@ -26,6 +26,8 @@ func (ctrl UserController) Login(c *gin.Context) {
 	if loginErr != nil {
 		logger.Error(" login failed for " + loginForm.UserName)
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": loginErr.Error()})
+		c.Abort()
+		return
 	}
 	tokenDetails, tokenError := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, loggerInUser.OrgId)
 

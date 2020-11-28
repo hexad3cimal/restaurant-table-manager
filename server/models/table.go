@@ -73,6 +73,17 @@ func (table Table) GetTableOfBranch(ID string, branchId string) (tableModel Tabl
 	return tableModel, err
 }
 
+func (table Table) DeleteById(ID string) (tableModel TableModel, err error) {
+
+	err = config.GetDB().Where("ID=?", ID).Delete(&tableModel).Error
+	if err != nil {
+
+		return TableModel{}, err
+	}
+
+	return tableModel, err
+}
+
 func (table Table) GetTablesOfBranch(branchId string) (tableModels []TableModel, err error) {
 
 	err = config.GetDB().Where("branch_id=?", branchId).Find(&tableModels).Error

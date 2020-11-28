@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 	"table-booking/helpers"
 	"table-booking/mappers"
 	"table-booking/models"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type TableController struct{}
@@ -32,10 +34,47 @@ func (ctrl TableController) Add(c *gin.Context) {
 	tableModel.Occupied = false
 	_, err := table.Add(tableModel)
 	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success"})
+		//get branch role for current organisation
+		roleModel, roleGetError := role.GetRoleForOrg("table", c.GetHeader("org_id"))
+		if roleGetError != nil {
+			table.DeleteById(tableModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+		//add new user with table role
+		userModel.RoleId = roleModel.ID
+		userModel.OrgId = branchModel.OrgId
+		bytePassword := []byte(tableForm.Password)
+		hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+		if err != nil {
+			table.DeleteById(tableModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		userModel.Name = tableForm.TableName
+		userModel.UserName = tableForm.BranchName + "-" + tableForm.TableName
+		userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
+
+		userModel.Password = hashedPassword
+		userModel.ForgotPasswordCode = uuid.NewV4().String()
+		userModel.BranchId = branchModel.ID
+		userModel.ID = uuid.NewV4().String()
+		_, userError := user.Register(userModel)
+		if userError != nil {
+			table.DeleteById(tableModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
 	} else {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
 
 }
 
@@ -85,6 +124,7 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 	if roleNameGetError != nil {
 		logger.Error("Get rolename failed for " + c.GetHeader("user_id") + " " + c.GetHeader("org_id") + " " + roleNameGetError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
 		return
 	}
 	var tables []models.TableModel

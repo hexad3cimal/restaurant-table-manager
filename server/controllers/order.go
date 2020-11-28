@@ -38,11 +38,13 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	orderModel.TableId = table.ID
 	orderModel.Quantity = orderForm.Quantity
 	orderModel.Note = orderForm.Notes
+	orderModel.Status = orderForm.Status
 
 	_, err := order.Add(orderModel)
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
+		logger.Error("Crreate order failed: " + err.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
 }

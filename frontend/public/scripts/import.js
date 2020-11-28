@@ -1,0 +1,1 @@
+window.restAppConfig = ({ 'api' : '/v1/api/' })

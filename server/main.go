@@ -19,6 +19,7 @@ func main() {
 	db.AutoMigrate(&models.TableModel{})
 	db.AutoMigrate(&models.BranchModel{})
 	db.AutoMigrate(&models.ProductModel{})
+	db.AutoMigrate(&models.OrderModel{})
 
 	router.InitRouter()
 }
