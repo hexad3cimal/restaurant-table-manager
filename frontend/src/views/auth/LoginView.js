@@ -36,7 +36,17 @@ const LoginView = () => {
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
-    if (user.isAuthenticated) navigate('/app/dashboard', { replace: true });
+    if (user.isAuthenticated) {
+      if(user.role === 'table'){
+        navigate('/table', { replace: true });
+        return;
+      }
+      if(user.role === 'kitchen'){
+        navigate('/kitchen', { replace: true });
+        return;
+      }
+      navigate('/app/dashboard', { replace: true });
+    }
   }
   return (
     <Page className={classes.root} title="Login">

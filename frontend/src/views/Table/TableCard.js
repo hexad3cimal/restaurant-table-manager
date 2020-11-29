@@ -42,7 +42,7 @@ const TableCard = ({ className, table, ...rest }) => {
   }
   return (
     <Card
-      className={clsx(classes.root, className, !table.occupied ? classes.occupied : null)}
+      className={clsx(classes.root, className, table.occupied ? classes.occupied : null)}
       {...rest}
     >
       <CardContent onClick={() => {onClick(table)}}>

@@ -16,7 +16,6 @@ func InitDB() {
 	if err == nil {
 		db.DB().SetMaxIdleConns(10)
 		db.LogMode(true)
-		fmt.Println("db")
 		DB = db
 	}
 	fmt.Println(err)

@@ -79,6 +79,20 @@ export default {
         draft.error = payload;
         draft.orders = [];
       }
+      ,
+      [ActionTypes.ORDER_GET_BY_TABLE_ID]: draft => {
+        draft.status = STATUS.RUNNING;
+        draft.new = false;
+      },
+      [ActionTypes.ORDER_GET_BY_TABLE_ID_SUCCESS]: (draft, { payload }) => {
+        draft.status = STATUS.READY;
+        draft.orders = payload;
+      },
+      [ActionTypes.ORDER_GET_BY_TABLE_ID_FAILURE]: (draft, { payload }) => {
+        draft.status = STATUS.ERROR;
+        draft.error = payload;
+        draft.orders = [];
+      }
     },
     orderState,
   ),

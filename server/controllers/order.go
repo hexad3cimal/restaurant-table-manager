@@ -49,24 +49,19 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	}
 }
 
-func (ctrl OrderController) GetProductsOfBranch(c *gin.Context) {
+func (ctrl OrderController) GetOrdersOfTable(c *gin.Context) {
 
-	branchId, gotValue := c.GetQuery("branchId")
+	tableId, gotValue := c.GetQuery("tableId")
 	if gotValue != true {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
-	products, err := product.GetProductsOfBranch(branchId)
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
-	} else {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
-	}
-
+	orders := order.GetByTableId(tableId)
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": orders})
 }
 
-func (ctrl OrderController) GetProducts(c *gin.Context) {
+func (ctrl OrderController) GetOrders(c *gin.Context) {
 
 	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
 

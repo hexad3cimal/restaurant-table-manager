@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -12,11 +12,16 @@ import {
   Divider,
   Typography,
   makeStyles,
-  Container
+  Container,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Table
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import Order from './Order';
-import { getProducts, initiateOrderAdd } from '../../actions';
+import { getOrderByTableId, getProducts, initiateOrderAdd } from '../../actions';
 
 
 const useStyles = makeStyles(() => ({
@@ -27,7 +32,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Table = ({ className, ...rest }) => {
+const TableView = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
@@ -35,6 +40,9 @@ const Table = ({ className, ...rest }) => {
   const tableState = useSelector(state => state.table);
   const table= tableState && tableState.selectedTable || {}
 
+  useEffect(()=>{
+    dispatch(getOrderByTableId(table.id))
+  },[dispatch, table])
   const onClick = () => {
     dispatch(getProducts())
     dispatch(initiateOrderAdd())
@@ -54,7 +62,35 @@ const Table = ({ className, ...rest }) => {
           <Typography color="textSecondary" variant="body1">
             {`${table.branchName}`}
           </Typography>
-         
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Product</TableCell>
+                <TableCell>Quantity</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orderState && orderState.orders.map(order => (
+                <TableRow
+                  hover
+                  key={order.id}
+                >
+                 
+                  <TableCell>
+                    <Box alignItems="center" display="flex">
+              
+                      <Typography color="textPrimary" variant="body1">
+                        {order.productName}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>{order.note}</TableCell>
+                  <TableCell>{order.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Box>
       </CardContent>
       <Divider />
@@ -70,8 +106,8 @@ const Table = ({ className, ...rest }) => {
   );
 };
 
-Table.propTypes = {
+TableView.propTypes = {
   className: PropTypes.string,
 };
 
-export default Table;
+export default TableView;

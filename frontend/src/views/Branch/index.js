@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from '../../components/Page';
 import Results from './Results';
 import Toolbar from './Toolbar';
-import { getBranches } from '../../actions';
+import { getBranches, hideAlert } from '../../actions';
 import AddBranch from './AddBranch';
+import Toast from '../../modules/toast';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -21,7 +22,10 @@ const Branch = () => {
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
   const branchState = useSelector(state => state.branch);
-
+  if (appState.alert.show) {
+    Toast({ message: appState.alert.message });
+    dispatch(hideAlert());
+  }
   if (branchState.new) {
     dispatch(getBranches());
   }

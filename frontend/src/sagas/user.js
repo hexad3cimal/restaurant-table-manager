@@ -19,7 +19,7 @@ export function* login({ payload }) {
       payload,
     });
 
-    handleRefreshToken(`${window.restAppConfig.api}token/refresh`);
+    // handleRefreshToken(`${window.restAppConfig.api}token/refresh`);
     
     yield put({
       type: ActionTypes.USER_LOGIN_SUCCESS,

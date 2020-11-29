@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from '../../components/Page';
 import TableList from './TableList';
 import Toolbar from './Toolbar';
-import { getTables } from '../../actions';
+import { getTables, hideAlert } from '../../actions';
 import AddTable from './AddTable';
+import Toast from '../../modules/toast';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -22,7 +23,10 @@ const Branch = () => {
   const appState = useSelector(state => state.app);
   const tableState = useSelector(state => state.table);
 
-  
+  if (appState.alert.show) {
+    Toast({ message: appState.alert.message });
+    dispatch(hideAlert());
+  }
   if (tableState && tableState.new) {
     dispatch(getTables());
   }

@@ -12,6 +12,10 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 	err := auth.TokenValid(c.Request, false)
 	if err != nil {
 		logger.Error(err)
+		if err.Error() == "token contains an invalid number of segments" {
+			AuthController.Refresh(AuthController{}, c)
+			return
+		}
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		c.Abort()
 		return

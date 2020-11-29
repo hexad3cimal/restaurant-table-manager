@@ -3,29 +3,29 @@
  * @desc Order
  */
 
-import { all, put, takeLatest } from 'redux-saga/effects';
+import { all, put, takeLatest } from "redux-saga/effects";
 
-import { ActionTypes } from '../constants/index';
-import { request } from '../modules/client';
+import { ActionTypes } from "../constants/index";
+import { request } from "../modules/client";
 
 /**
  * Add new order
  */
-export function* add({payload}) {
+export function* add({ payload }) {
   try {
     yield request(`${window.restAppConfig.api}order`, {
-      method: 'POST',
+      method: "POST",
       payload,
     });
     yield all([
-    yield put({
-      type: ActionTypes.ORDER_ADD_SUCCESS,
-    }),
-    yield put({
-      type: ActionTypes.SHOW_ALERT,
-      payload: `Added ${payload.name} successfully!`,
-    }),
-  ]);
+      yield put({
+        type: ActionTypes.ORDER_ADD_SUCCESS,
+      }),
+      yield put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: `Added ${payload.name} successfully!`,
+      }),
+    ]);
   } catch (err) {
     /* istanbul ignore next */
     yield all([
@@ -35,7 +35,7 @@ export function* add({payload}) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Could not add order,please retry',
+        payload: "Could not add order,please retry",
       }),
     ]);
   }
@@ -47,7 +47,7 @@ export function* add({payload}) {
 export function* getById({ id }) {
   try {
     const order = yield request(`${window.restAppConfig.api}order?id=${id}`, {
-      method: 'GET',
+      method: "GET",
     });
 
     yield put({
@@ -63,19 +63,47 @@ export function* getById({ id }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting order details, please retry',
+        payload: "Error while gettting order details, please retry",
       }),
     ]);
   }
 }
 
+
+/**
+ * Get order details by table id
+ */
+export function* getByTableId({ payload }) {
+  try {
+    const order = yield request(`${window.restAppConfig.api}order?tableId=${payload}`, {
+      method: "GET",
+    });
+
+    yield put({
+      type: ActionTypes.ORDER_GET_BY_TABLE_ID_SUCCESS,
+      payload: order.data,
+    });
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.ORDER_GET_BY_TABLE_ID_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: "Error while gettting order details, please retry",
+      }),
+    ]);
+  }
+}
 /**
  * Get orders
  */
 export function* getOrders() {
   try {
     const orders = yield request(`${window.restAppConfig.api}orders`, {
-      method: 'GET',
+      method: "GET",
     });
 
     yield all([
@@ -86,7 +114,7 @@ export function* getOrders() {
     ]);
   } catch (err) {
     /* istanbul ignore next */
-    console.log("error",err)
+    console.log("error", err);
     yield all([
       put({
         type: ActionTypes.ORDERS_GET_FAILURE,
@@ -94,7 +122,7 @@ export function* getOrders() {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting orders, please retry',
+        payload: "Error while gettting orders, please retry",
       }),
     ]);
   }
@@ -107,6 +135,7 @@ export default function* root() {
   yield all([
     takeLatest(ActionTypes.ORDER_ADD, add),
     takeLatest(ActionTypes.ORDER_GET, getById),
+    takeLatest(ActionTypes.ORDER_GET_BY_TABLE_ID, getByTableId),
     takeLatest(ActionTypes.ORDERS_GET, getOrders),
   ]);
 }

@@ -101,6 +101,11 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 	var error error
 	if userRoleName == "admin" {
 		branches, error = branch.GetBranchesOfOrg(c.GetHeader("org_id"))
+		if error != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
 	} else {
 
 		currentUser, getCurrentUserError := user.GetUserById(c.GetHeader("user_id"))
@@ -119,10 +124,6 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 		branches = append(branches, currentBranch)
 
 	}
-	if error == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
-	} else {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-	}
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
 
 }

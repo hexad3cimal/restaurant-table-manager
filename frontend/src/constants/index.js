@@ -66,6 +66,9 @@ export const ActionTypes = keyMirror({
   ORDERS_GET: undefined,
   ORDERS_GET_SUCCESS: undefined,
   ORDERS_GET_FAILURE: undefined,
+  ORDER_GET_BY_TABLE_ID: undefined,
+  ORDER_GET_BY_TABLE_ID_SUCCESS: undefined,
+  ORDER_GET_BY_TABLE_ID_FAILURE: undefined,
 });
 
 /**

@@ -43,13 +43,34 @@ func (order Order) Get(id string) (orderModel OrderModel, err error) {
 	return orderModel, err
 }
 
+func (order Order) GetByTableId(tableId string) (orderModel []OrderModel) {
+
+	config.GetDB().Where("table_id=?", tableId).Where("status!=?", "complete").Find(&orderModel)
+
+	return orderModel
+}
+
 func (order Order) GetOrderForOrg(ID string, orgId string) (orderModel OrderModel, err error) {
 
-	err = config.GetDB().Where("ID=?", ID).Where("orgId=?", orgId).First(&orderModel).Error
+	err = config.GetDB().Where("ID=?", ID).Where("org_id=?", orgId).Find(&orderModel).Error
 	if err != nil {
 
 		return OrderModel{}, err
 	}
 
 	return orderModel, err
+}
+
+func (order Order) GetOrdersOfOrg(orgId string) (orderModels []OrderModel) {
+
+	config.GetDB().Where("org_id=?", orgId).Find(&orderModels)
+
+	return orderModels
+}
+
+func (order Order) GetOrdersOfBranch(branchId string) (orderModels []OrderModel) {
+
+	config.GetDB().Where("branch_id=?", branchId).Find(&orderModels)
+
+	return orderModels
 }

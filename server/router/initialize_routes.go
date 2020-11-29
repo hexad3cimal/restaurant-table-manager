@@ -10,6 +10,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	socketio "github.com/googollee/go-socket.io"
 	"github.com/twinj/uuid"
 )
 
@@ -23,7 +24,7 @@ func generateContextId() gin.HandlerFunc {
 
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Origin, Authorization, Accept, Client-Security-Token, Accept-Encoding, x-access-token")
@@ -48,7 +49,6 @@ func AuthMiddleware() gin.HandlerFunc {
 func isAdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		isAdmin := helpers.IsAdmin(c.GetHeader("role_id"), c.GetHeader("org_id"))
-		fmt.Println("Isadmin", isAdmin)
 		if isAdmin == true {
 			c.Next()
 			return
@@ -97,7 +97,7 @@ func InitRouter() {
 
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)
-		// v1.GET("/orders", AuthMiddleware(), order.GetProducts)
+		v1.GET("/order", AuthMiddleware(), order.GetOrdersOfTable)
 		// v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 	}
 
@@ -105,5 +105,18 @@ func InitRouter() {
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")
 	})
+	server, _ := socketio.NewServer(nil)
+	server.OnConnect("/", func(s socketio.Conn) error {
+		s.SetContext("")
+		fmt.Println("connected:", s.ID())
+		s.Emit("reply", "have "+s.ID())
+		return nil
+	})
+
+	go server.Serve()
+	defer server.Close()
+	router.GET("/events/*any", gin.WrapH(server))
+	router.POST("/events/*any", gin.WrapH(server))
 	router.Run(":" + config.GetConfig().Port)
+
 }
