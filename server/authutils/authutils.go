@@ -23,6 +23,7 @@ type AccessDetails struct {
 	UserId     string
 	RoleId     string
 	OrgId      string
+	UserName   string
 }
 
 type Token struct {
@@ -32,7 +33,7 @@ type Token struct {
 
 type Auth struct{}
 
-func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*TokenDetails, error) {
+func (m Auth) CreateToken(userId string, userName string, userRoleId string, orgId string) (*TokenDetails, error) {
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUUID = uuid.NewV4().String()
@@ -44,6 +45,7 @@ func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*Toke
 	atClaims["authorized"] = true
 	atClaims["access_uuid"] = td.AccessUUID
 	atClaims["user_id"] = userId
+	atClaims["user_name"] = userName
 	atClaims["role_id"] = userRoleId
 	atClaims["org_id"] = orgId
 	atClaims["exp"] = td.AtExpires
@@ -58,6 +60,7 @@ func (m Auth) CreateToken(userId string, userRoleId string, orgId string) (*Toke
 	rtClaims := jwt.MapClaims{}
 	rtClaims["access_uuid"] = td.AccessUUID
 	rtClaims["user_id"] = userId
+	rtClaims["user_name"] = userName
 	rtClaims["role_id"] = userRoleId
 	rtClaims["org_id"] = orgId
 	rtClaims["exp"] = td.RtExpires
@@ -133,6 +136,7 @@ func (m Auth) ExtractTokenMetadata(r *http.Request, refreshToken bool) (*AccessD
 			AccessUUID: claims["access_uuid"].(string),
 			OrgId:      claims["org_id"].(string),
 			UserId:     claims["user_id"].(string),
+			UserName:   claims["user_name"].(string),
 			RoleId:     claims["role_id"].(string),
 		}, nil
 	}

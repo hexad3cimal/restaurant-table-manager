@@ -11,13 +11,16 @@ var user = new(models.User)
 var userModel models.UserModel
 var logger = config.InitLogger()
 
-func IsAdmin(roleId string, orgId string) (isAdmin bool) {
-	fetchedRole, err := role.GetRoleByIdAndOrg(roleId, orgId)
+func IsAdmin(userId string, orgId string) (isAdmin bool) {
+	userObject, getUserError := user.GetUserById(userId)
+	if getUserError != nil || userObject.OrgId != orgId {
+		return false
+	}
+	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, orgId)
 
 	if err != nil {
 		return false
 	}
-	logger.Error("fetchedRole.Name" + fetchedRole.Name)
 	if fetchedRole.Name == "admin" {
 		return true
 
@@ -29,7 +32,7 @@ func IsAdmin(roleId string, orgId string) (isAdmin bool) {
 func GetRoleName(userId string, orgId string) (roleName string, err error) {
 
 	userObject, getUserError := user.GetUserById(userId)
-	if getUserError != nil {
+	if getUserError != nil || userObject.OrgId != orgId {
 		return "", getUserError
 	}
 	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, orgId)

@@ -29,7 +29,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	tokenDetails, tokenError := auth.CreateToken(loggerInUser.ID, loggerInUser.RoleId, loggerInUser.OrgId)
+	tokenDetails, tokenError := auth.CreateToken(loggerInUser.ID, loggerInUser.UserName, loggerInUser.RoleId, loggerInUser.OrgId)
 
 	if tokenError == nil {
 		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)

@@ -51,7 +51,7 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 		return
 	}
-	token, createErr := auth.CreateToken(user.ID, user.RoleId, user.OrgId)
+	token, createErr := auth.CreateToken(user.ID, user.UserName, user.RoleId, user.OrgId)
 	if createErr != nil {
 		c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 		return

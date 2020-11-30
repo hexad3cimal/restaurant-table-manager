@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = () => {
   const classes = useStyles();
-  socketConnection()
   return (
     <Page
       className={classes.root}

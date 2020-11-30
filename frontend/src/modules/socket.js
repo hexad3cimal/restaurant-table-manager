@@ -1,8 +1,6 @@
-import io from 'socket.io-client';
 
+var connection;
 export const socketConnection = () => {
-   return io("/",{
-        path: '/events',
-        transports: ['websocket'],
-   })
+   connection = new WebSocket(`ws://localhost:3000/events`);
+   return connection;
 }

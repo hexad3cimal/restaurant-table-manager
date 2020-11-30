@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 	"table-booking/config"
 	"table-booking/controllers"
@@ -10,7 +9,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
+	"github.com/gorilla/websocket"
 	"github.com/twinj/uuid"
 )
 
@@ -48,7 +47,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 func isAdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		isAdmin := helpers.IsAdmin(c.GetHeader("role_id"), c.GetHeader("org_id"))
+		isAdmin := helpers.IsAdmin(c.GetHeader("user_id"), c.GetHeader("org_id"))
 		if isAdmin == true {
 			c.Next()
 			return
@@ -105,18 +104,22 @@ func InitRouter() {
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")
 	})
-	server, _ := socketio.NewServer(nil)
-	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		fmt.Println("connected:", s.ID())
-		s.Emit("reply", "have "+s.ID())
-		return nil
-	})
+	router.Any("/events", AuthMiddleware(), func(c *gin.Context) {
+		hub := helpers.GetHub()
+		go hub.Run()
 
-	go server.Serve()
-	defer server.Close()
-	router.GET("/events/*any", gin.WrapH(server))
-	router.POST("/events/*any", gin.WrapH(server))
+		var upgrader = websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin:     func(r *http.Request) bool { return true },
+		}
+
+		connection, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			panic(err)
+		}
+		helpers.CreateNewSocketUser(hub, connection, c.GetHeader("user_name"), c.GetHeader("user_id"))
+	})
 	router.Run(":" + config.GetConfig().Port)
 
 }

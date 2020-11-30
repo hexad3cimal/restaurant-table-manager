@@ -2,6 +2,7 @@ package main
 
 import (
 	"table-booking/config"
+	"table-booking/helpers"
 	"table-booking/models"
 	"table-booking/router"
 )
@@ -12,6 +13,7 @@ func main() {
 
 	config.InitConfig()
 	config.InitDB()
+	helpers.InitHub()
 	db := config.GetDB()
 	db.AutoMigrate(&models.OrganizationModel{})
 	db.AutoMigrate(&models.UserModel{})
