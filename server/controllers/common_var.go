@@ -28,3 +28,6 @@ var product = new(models.Product)
 
 var orderModel models.OrderModel
 var order = new(models.Order)
+
+var token = new(models.Token)
+var tokenModel models.TokenModel

@@ -28,11 +28,17 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	orderModel.ID = uuid.NewV4().String()
 	orderModel.ProductName = orderForm.ProductName
 	orderModel.ProductId = orderForm.ProductId
 	orderModel.CreatedAt = time.Now()
-	orderModel.OrgId = c.GetHeader("org_id")
+	orderModel.OrgId = tokenModel.OrgId
 	orderModel.BranchId = table.BranchId
 	orderModel.BranchName = table.BranchName
 	orderModel.TableId = table.ID
@@ -63,7 +69,13 @@ func (ctrl OrderController) GetOrdersOfTable(c *gin.Context) {
 
 func (ctrl OrderController) GetOrders(c *gin.Context) {
 
-	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 
 	if getRoleError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -73,7 +85,7 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 	var products []models.ProductModel
 	var error error
 	if userRoleName == "admin" {
-		products, error = product.GetProductsOfOrg(c.GetHeader("org_id"))
+		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
 
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -82,7 +94,7 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 		}
 	} else {
 
-		currentUser, getCurrentUserError := user.GetUserById(c.GetHeader("user_id"))
+		currentUser, getCurrentUserError := user.GetUserById(tokenModel.UserId)
 		if getCurrentUserError != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

@@ -20,16 +20,14 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	accessDetails, err := auth.ExtractTokenMetadata(c.Request, false)
+	tokenId, err := auth.ExtractTokenMetadata(c.Request, false)
 	if err != nil {
 		logger.Error(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		c.Abort()
 		return
 	}
-	c.Request.Header.Set("org_id", accessDetails.OrgId)
-	c.Request.Header.Set("role_id", accessDetails.RoleId)
-	c.Request.Header.Set("user_id", accessDetails.UserId)
+	c.Request.Header.Set("access_id", tokenId)
 }
 
 func (ctl AuthController) Refresh(c *gin.Context) {
@@ -39,7 +37,7 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		return
 	}
-	accessDetails, err := auth.ExtractTokenMetadata(c.Request, true)
+	tokenId, err := auth.ExtractTokenMetadata(c.Request, true)
 	if err != nil {
 		logger.Error(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})

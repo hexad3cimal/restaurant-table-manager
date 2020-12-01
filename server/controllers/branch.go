@@ -29,7 +29,13 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	branchModel.Contact = branchForm.Contact
 	branchModel.Email = branchForm.Email
 	branchModel.Name = branchForm.FullName
-	branchModel.OrgId = c.GetHeader("org_id")
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	branchModel.OrgId = tokenModel.OrgId
 	branchModel.ID = uuid.NewV4().String()
 	_, branchAddErr := branch.Add(branchModel)
 	if branchAddErr != nil {
@@ -67,10 +73,38 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
 	userModel.BranchId = branchModel.ID
 	userModel.ID = uuid.NewV4().String()
-	_, userError := user.Register(userModel)
+	branchUserModel, userError := user.Register(userModel)
 
 	if userError != nil {
 		branch.DeleteBranchById(branchModel.ID)
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
+	//get branch role for current organisation
+	kitchenRoleModel, kitchenRoleGetError := role.GetRoleForOrg("kitchen", branchModel.OrgId)
+	if kitchenRoleGetError != nil {
+		branch.DeleteBranchById(branchModel.ID)
+		user.DeleteById(userModel.ID)
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
+	userModel.Name = branchForm.FullName
+	userModel.UserName = branchForm.UserName + "-kitchen"
+	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
+	userModel.RoleId = kitchenRoleModel.ID
+	userModel.Email = branchForm.Email
+	userModel.Password = hashedPassword
+	userModel.ForgotPasswordCode = uuid.NewV4().String()
+	userModel.BranchId = branchModel.ID
+	userModel.ID = uuid.NewV4().String()
+	_, kitchenUserError := user.Register(userModel)
+	if kitchenUserError != nil {
+		branch.DeleteBranchById(branchModel.ID)
+		user.DeleteById(branchUserModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -79,7 +113,13 @@ func (ctrl BranchController) Add(c *gin.Context) {
 }
 
 func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
-	branches, err := branch.GetBranchesOfOrg(c.GetHeader("org_id"))
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	branches, err := branch.GetBranchesOfOrg(tokenModel.OrgId)
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
 	} else {
@@ -89,11 +129,17 @@ func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
 }
 
 func (ctrl BranchController) GetBranches(c *gin.Context) {
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 
-	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
+	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 
 	hub := helpers.GetHub()
-	helpers.EmitToSpecificClient(hub, helpers.SocketEventStruct{EventName: "message", EventPayload: "hello"}, c.GetHeader("user_id"))
+	helpers.EmitToSpecificClient(hub, helpers.SocketEventStruct{EventName: "message", EventPayload: "hello"}, tokenModel.UserId)
 	if getRoleError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
@@ -102,7 +148,7 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 	var branches []models.BranchModel
 	var error error
 	if userRoleName == "admin" {
-		branches, error = branch.GetBranchesOfOrg(c.GetHeader("org_id"))
+		branches, error = branch.GetBranchesOfOrg(tokenModel.OrgId)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
@@ -110,7 +156,7 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 		}
 	} else {
 
-		currentUser, getCurrentUserError := user.GetUserById(c.GetHeader("user_id"))
+		currentUser, getCurrentUserError := user.GetUserById(tokenModel.UserId)
 		if getCurrentUserError != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

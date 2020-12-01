@@ -24,18 +24,24 @@ func (ctrl TableController) Add(c *gin.Context) {
 		return
 	}
 
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	tableModel.Active = true
 	tableModel.ID = uuid.NewV4().String()
 	tableModel.Name = tableForm.TableName
 	tableModel.CreatedAt = time.Now()
-	tableModel.OrgId = c.GetHeader("org_id")
+	tableModel.OrgId = tokenModel.OrgId
 	tableModel.BranchId = tableForm.BranchId
 	tableModel.BranchName = tableForm.BranchName
 	tableModel.Occupied = false
 	_, err := table.Add(tableModel)
 	if err == nil {
 		//get branch role for current organisation
-		roleModel, roleGetError := role.GetRoleForOrg("table", c.GetHeader("org_id"))
+		roleModel, roleGetError := role.GetRoleForOrg("table", tokenModel.OrgId)
 		if roleGetError != nil {
 			table.DeleteById(tableModel.ID)
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -79,8 +85,13 @@ func (ctrl TableController) Add(c *gin.Context) {
 }
 
 func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
-
-	tables, err := table.GetTablesOfOrg(c.GetHeader("org_id"))
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	tables, err := table.GetTablesOfOrg(tokenModel.OrgId)
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})
 	} else {
@@ -91,9 +102,9 @@ func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
 
 // func (ctrl TableController) GetTables(c *gin.Context) {
 
-// 	roleName, roleNameGetError := helpers.GetRoleName(c.GetHeader("role_id"), c.GetHeader("org_id"))
+// 	roleName, roleNameGetError := helpers.GetRoleName(c.GetHeader("role_id"), tokenModel.OrgId)
 // 	if roleNameGetError != nil {
-// 		logger.Error("Get rolename failed for " + c.GetHeader("role_id") + " " + c.GetHeader("org_id") + " " + roleNameGetError.Error())
+// 		logger.Error("Get rolename failed for " + c.GetHeader("role_id") + " " + tokenModel.OrgId + " " + roleNameGetError.Error())
 // 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 // 		return
 // 	}
@@ -101,11 +112,11 @@ func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
 // 	var tables []models.TableModel
 // 	var err error
 // 	if roleName == "admin" {
-// 		tables, err = table.GetTablesOfOrg(c.GetHeader("org_id"))
+// 		tables, err = table.GetTablesOfOrg(tokenModel.OrgId)
 
 // 	}
 // 	if roleName == "branch" || roleName == "kitchen" {
-// 		tables, err = table.GetTablesOfBranch(c.GetHeader("org_id"))
+// 		tables, err = table.GetTablesOfBranch(tokenModel.OrgId)
 // 	}
 
 // 	if err == nil {
@@ -120,9 +131,15 @@ func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
 
 func (ctrl TableController) GetTables(c *gin.Context) {
 
-	roleName, roleNameGetError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	roleName, roleNameGetError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 	if roleNameGetError != nil {
-		logger.Error("Get rolename failed for " + c.GetHeader("user_id") + " " + c.GetHeader("org_id") + " " + roleNameGetError.Error())
+		logger.Error("Get rolename failed for " + tokenModel.UserId + " " + tokenModel.OrgId + " " + roleNameGetError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -130,14 +147,14 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 	var tables []models.TableModel
 	var err error
 	if roleName == "admin" {
-		tables, err = table.GetTablesOfOrg(c.GetHeader("org_id"))
+		tables, err = table.GetTablesOfOrg(tokenModel.OrgId)
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})
 		c.Abort()
 		return
 	}
 
 	if roleName == "manager" {
-		userObject, getUserError := user.GetUserById(c.GetHeader("user_id"))
+		userObject, getUserError := user.GetUserById(tokenModel.UserId)
 		if getUserError != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

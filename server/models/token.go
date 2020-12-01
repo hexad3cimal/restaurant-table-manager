@@ -1,0 +1,51 @@
+package models
+
+import (
+	"table-booking/config"
+
+	"time"
+)
+
+type TokenModel struct {
+	ID           string    `db:"id, primarykey" json:"id"`
+	Email        string    `db:"email" json:"email"`
+	OrgId        string    `db:"org_id" json:"orgId"`
+	BranchId     string    `db:"branch_id" json:"branchId"`
+	RoleId       string    `db:"role_id" json:"roleId"`
+	UserId       string    `db:"user_id" json:"userId"`
+	RefreshToken string    `db:"refresh_token" json:"refreshToken"`
+	AccessToken  string    `db:"access_token" json:"accessToken"`
+	Valid        bool      `db:"valid" json:"valid" sql:"DEFAULT:true"`
+	UpdatedAt    time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt    time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+}
+type Token struct {
+}
+
+func (u Token) Add(token TokenModel) (addedToken TokenModel, err error) {
+
+	err = config.GetDB().Save(&token).Error
+	if err != nil {
+		return TokenModel{}, err
+	}
+
+	return token, err
+}
+
+func (u Token) GetTokenById(tokenId string) (token TokenModel, err error) {
+	err = config.GetDB().Where("ID=?", tokenId).First(&token).Error
+	if err != nil {
+		return TokenModel{}, err
+	}
+
+	return token, nil
+}
+
+func (u Token) DeleteById(tokenId string) (token TokenModel, err error) {
+	err = config.GetDB().Where("ID=?", tokenId).Delete(&token).Error
+	if err != nil {
+		return TokenModel{}, err
+	}
+
+	return token, nil
+}

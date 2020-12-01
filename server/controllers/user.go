@@ -29,18 +29,36 @@ func (ctrl UserController) Login(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	tokenDetails, tokenError := auth.CreateToken(loggerInUser.ID, loggerInUser.UserName, loggerInUser.RoleId, loggerInUser.OrgId)
-
+	tokenDetails, tokenError := auth.CreateToken()
 	if tokenError == nil {
-		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
-		c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
-		c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
-		// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
-	} else {
-		logger.Error(" login failed for " + loginForm.UserName)
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})
+
+		tokenModel.BranchId = loggerInUser.BranchId
+		tokenModel.Email = loggerInUser.Email
+		tokenModel.UserId = loggerInUser.ID
+		tokenModel.OrgId = loggerInUser.OrgId
+		tokenModel.RoleId = loggerInUser.RoleId
+		tokenModel.AccessToken = tokenDetails.AccessToken
+		tokenModel.RefreshToken = tokenDetails.RefreshToken
+		tokenModel.ID = tokenDetails.AccessUUID
+		_, tokenAddError := token.Add(tokenModel)
+		if tokenAddError == nil {
+			c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
+			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
+			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
+			c.Abort()
+			return
+			// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
+		} else {
+			logger.Error(" login failed for " + loginForm.UserName)
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})
+			c.Abort()
+			return
+		}
 	}
 
+	c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})
+	c.Abort()
+	return
 }
 
 func (ctrl UserController) Register(c *gin.Context) {

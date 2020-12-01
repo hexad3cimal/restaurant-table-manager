@@ -23,11 +23,16 @@ func (ctrl ProductController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	productModel.ID = uuid.NewV4().String()
 	productModel.ProductName = productForm.ProductName
 	productModel.CreatedAt = time.Now()
-	productModel.OrgId = c.GetHeader("org_id")
+	productModel.OrgId = tokenModel.OrgId
 	productModel.BranchId = productForm.BranchId
 	productModel.BranchName = productForm.BranchName
 	productModel.Quantity = productForm.Quantity
@@ -63,7 +68,13 @@ func (ctrl ProductController) GetProductsOfBranch(c *gin.Context) {
 
 func (ctrl ProductController) GetProducts(c *gin.Context) {
 
-	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 
 	if getRoleError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -73,7 +84,7 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 	var products []models.ProductModel
 	var error error
 	if userRoleName == "admin" {
-		products, error = product.GetProductsOfOrg(c.GetHeader("org_id"))
+		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
 
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -82,7 +93,7 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 		}
 	} else {
 
-		currentUser, getCurrentUserError := user.GetUserById(c.GetHeader("user_id"))
+		currentUser, getCurrentUserError := user.GetUserById(tokenModel.UserId)
 		if getCurrentUserError != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

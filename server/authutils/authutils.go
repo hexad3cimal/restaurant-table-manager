@@ -18,22 +18,9 @@ type TokenDetails struct {
 	RtExpires    int64
 }
 
-type AccessDetails struct {
-	AccessUUID string
-	UserId     string
-	RoleId     string
-	OrgId      string
-	UserName   string
-}
-
-type Token struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
 type Auth struct{}
 
-func (m Auth) CreateToken(userId string, userName string, userRoleId string, orgId string) (*TokenDetails, error) {
+func (m Auth) CreateToken() (*TokenDetails, error) {
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUUID = uuid.NewV4().String()
@@ -42,12 +29,7 @@ func (m Auth) CreateToken(userId string, userName string, userRoleId string, org
 
 	var err error
 	atClaims := jwt.MapClaims{}
-	atClaims["authorized"] = true
 	atClaims["access_uuid"] = td.AccessUUID
-	atClaims["user_id"] = userId
-	atClaims["user_name"] = userName
-	atClaims["role_id"] = userRoleId
-	atClaims["org_id"] = orgId
 	atClaims["exp"] = td.AtExpires
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
@@ -59,16 +41,13 @@ func (m Auth) CreateToken(userId string, userName string, userRoleId string, org
 
 	rtClaims := jwt.MapClaims{}
 	rtClaims["access_uuid"] = td.AccessUUID
-	rtClaims["user_id"] = userId
-	rtClaims["user_name"] = userName
-	rtClaims["role_id"] = userRoleId
-	rtClaims["org_id"] = orgId
 	rtClaims["exp"] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
 	td.RefreshToken, err = rt.SignedString([]byte(config.GetConfig().Secret))
 	if err != nil {
 		return nil, err
 	}
+
 	return td, nil
 }
 
@@ -124,21 +103,15 @@ func (m Auth) TokenValid(r *http.Request, refreshToken bool) error {
 }
 
 //ExtractTokenMetadata ...
-func (m Auth) ExtractTokenMetadata(r *http.Request, refreshToken bool) (*AccessDetails, error) {
+func (m Auth) ExtractTokenMetadata(r *http.Request, refreshToken bool) (string, error) {
 	token, err := m.VerifyToken(r, refreshToken)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
 
-		return &AccessDetails{
-			AccessUUID: claims["access_uuid"].(string),
-			OrgId:      claims["org_id"].(string),
-			UserId:     claims["user_id"].(string),
-			UserName:   claims["user_name"].(string),
-			RoleId:     claims["role_id"].(string),
-		}, nil
+		return claims["access_uuid"].(string), nil
 	}
-	return nil, err
+	return "", err
 }

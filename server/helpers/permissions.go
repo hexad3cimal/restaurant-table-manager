@@ -10,6 +10,8 @@ var roleModel models.RoleModel
 var user = new(models.User)
 var userModel models.UserModel
 var logger = config.InitLogger()
+var token = new(models.Token)
+var tokenModel models.TokenModel
 
 func IsAdmin(userId string, orgId string) (isAdmin bool) {
 	userObject, getUserError := user.GetUserById(userId)
@@ -43,4 +45,15 @@ func GetRoleName(userId string, orgId string) (roleName string, err error) {
 
 	return fetchedRole.Name, nil
 
+}
+
+func GetToken(accessId string) (tokenReturnModel models.TokenModel, err error) {
+
+	tokenModel, getTokenModelError := token.GetTokenById(accessId)
+
+	if getTokenModelError != nil {
+		return tokenModel, getTokenModelError
+	}
+
+	return tokenModel, nil
 }
