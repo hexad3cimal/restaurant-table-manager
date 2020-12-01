@@ -44,12 +44,18 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	user, getUserErr := user.GetUserById(accessDetails.UserId)
+	tokenModel, getTokenError := token.GetTokenById(tokenId)
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	_, getUserErr := user.GetUserById(tokenModel.UserId)
 	if getUserErr != nil {
 		c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 		return
 	}
-	token, createErr := auth.CreateToken(user.ID, user.UserName, user.RoleId, user.OrgId)
+	token, createErr := auth.CreateToken()
 	if createErr != nil {
 		c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 		return
