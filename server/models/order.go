@@ -14,6 +14,8 @@ type OrderModel struct {
 	Note        string    `db:"note" json:"note"`
 	Quantity    int32     `db:"quantity" json:"quantity"`
 	ProductId   string    `db:"product_id" json:"productId"`
+	KitchenId   string    `db:"kitchen_id" json:"kitchenId"`
+	KitchenName string    `db:"kitchen_name" json:"kitchenName"`
 	ProductName string    `db:"product_name" json:"productName"`
 	Status      string    `db:"status" json:"status"`
 	UpdatedAt   time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
@@ -46,6 +48,13 @@ func (order Order) Get(id string) (orderModel OrderModel, err error) {
 func (order Order) GetByTableId(tableId string) (orderModel []OrderModel) {
 
 	config.GetDB().Where("table_id=?", tableId).Where("status!=?", "complete").Find(&orderModel)
+
+	return orderModel
+}
+
+func (order Order) DeleteById(tableId string) (orderModel []OrderModel) {
+
+	config.GetDB().Where("ID=?", tableId).Delete(&orderModel)
 
 	return orderModel
 }

@@ -39,6 +39,8 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	orderModel.ProductId = orderForm.ProductId
 	orderModel.CreatedAt = time.Now()
 	orderModel.OrgId = tokenModel.OrgId
+	orderModel.KitchenId = orderForm.KitchenId
+	orderModel.KitchenName = orderForm.KitchenName
 	orderModel.BranchId = table.BranchId
 	orderModel.BranchName = table.BranchName
 	orderModel.TableId = table.ID
@@ -48,6 +50,26 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 	_, err := order.Add(orderModel)
 	if err == nil {
+		userRole, rolesGetError := role.GetRoleForOrg("manager", tokenModel.OrgId)
+		if rolesGetError != nil {
+			order.DeleteById(orderModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		users, userError := user.GetUsersByOrgIdAndRoleId(tokenModel.OrgId, userRole.ID)
+		if userError != nil {
+			order.DeleteById(orderModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+		for _, user := range users {
+			helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, user.ID)
+		}
+		helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, user.ID)
+
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
 		logger.Error("Crreate order failed: " + err.Error())

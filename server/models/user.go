@@ -96,13 +96,31 @@ func (u User) GetUserByEmail(email string) (user UserModel, err error) {
 	return user, nil
 }
 
-func (u User) GetUserByBranchId(branchId string) (user UserModel, err error) {
-	err = config.GetDB().Where("branch_id=?", branchId).First(&user).Error
+func (u User) GetUsersByBranchId(branchId string) (users []UserModel, err error) {
+	err = config.GetDB().Where("branch_id=?", branchId).Find(&users).Error
 	if err != nil {
-		return UserModel{}, err
+		return []UserModel{}, err
 	}
 
-	return user, nil
+	return users, nil
+}
+
+func (u User) GetUsersByOrgId(orgId string) (users []UserModel, err error) {
+	err = config.GetDB().Where("org_id=?", orgId).Find(&users).Error
+	if err != nil {
+		return []UserModel{}, err
+	}
+
+	return users, nil
+}
+
+func (u User) GetUsersByOrgIdAndRoleId(orgId string, roleId string) (users []UserModel, err error) {
+	err = config.GetDB().Where("org_id=?", orgId).Where("role_id=?", roleId).Find(&users).Error
+	if err != nil {
+		return []UserModel{}, err
+	}
+
+	return users, nil
 }
 
 func (u User) DeleteById(userId string) (user UserModel, err error) {
