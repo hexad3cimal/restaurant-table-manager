@@ -123,6 +123,14 @@ func (u User) GetUsersByOrgIdAndRoleId(orgId string, roleId string) (users []Use
 	return users, nil
 }
 
+func (u User) GetUsersByBranchIdAndRoleId(branchId string, roleId string) (users []UserModel, err error) {
+	err = config.GetDB().Where("branch_id=?", branchId).Where("role_id=?", roleId).Find(&users).Error
+	if err != nil {
+		return []UserModel{}, err
+	}
+
+	return users, nil
+}
 func (u User) DeleteById(userId string) (user UserModel, err error) {
 	err = config.GetDB().Where("ID=?", userId).Delete(&user).Error
 	if err != nil {

@@ -103,7 +103,6 @@ const AddItem = ({ className, ...rest }) => {
                     variant="outlined"
                   />
                 </Grid>
-
                 <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
@@ -124,6 +123,30 @@ const AddItem = ({ className, ...rest }) => {
                     {branches.map(branch => (
                       <option key={branch.id} value={branch.id}>
                         {branch.name}
+                      </option>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Select Kitchen"
+                    name="kitchenId"
+                    error={Boolean(touched.kitchenId && errors.kitchenId)}
+                    helperText={touched.kitchenId && errors.kitchenId}
+                    onChange={handleChange}
+                    required
+                    select
+                    SelectProps={{ native: true }}
+                    value={values.kitchenId}
+                    disabled={(kitchens && kitchens.length ===1)}
+                    variant="outlined"
+                  >
+                     <option key="" value="">
+                      </option>
+                    {kitchens.map(kitchen => (
+                      <option key={kitchen.id} value={kitchen.id}>
+                        {kitchen.name}
                       </option>
                     ))}
                   </TextField>
