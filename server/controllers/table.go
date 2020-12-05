@@ -40,7 +40,7 @@ func (ctrl TableController) Add(c *gin.Context) {
 	// _, err := table.Add(tableModel)
 	// if err == nil {
 	//get branch role for current organisation
-	roleModel, roleGetError := role.GetRoleForOrg("table", tokenModel.OrgId)
+	roleModel, roleGetError := role.GetRoleByNameAndOrgId("table", tokenModel.OrgId)
 	if roleGetError != nil {
 		table.DeleteById(tableModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -50,7 +50,9 @@ func (ctrl TableController) Add(c *gin.Context) {
 
 	//add new user with table role
 	userModel.RoleId = roleModel.ID
-	userModel.OrgId = branchModel.OrgId
+	userModel.OrgId = tokenModel.OrgId
+	userModel.BranchId = tableForm.BranchId
+	userModel.BranchName = tableForm.BranchName
 	bytePassword := []byte(tableForm.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if err != nil {
@@ -65,7 +67,6 @@ func (ctrl TableController) Add(c *gin.Context) {
 
 	userModel.Password = hashedPassword
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
-	userModel.BranchId = branchModel.ID
 	userModel.ID = uuid.NewV4().String()
 	_, userError := user.Register(userModel)
 	if userError != nil {
@@ -158,7 +159,13 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 	}
 
 	if roleName == "manager" {
-		tables, err = user.GetUsersByBranchIdAndRoleId(tokenModel.BranchId, tokenModel.RoleId)
+		tableRole, getTableRoleError := role.GetRoleByNameAndOrgId("table", tokenModel.OrgId)
+		if getTableRoleError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		tables, err = user.GetUsersByBranchIdAndRoleId(tokenModel.BranchId, tableRole.ID)
 		if err == nil {
 			c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})
 			c.Abort()

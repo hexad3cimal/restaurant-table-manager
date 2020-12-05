@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from '../../components/Page';
 import KitchenList from './KitchenList';
 import Toolbar from './Toolbar';
-import { getTables, hideAlert } from '../../actions';
+import { getKitchens, hideAlert } from '../../actions';
 import AddKitchen from './AddKitchen';
 import Toast from '../../modules/toast';
 const useStyles = makeStyles(theme => ({
@@ -21,22 +21,22 @@ const Kitchen = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
-  const tableState = useSelector(state => state.table);
+  const kitchenState = useSelector(state => state.kitchen);
 
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
   }
-  if (tableState && tableState.new) {
-    dispatch(getTables());
+  if (kitchenState && kitchenState.new) {
+    dispatch(getKitchens());
   }
   useEffect(() => {
-    dispatch(getTables());
+    dispatch(getKitchens());
   }, []);
   return (
     <Page className={classes.root} title="Kitchens">
       <Container maxWidth={false}>
-        {tableState && tableState.add ? (
+        {kitchenState && kitchenState.add ? (
           <Box mt={3}>
             <AddKitchen />
           </Box>

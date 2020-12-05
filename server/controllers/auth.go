@@ -27,42 +27,48 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.Request.Header.Set("access_id", tokenId)
+	c.Request.Header.Set("access_uuid", tokenId)
 }
 
 func (ctl AuthController) Refresh(c *gin.Context) {
+	oldTokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		logger.Error(getTokenError)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
+		c.Abort()
+		return
+	}
+	token.DeleteById(tokenModel.ID)
 
 	_, verifyRefreshTokenErr := auth.VerifyToken(c.Request, true)
 	if verifyRefreshTokenErr != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
-		return
-	}
-	tokenId, err := auth.ExtractTokenMetadata(c.Request, true)
-	if err != nil {
-		logger.Error(err)
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		c.Abort()
 		return
 	}
-	tokenModel, getTokenError := token.GetTokenById(tokenId)
-	if getTokenError != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+
+	tokenDetails, createTokenErr := auth.CreateToken()
+	if createTokenErr != nil {
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid refresh token"})
 		c.Abort()
 		return
 	}
-	_, getUserErr := user.GetUserById(tokenModel.UserId)
-	if getUserErr != nil {
-		c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
+	c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid refresh token"})
+	tokenModel.BranchId = oldTokenModel.BranchId
+	tokenModel.Email = oldTokenModel.Email
+	tokenModel.UserId = oldTokenModel.UserId
+	tokenModel.OrgId = oldTokenModel.OrgId
+	tokenModel.RoleId = oldTokenModel.RoleId
+	tokenModel.AccessToken = tokenDetails.AccessToken
+	tokenModel.RefreshToken = tokenDetails.RefreshToken
+	tokenModel.ID = tokenDetails.AccessUUID
+	_, tokenAddError := token.Add(tokenModel)
+	if tokenAddError == nil {
+		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
+		c.JSON(http.StatusOK, gin.H{"message": "success"})
+		c.Abort()
 		return
 	}
-	token, createErr := auth.CreateToken()
-	if createErr != nil {
-		c.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
-		return
-	}
-
-	c.SetCookie("token", token.AccessToken, 300, "/", "localhost", false, true)
-
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid refresh token"})
 
 }

@@ -45,7 +45,7 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	}
 
 	//get branch role for current organisation
-	roleModel, roleGetError := role.GetRoleForOrg("manager", branchModel.OrgId)
+	roleModel, roleGetError := role.GetRoleByNameAndOrgId("manager", branchModel.OrgId)
 	if roleGetError != nil {
 		branch.DeleteBranchById(branchModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -83,7 +83,7 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	}
 
 	//get branch role for current organisation
-	kitchenRoleModel, kitchenRoleGetError := role.GetRoleForOrg("kitchen", branchModel.OrgId)
+	kitchenRoleModel, kitchenRoleGetError := role.GetRoleByNameAndOrgId("kitchen", branchModel.OrgId)
 	if kitchenRoleGetError != nil {
 		branch.DeleteBranchById(branchModel.ID)
 		user.DeleteById(userModel.ID)

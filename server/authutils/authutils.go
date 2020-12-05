@@ -28,6 +28,14 @@ func (m Auth) CreateToken() (*TokenDetails, error) {
 	td.RtExpires = time.Now().Add(time.Minute * 30).Unix()
 
 	var err error
+
+	rtClaims := jwt.MapClaims{}
+	rtClaims["access_uuid"] = td.AccessUUID
+	rtClaims["exp"] = td.RtExpires
+	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
+	td.RefreshToken, err = rt.SignedString([]byte(config.GetConfig().Secret))
+	td.AccessUUID = uuid.NewV4().String()
+
 	atClaims := jwt.MapClaims{}
 	atClaims["access_uuid"] = td.AccessUUID
 	atClaims["exp"] = td.AtExpires
@@ -37,13 +45,6 @@ func (m Auth) CreateToken() (*TokenDetails, error) {
 	if err != nil {
 		return nil, err
 	}
-	td.AccessUUID = uuid.NewV4().String()
-
-	rtClaims := jwt.MapClaims{}
-	rtClaims["access_uuid"] = td.AccessUUID
-	rtClaims["exp"] = td.RtExpires
-	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-	td.RefreshToken, err = rt.SignedString([]byte(config.GetConfig().Secret))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,6 @@ func (m Auth) ExtractTokenMetadata(r *http.Request, refreshToken bool) (string, 
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-
 		return claims["access_uuid"].(string), nil
 	}
 	return "", err

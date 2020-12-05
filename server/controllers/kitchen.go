@@ -33,7 +33,7 @@ func (ctrl KitchenController) Add(c *gin.Context) {
 	}
 
 	//get branch role for current organisation
-	roleModel, roleGetError := role.GetRoleForOrg("kitchen", tokenModel.OrgId)
+	roleModel, roleGetError := role.GetRoleByNameAndOrgId("kitchen", tokenModel.OrgId)
 	if roleGetError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()

@@ -48,12 +48,10 @@ func (ctrl UserController) Login(c *gin.Context) {
 			c.Abort()
 			return
 			// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
-		} else {
-			logger.Error(" login failed for " + loginForm.UserName)
-			c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})
-			c.Abort()
-			return
 		}
+		logger.Error(" login failed for " + loginForm.UserName)
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenAddError.Error()})
+
 	}
 
 	c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})

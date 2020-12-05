@@ -46,6 +46,7 @@ export const ActionTypes = keyMirror({
   TABLES_GET_BRANCH: undefined,
   TABLES_GET_ORG_SUCCESS: undefined,
   TABLES_GET_ORG_FAILURE: undefined,
+  KITCHEN_ADD_INITIATE: undefined,
   KITCHEN_ADD: undefined,
   KITCHEN_ADD_SUCCESS: undefined,
   KITCHEN_ADD_FAILURE: undefined,

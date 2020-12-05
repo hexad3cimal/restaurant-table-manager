@@ -98,6 +98,11 @@ func InitRouter() {
 		v1.POST("/order", AuthMiddleware(), order.Add)
 		v1.GET("/order", AuthMiddleware(), order.GetOrdersOfTable)
 		// v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
+
+		kitchen := new(controllers.KitchenController)
+		v1.POST("/kitchen", AuthMiddleware(), kitchen.Add)
+		// v1.POST("/table/branch", AuthMiddleware(), table.GetTablesOfBranch)
+		v1.GET("/kitchens", AuthMiddleware(), kitchen.GetKitchens)
 	}
 
 	//for react

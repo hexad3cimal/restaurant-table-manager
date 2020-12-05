@@ -28,8 +28,10 @@ const AddItem = ({ className, ...rest }) => {
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
   const branchState = useSelector(state => state.branch);
+  const kitchenState = useSelector(state => state.kitchen);
 
   const branches = (branchState && branchState.branches) || [];
+  const kitchens = (kitchenState && kitchenState.kitchens) || [];
 
   useEffect(() => {
     dispatch(getBranches());

@@ -11,6 +11,7 @@ const NotFoundView = lazy(() => import('./views/errors/NotFoundView'));
 const BranchView = lazy(() => import('./views/Branch'));
 const TableView = lazy(() => import('./views/Table'));
 const TableDetailedView = lazy(() => import('./views/Table/Table'));
+const KitchenView = lazy(() => import('./views/Kitchen'));
 
 const ProductView = lazy(() => import('./views/Product'));
 
@@ -28,6 +29,7 @@ const routes = isLoggedIn => [
         element: <TableView />
             },
       { path: 'product', element: <ProductView /> },
+      { path: 'kitchen', element: <KitchenView /> },
       { path: 'table-details', element: <TableDetailedView /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],

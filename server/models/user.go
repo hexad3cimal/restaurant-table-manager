@@ -15,6 +15,7 @@ type UserModel struct {
 	Email              string    `db:"email" json:"email"`
 	OrgId              string    `db:"org_id" json:"orgId"`
 	BranchId           string    `db:"branch_id" json:"branchId"`
+	BranchName         string    `db:"branch_name" json:"branchName"`
 	RoleId             string    `db:"role_id" json:"roleId"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
@@ -23,7 +24,7 @@ type UserModel struct {
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
 	Name               string    `db:"name" json:"name"`
 	UserName           string    `db:"user_name" json:"userName"`
-	UserNameLowerCase  string    `db:"user_name_lower" json:"userNameLower"`
+	UserNameLowerCase  string    `db:"user_name_lower_case" json:"userNameLower"`
 	UpdatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
@@ -79,7 +80,7 @@ func (u User) GetUserById(userId string) (user UserModel, err error) {
 }
 
 func (u User) GetUserByUsername(userName string) (user UserModel, err error) {
-	err = config.GetDB().Where("user_name_lower=?", userName).First(&user).Error
+	err = config.GetDB().Where("user_name_lower_case=?", userName).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}

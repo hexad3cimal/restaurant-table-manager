@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBranches, addTable } from '../../actions';
+import { getBranches, addTable, addKitchen } from '../../actions';
 
 import {
   Box,
@@ -32,10 +32,10 @@ const AddTable = ({ className, ...rest }) => {
 
   const branches = (branchState && branchState.branches) || [];
 
-  const [branchName, setBranchName] = useState(null);
+  const [branchName, setBranchName] = useState("");
 
   useEffect(() => {
-
+    if(branches.length ===1)setBranchName(branches[0].name)
   }, [branches]);
 
   useEffect(() => {
@@ -44,14 +44,15 @@ const AddTable = ({ className, ...rest }) => {
   return (
     <Formik
       initialValues={{
-        tableName: '',
-        branchId: '',
-        branchName: '',
+        name: branchName && `${branchName}-`+'',
+        userName: branchName && `${branchName}-`+'',
+        branchId: branchName && branches[0].id,
+        branchName: branchName && branchName || '',
         password: ''
       }}
       validationSchema={Yup.object().shape({
-        tableName: Yup.string()
-        .test('checkUsername', 'TableName already taken', function(username) {
+        userName: Yup.string()
+        .test('checkUsername', 'username already taken', function(username) {
           return new Promise((resolve, reject) => {
             request(`${window.restAppConfig.api}/user/validate?username=${username}`)
               .then(response => {
@@ -66,7 +67,7 @@ const AddTable = ({ className, ...rest }) => {
           });
         })
         .required('username is required'),
-        tableName: Yup.string()
+        name: Yup.string()
           .max(255)
           .required('Tablename  is required'),
         password: Yup.string()
@@ -83,7 +84,7 @@ const AddTable = ({ className, ...rest }) => {
           }
           return branchNameArray;
         }, [])[0];
-        dispatch(addTable(values));
+        dispatch(addKitchen(values));
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -99,21 +100,35 @@ const AddTable = ({ className, ...rest }) => {
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.tableName && errors.tableName)}
+                    error={Boolean(touched.name && errors.name)}
                     fullWidth
-                    helperText={touched.tableName && errors.tableName}
-                    label="Table Name"
+                    helperText={touched.name && errors.name}
+                    label="Kitchen Name"
                     margin="normal"
-                    name="tableName"
+                    name="name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.tableName}
+                    value={values.name}
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.userName && errors.userName)}
+                    fullWidth
+                    helperText={touched.userName && errors.userName}
+                    label="Username"
+                    margin="normal"
+                    name="userName"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.userName}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.password && errors.password)}
                     fullWidth
@@ -128,7 +143,8 @@ const AddTable = ({ className, ...rest }) => {
                     type="password"
                   />
                 </Grid>
-                <Grid item md={4} xs={12}>
+
+                <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     label="Select Branch"

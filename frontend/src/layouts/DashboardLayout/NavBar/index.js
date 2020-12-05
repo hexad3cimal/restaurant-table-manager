@@ -52,6 +52,11 @@ const items = [
     title: 'Product',
   },
   {
+    href: '/app/kitchen',
+    icon: UserIcon,
+    title: 'Kitchen',
+  },
+  {
     href: '/app/settings',
     icon: SettingsIcon,
     title: 'Settings',
