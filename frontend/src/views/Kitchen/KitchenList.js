@@ -3,7 +3,7 @@ import { Box, Container, Grid, makeStyles } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 import Page from '../../components/Page';
 import Toolbar from './Toolbar';
-import TableCard from './TableCard';
+import TableCard from './KitchenCard';
 import { useDispatch, useSelector } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TableList = () => {
+const KitchenList = () => {
   const classes = useStyles();
   const tableState = useSelector(state => state.table);
   const tables = (tableState && tableState.tables) || [];
@@ -42,4 +42,4 @@ const TableList = () => {
   );
 };
 
-export default TableList;
+export default KitchenList;

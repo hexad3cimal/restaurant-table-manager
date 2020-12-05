@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TableCard = ({ className, table, ...rest }) => {
+const KitchenCard = ({ className, table, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -78,9 +78,9 @@ const TableCard = ({ className, table, ...rest }) => {
   );
 };
 
-TableCard.propTypes = {
+KitchenCard.propTypes = {
   className: PropTypes.string,
   table: PropTypes.object.isRequired,
 };
 
-export default TableCard;
+export default KitchenCard;

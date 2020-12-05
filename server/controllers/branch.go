@@ -138,8 +138,6 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 
 	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 
-	hub := helpers.GetHub()
-	helpers.EmitToSpecificClient(hub, helpers.SocketEventStruct{EventName: "message", EventPayload: "hello"}, tokenModel.UserId)
 	if getRoleError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()

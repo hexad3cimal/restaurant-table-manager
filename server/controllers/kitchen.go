@@ -70,55 +70,50 @@ func (ctrl KitchenController) Add(c *gin.Context) {
 	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 }
 
-func (ctrl KitchenController) GetBranchesOfOrg(c *gin.Context) {
+func (ctrl KitchenController) GetKitchens(c *gin.Context) {
 
-	branches, err := branch.GetBranchesOfOrg(c.GetHeader("org_id"))
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
-	} else {
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
+	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 
-}
-
-func (ctrl KitchenController) GetBranches(c *gin.Context) {
-
-	userRoleName, getRoleError := helpers.GetRoleName(c.GetHeader("user_id"), c.GetHeader("org_id"))
-
-	hub := helpers.GetHub()
-	helpers.EmitToSpecificClient(hub, helpers.SocketEventStruct{EventName: "message", EventPayload: "hello"}, c.GetHeader("user_id"))
 	if getRoleError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
-	var branches []models.BranchModel
+	var kitchens []models.UserModel
 	var error error
 	if userRoleName == "admin" {
-		branches, error = branch.GetBranchesOfOrg(c.GetHeader("org_id"))
+		kitchens, error = user.GetUsersByOrgIdAndRoleId(tokenModel.OrgId, tokenModel.RoleId)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
 			return
 		}
-	} else {
-
-		currentUser, getCurrentUserError := user.GetUserById(c.GetHeader("user_id"))
-		if getCurrentUserError != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-		currentBranch, getCurrentBranchError := branch.Get(currentUser.BranchId)
-
-		if getCurrentBranchError != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-		branches = append(branches, currentBranch)
-
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
+
+	if userRoleName == "manager" {
+		kitchens, error = user.GetUsersByBranchIdAndRoleId(tokenModel.BranchId, tokenModel.RoleId)
+		if error != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+	}
+
+	if userRoleName == "kitchen" {
+		kitchenModel, error := user.GetUserById(tokenModel.UserId)
+		if error != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		kitchens = append(kitchens, kitchenModel)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": kitchens})
 
 }

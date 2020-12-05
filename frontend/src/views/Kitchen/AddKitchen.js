@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import {
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import { request } from '../../modules/client';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -31,6 +32,12 @@ const AddTable = ({ className, ...rest }) => {
 
   const branches = (branchState && branchState.branches) || [];
 
+  const [branchName, setBranchName] = useState(null);
+
+  useEffect(() => {
+
+  }, [branches]);
+
   useEffect(() => {
     dispatch(getBranches());
   }, []);
@@ -43,6 +50,22 @@ const AddTable = ({ className, ...rest }) => {
         password: ''
       }}
       validationSchema={Yup.object().shape({
+        tableName: Yup.string()
+        .test('checkUsername', 'TableName already taken', function(username) {
+          return new Promise((resolve, reject) => {
+            request(`${window.restAppConfig.api}/user/validate?username=${username}`)
+              .then(response => {
+                if (response.data === true) resolve(true);
+                else {
+                  resolve(false);
+                }
+              })
+              .catch(error => {
+                resolve(false);
+              });
+          });
+        })
+        .required('username is required'),
         tableName: Yup.string()
           .max(255)
           .required('Tablename  is required'),

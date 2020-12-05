@@ -30,7 +30,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 		return
 	}
 	productModel.ID = uuid.NewV4().String()
-	productModel.ProductName = productForm.ProductName
+	productModel.Name = productForm.ProductName
 	productModel.CreatedAt = time.Now()
 	productModel.OrgId = tokenModel.OrgId
 	productModel.BranchId = productForm.BranchId

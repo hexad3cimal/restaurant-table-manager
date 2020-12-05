@@ -3,10 +3,10 @@ import { Box, Container, makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Page from '../../components/Page';
-import TableList from './TableList';
+import KitchenList from './KitchenList';
 import Toolbar from './Toolbar';
 import { getTables, hideAlert } from '../../actions';
-import AddTable from './AddTable';
+import AddKitchen from './AddKitchen';
 import Toast from '../../modules/toast';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Branch = () => {
+const Kitchen = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
@@ -34,17 +34,17 @@ const Branch = () => {
     dispatch(getTables());
   }, []);
   return (
-    <Page className={classes.root} title="Tables">
+    <Page className={classes.root} title="Kitchens">
       <Container maxWidth={false}>
         {tableState && tableState.add ? (
           <Box mt={3}>
-            <AddTable />
+            <AddKitchen />
           </Box>
         ) : (
           <Box mt={3}>
             <Toolbar />
 
-            <TableList />
+            <KitchenList />
           </Box>
         )}
       </Container>
@@ -52,4 +52,4 @@ const Branch = () => {
   );
 };
 
-export default Branch;
+export default Kitchen;

@@ -10,7 +10,7 @@ type ProductModel struct {
 	OrgId       string    `db:"org_id" json:"orgId"`
 	BranchId    string    `db:"branch_id" json:"branchId"`
 	BranchName  string    `db:"branch_name" json:"branchName"`
-	ProductName string    `db:"product_name" json:"productName"`
+	Name        string    `db:"name" json:"name"`
 	Quantity    int       `db:"quantity" json:"quantity"`
 	Price       string    `db:"price" json:"price"`
 	Discount    int       `db:"discount" json:"discount"`
