@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React  from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -13,7 +13,6 @@ import {
   Grid,
   TextField,
   makeStyles,
-  TextareaAutosize,
 } from '@material-ui/core';
 import { addBranch } from '../../actions';
 import * as Yup from 'yup';

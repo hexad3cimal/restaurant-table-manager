@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Container, makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -19,7 +19,6 @@ const useStyles = makeStyles(theme => ({
 const Products = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const appState = useSelector(state => state.app);
   const productState = useSelector(state => state.product);
 
   if (productState && productState.new) {

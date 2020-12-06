@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   Divider,
-  makeStyles,
   Container,
   CardHeader,
   Grid,
@@ -19,13 +18,6 @@ import { Formik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { addOrder } from '../../actions';
 
-const useStyles = makeStyles(() => ({
-  root: {},
-  avatar: {
-    height: 100,
-    width: 100,
-  },
-}));
 
 const Order = ({ className, table, ...rest }) => {
 

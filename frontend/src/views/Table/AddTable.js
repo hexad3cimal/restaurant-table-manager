@@ -26,7 +26,6 @@ const useStyles = makeStyles(() => ({
 const AddTable = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const appState = useSelector(state => state.app);
   const branchState = useSelector(state => state.branch);
 
   const branches = (branchState && branchState.branches) || [];

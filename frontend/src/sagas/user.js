@@ -7,7 +7,6 @@ import { all, delay, put, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../constants/index';
 import { request } from '../modules/client';
-import { handleRefreshToken } from '../modules/helpers';
 
 /**
  * Login

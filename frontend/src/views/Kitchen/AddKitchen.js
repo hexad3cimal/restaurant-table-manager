@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBranches, addTable, addKitchen } from '../../actions';
+import { getBranches, addKitchen } from '../../actions';
 
 import {
   Box,
@@ -27,7 +27,6 @@ const useStyles = makeStyles(() => ({
 const AddTable = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const appState = useSelector(state => state.app);
   const branchState = useSelector(state => state.branch);
 
   const branches = (branchState && branchState.branches) || [];

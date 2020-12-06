@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import moment from 'moment';
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -35,7 +33,6 @@ const useStyles = makeStyles(() => ({
 const TableView = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const appState = useSelector(state => state.app);
   const orderState = useSelector(state => state.order);
   const tableState = useSelector(state => state.table);
   const table= tableState && tableState.selectedTable || {}
