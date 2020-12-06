@@ -5,6 +5,8 @@ type ProductForm struct {
 	OrgId       string `json:"orgId"`
 	BranchId    string `json:"branchId" binding:"required"`
 	BranchName  string `json:"branchName" binding:"required"`
+	KitchenId   string `json:"kitchenId" binding:"required"`
+	KitchenName string `json:"kitchenName" binding:"required"`
 	Description string `json:"description" binding:"required"`
 	Image       string `json:"image"`
 	Price       string `json:"price" binding:"required"`

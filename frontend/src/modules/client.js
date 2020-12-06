@@ -5,24 +5,6 @@
  */
 
 
-export class ServerError extends Error {
-  response: Object;
-
-  constructor(message?: string): Error {
-    super(message);
-
-    Error.captureStackTrace(this, ServerError);
-
-    this.name = 'ServerError';
-
-    return this;
-  }
-}
-
-export function parseError(error: string): string {
-  return error || 'Something went wrong';
-}
-
 /**
  * Fetch data
  *
@@ -34,11 +16,12 @@ export function parseError(error: string): string {
  *
  * @returns {Promise}
  */
-export function request(url: string, options: Object = {}): Promise<*> {
+export function request(url, options = {}){
   const config = {
     method: 'GET',
     ...options,
   };
+  const error = {status : null , response: null};
   const errors = [];
 
   if (!url) {
@@ -50,7 +33,7 @@ export function request(url: string, options: Object = {}): Promise<*> {
   }
 
   if (errors.length) {
-    throw new Error(`Error! You must pass \`${errors.join('`, `')}\``);
+    throw  `Error! You must pass \`${errors.join('`, `')}\``;
   }
 
   const headers = {
@@ -61,7 +44,7 @@ export function request(url: string, options: Object = {}): Promise<*> {
 
   // if (!(url.includes('/login') || url.includes('/register'))) headers.Authorization = `Bearer ${getUser().token}`;
 
-  const params: Object = {
+  const params = {
     headers,
     method: config.method,
   };
@@ -75,7 +58,6 @@ export function request(url: string, options: Object = {}): Promise<*> {
 
     if (response.status > 299) {
       if([401,403].includes(response.status)){window.location.href ="/login"; return}
-      const error: Object = new ServerError(response.statusText);
       error.status = response.status;
 
       if (contentType && contentType.includes('application/json')) {

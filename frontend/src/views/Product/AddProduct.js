@@ -40,6 +40,7 @@ const AddItem = ({ className, ...rest }) => {
       initialValues={{
         productName: '',
         branchId:  '',
+        kitchenId:  '',
         price: '',
         description: '',
         discount:'',
@@ -61,6 +62,16 @@ const AddItem = ({ className, ...rest }) => {
             return false
           })
         ,
+        kitchenId: Yup.string()
+        .test("kitchenIdtest","Please select a kitchen",function(value){
+          if(kitchens && kitchens.length === 1){
+            return true
+          }else{
+            if(value.length > 10) return true
+          }
+          return false
+        })
+      ,
         price: Yup.number()
           .required('Price is required'),
       })}
@@ -73,6 +84,15 @@ const AddItem = ({ className, ...rest }) => {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
+        }, [])[0];
+        if(kitchens && kitchens.length === 1){
+          values.kitchenId = kitchens && kitchens[0].id;
+        }
+        values.kitchenName = kitchens.reduce(function(kitchenNameArray, kitchen) {
+          if (kitchen.id === values.kitchenId) {
+            kitchenNameArray.push(kitchen.name);
+          }
+          return kitchenNameArray;
         }, [])[0];
         dispatch(addProduct(values));
       }}

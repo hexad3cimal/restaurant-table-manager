@@ -10,6 +10,8 @@ type ProductModel struct {
 	OrgId       string    `db:"org_id" json:"orgId"`
 	BranchId    string    `db:"branch_id" json:"branchId"`
 	BranchName  string    `db:"branch_name" json:"branchName"`
+	KitchenId   string    `db:"kitchen_id" json:"kitchenId"`
+	KitchenName string    `db:"kitchen_name" json:"kitchenName"`
 	Name        string    `db:"name" json:"name"`
 	Quantity    int       `db:"quantity" json:"quantity"`
 	Price       string    `db:"price" json:"price"`
@@ -32,7 +34,7 @@ func (product Product) Add(productModel ProductModel) (returnModel ProductModel,
 	return productModel, err
 }
 
-func (product Product) Get(id string) (productModel ProductModel, err error) {
+func (product Product) GetById(id string) (productModel ProductModel, err error) {
 
 	err = config.GetDB().Where("id=?", id).First(&productModel).Error
 	if err != nil {

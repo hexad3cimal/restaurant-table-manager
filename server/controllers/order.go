@@ -42,13 +42,19 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		return
 	}
 
+	productModel, getProductError := product.GetById(orderForm.ProductId)
+	if getProductError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	orderModel.ID = uuid.NewV4().String()
 	orderModel.ProductName = orderForm.ProductName
 	orderModel.ProductId = orderForm.ProductId
 	orderModel.CreatedAt = time.Now()
 	orderModel.OrgId = tokenModel.OrgId
-	orderModel.KitchenId = orderForm.KitchenId
-	orderModel.KitchenName = orderForm.KitchenName
+	orderModel.KitchenId = productModel.KitchenId
+	orderModel.KitchenName = productModel.KitchenName
 	orderModel.BranchId = table.BranchId
 	orderModel.BranchName = table.BranchName
 	orderModel.TableId = table.ID
@@ -101,6 +107,7 @@ func (ctrl OrderController) GetOrdersOfTable(c *gin.Context) {
 	}
 	tableObject, getTableError := user.GetUserById(tableId)
 	if getTableError != nil {
+		logger.Error("get table error for" + tableId)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -108,7 +115,7 @@ func (ctrl OrderController) GetOrdersOfTable(c *gin.Context) {
 	isUserAssociatedWithBranch := false
 	isManagerOrAdmin := helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tableObject.BranchId)
 	if !isManagerOrAdmin {
-		isUserAssociatedWithBranch = helpers.IsUserReallyAssociatedWithBranch(tokenModel.UserId, tokenModel.OrgId, tableObject.BranchId)
+		isUserAssociatedWithBranch = helpers.IsUserReallyAssociatedWithBranch(tokenModel.UserId, tableObject.BranchId, tokenModel.OrgId)
 	}
 
 	if isManagerOrAdmin || isUserAssociatedWithBranch {

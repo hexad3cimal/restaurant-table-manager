@@ -101,7 +101,7 @@ func (ctrl KitchenController) GetKitchens(c *gin.Context) {
 		}
 	}
 
-	if userRoleName == "manager" {
+	if userRoleName == "manager" || userRoleName == "table" {
 
 		kitchenRole, getKitchenRoleError := role.GetRoleByNameAndOrgId("kitchen", tokenModel.OrgId)
 

@@ -1,5 +1,4 @@
-// import React, { useEffect } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -21,9 +20,8 @@ import {
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import Order from './Order';
-// import { getOrderByTableId, getProducts, initiateOrderAdd } from '../../actions';
+import { getOrderByTableId, getProducts, initiateOrderAdd } from '../../actions';
 
-import { getProducts, initiateOrderAdd } from '../../actions';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -40,9 +38,10 @@ const TableView = ({ className, ...rest }) => {
   const tableState = useSelector(state => state.table);
   const table= tableState && tableState.selectedTable || {}
 
-  // useEffect(()=>{
-  //   dispatch(getOrderByTableId(table.id))
-  // },[dispatch, table])
+  useEffect(()=>{
+    if(table.id)
+      dispatch(getOrderByTableId(table.id))
+  },[dispatch, table && table.id])
   const onClick = () => {
     dispatch(getProducts())
     dispatch(initiateOrderAdd())

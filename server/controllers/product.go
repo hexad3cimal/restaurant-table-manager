@@ -41,6 +41,8 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.OrgId = tokenModel.OrgId
 	productModel.BranchId = productForm.BranchId
 	productModel.BranchName = productForm.BranchName
+	productModel.KitchenId = productForm.KitchenId
+	productModel.KitchenName = productForm.KitchenName
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
 	productModel.Discount = productForm.Discount
