@@ -22,18 +22,26 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		return
 	}
 
-	table, getTableError := table.GetTableById(orderForm.TableId)
-	if getTableError != nil {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
+
+	table, getTableError := table.GetTableById(orderForm.TableId)
+	if getTableError != nil {
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
+	if !helpers.IsUserAllowedToOrder(tokenModel.UserId, table.BranchId, tokenModel.OrgId, tokenModel.RoleId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
 	orderModel.ID = uuid.NewV4().String()
 	orderModel.ProductName = orderForm.ProductName
 	orderModel.ProductId = orderForm.ProductId
@@ -79,14 +87,40 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 func (ctrl OrderController) GetOrdersOfTable(c *gin.Context) {
 
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	tableId, gotValue := c.GetQuery("tableId")
 	if gotValue != true {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
-	orders := order.GetByTableId(tableId)
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": orders})
+	tableObject, getTableError := user.GetUserById(tableId)
+	if getTableError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	isUserAssociatedWithBranch := false
+	isManagerOrAdmin := helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tableObject.BranchId)
+	if !isManagerOrAdmin {
+		isUserAssociatedWithBranch = helpers.IsUserReallyAssociatedWithBranch(tokenModel.UserId, tokenModel.OrgId, tableObject.BranchId)
+	}
+
+	if isManagerOrAdmin || isUserAssociatedWithBranch {
+
+		orders := order.GetByTableId(tableId)
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": orders})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	c.Abort()
+	return
 }
 
 func (ctrl OrderController) GetOrders(c *gin.Context) {
@@ -114,23 +148,10 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 			c.Abort()
 			return
 		}
-	} else {
-
-		currentUser, getCurrentUserError := user.GetUserById(tokenModel.UserId)
-		if getCurrentUserError != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-		products, error = product.GetProductsOfBranch(currentUser.BranchId)
-
-		if error != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-
 	}
+
+	products, error = product.GetProductsOfBranch(tokenModel.BranchId)
+
 	if error == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
 	} else {

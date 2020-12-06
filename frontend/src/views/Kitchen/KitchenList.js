@@ -20,16 +20,16 @@ const useStyles = makeStyles(theme => ({
 
 const KitchenList = () => {
   const classes = useStyles();
-  const tableState = useSelector(state => state.table);
-  const tables = (tableState && tableState.tables) || [];
+  const KitchenState = useSelector(state => state.kitchen);
+  const kitchens = (KitchenState && KitchenState.kitchens) || [];
   return (
     <Page className={classes.root} title="Products">
       <Container maxWidth={false}>
         <Box mt={3}>
           <Grid container spacing={3}>
-            {tables.map(table => (
-              <Grid item key={table.id} lg={4} md={6} xs={12}>
-                <TableCard className={classes.tableCard} table={table} />
+            {kitchens.map(kitchen => (
+              <Grid item key={kitchen.id} lg={4} md={6} xs={12}>
+                <TableCard className={classes.tableCard} table={kitchen} />
               </Grid>
             ))}
           </Grid>

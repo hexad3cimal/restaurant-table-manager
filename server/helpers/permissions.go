@@ -31,6 +31,72 @@ func IsAdmin(userId string, orgId string) (isAdmin bool) {
 
 }
 
+func AdminOrManagerOfTheOrgAndBranch(userId string, orgId string, branchId string) (isAdmin bool) {
+	userObject, getUserError := user.GetUserById(userId)
+	if getUserError != nil || userObject.OrgId != orgId {
+		return false
+	}
+
+	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, orgId)
+
+	if err != nil {
+		return false
+	}
+	if fetchedRole.Name == "admin" && userObject.OrgId == orgId {
+
+		return true
+
+	}
+	if fetchedRole.Name == "manager" && userObject.OrgId == orgId && userObject.BranchId == branchId {
+		return true
+
+	}
+	return false
+
+}
+
+func IsUserReallyAssociatedWithBranch(userId string, branchId string, orgId string) (associated bool) {
+	userObject, getUserError := user.GetUserById(userId)
+	if getUserError != nil || userObject.OrgId != orgId || userObject.BranchId != branchId {
+		return false
+	}
+
+	return true
+
+}
+
+func IsUserAllowedToOrder(userId string, branchId string, orgId string, roleId string) (associated bool) {
+	if AdminOrManagerOfTheOrgAndBranch(userId, branchId, orgId) {
+		return true
+	}
+	fetchedRole, err := role.GetRoleByIdAndOrg(roleId, orgId)
+
+	if err != nil {
+		return false
+	}
+	if fetchedRole.Name == "table" {
+		return true
+	}
+	return false
+
+}
+
+func IsUserAllowedToAddProduct(userId string, branchId string, orgId string, roleId string) (associated bool) {
+	if AdminOrManagerOfTheOrgAndBranch(userId, branchId, orgId) {
+		return true
+	}
+	fetchedRole, err := role.GetRoleByIdAndOrg(roleId, orgId)
+
+	if err != nil {
+		return false
+	}
+	if fetchedRole.Name == "kitchen" {
+		return true
+	}
+	return false
+
+}
+
 func GetRoleName(userId string, orgId string) (roleName string, err error) {
 
 	userObject, getUserError := user.GetUserById(userId)

@@ -29,6 +29,11 @@ func (ctrl TableController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	// tableModel.Active = true
 	// tableModel.ID = uuid.NewV4().String()
 	// tableModel.Name = tableForm.TableName
@@ -62,7 +67,7 @@ func (ctrl TableController) Add(c *gin.Context) {
 		return
 	}
 	userModel.Name = tableForm.TableName
-	userModel.UserName = tableForm.BranchName + "-" + tableForm.TableName
+	userModel.UserName = tableForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
 
 	userModel.Password = hashedPassword
@@ -137,6 +142,12 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	roleName, roleNameGetError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 	if roleNameGetError != nil {
 		logger.Error("Get rolename failed for " + tokenModel.UserId + " " + tokenModel.OrgId + " " + roleNameGetError.Error())
@@ -146,8 +157,14 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 	}
 	var tables []models.UserModel
 	var err error
+	tableRole, getTableRoleError := role.GetRoleByNameAndOrgId("table", tokenModel.OrgId)
+	if getTableRoleError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	if roleName == "admin" {
-		tables, err = user.GetUsersByOrgIdAndRoleId(tokenModel.OrgId, tokenModel.RoleId)
+		tables, err = user.GetUsersByOrgIdAndRoleId(tokenModel.OrgId, tableRole.ID)
 		if err != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
@@ -159,12 +176,7 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 	}
 
 	if roleName == "manager" {
-		tableRole, getTableRoleError := role.GetRoleByNameAndOrgId("table", tokenModel.OrgId)
-		if getTableRoleError != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
+
 		tables, err = user.GetUsersByBranchIdAndRoleId(tokenModel.BranchId, tableRole.ID)
 		if err == nil {
 			c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})

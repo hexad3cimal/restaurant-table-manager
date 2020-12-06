@@ -31,7 +31,14 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 }
 
 func (ctl AuthController) Refresh(c *gin.Context) {
-	oldTokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	tokenId, err := auth.ExtractTokenMetadata(c.Request, false)
+	if err != nil {
+		logger.Error(err)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
+		c.Abort()
+		return
+	}
+	oldTokenModel, getTokenError := token.GetTokenById(tokenId)
 	if getTokenError != nil {
 		logger.Error(getTokenError)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
@@ -64,11 +71,13 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 	tokenModel.ID = tokenDetails.AccessUUID
 	_, tokenAddError := token.Add(tokenModel)
 	if tokenAddError == nil {
+
+		c.Request.Header.Set("access_uuid", tokenId)
 		c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
-		c.JSON(http.StatusOK, gin.H{"message": "success"})
-		c.Abort()
+		c.Next()
 		return
 	}
 	c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid refresh token"})
-
+	c.Abort()
+	return
 }

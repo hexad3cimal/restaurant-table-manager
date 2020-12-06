@@ -56,6 +56,16 @@
     "redux-logger": "^3.0.6"
   },
   "proxy": "http://localhost:8090",
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "eslint . --fix", "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "scripts": {
     "start": "node build-dependencies.js && react-scripts start",
     "build": "react-scripts build",

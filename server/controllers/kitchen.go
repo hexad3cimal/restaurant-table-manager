@@ -15,7 +15,7 @@ import (
 type KitchenController struct{}
 
 func (ctrl KitchenController) Add(c *gin.Context) {
-	var kitchenForm mappers.RegisterForm
+	var kitchenForm mappers.KitchenForm
 
 	if c.ShouldBindJSON(&kitchenForm) != nil {
 		logger.Error("invalid form ")
@@ -27,6 +27,12 @@ func (ctrl KitchenController) Add(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -50,11 +56,10 @@ func (ctrl KitchenController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	userModel.Name = kitchenForm.FullName
+	userModel.Name = kitchenForm.Name
 	userModel.UserName = kitchenForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(kitchenForm.UserName)
 
-	userModel.Email = kitchenForm.Email
 	userModel.Password = hashedPassword
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
 	userModel.BranchId = tokenModel.BranchId
@@ -97,7 +102,16 @@ func (ctrl KitchenController) GetKitchens(c *gin.Context) {
 	}
 
 	if userRoleName == "manager" {
-		kitchens, error = user.GetUsersByBranchIdAndRoleId(tokenModel.BranchId, tokenModel.RoleId)
+
+		kitchenRole, getKitchenRoleError := role.GetRoleByNameAndOrgId("kitchen", tokenModel.OrgId)
+
+		if getKitchenRoleError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+		kitchens, error = user.GetUsersByBranchIdAndRoleId(tokenModel.BranchId, kitchenRole.ID)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

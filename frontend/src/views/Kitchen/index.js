@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
 import { Box, Container, makeStyles } from '@material-ui/core';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { getKitchens, hideAlert } from '../../actions';
 import Page from '../../components/Page';
+import Toast from '../../modules/toast';
+import AddKitchen from './AddKitchen';
 import KitchenList from './KitchenList';
 import Toolbar from './Toolbar';
-import { getKitchens, hideAlert } from '../../actions';
-import AddKitchen from './AddKitchen';
-import Toast from '../../modules/toast';
+
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,

@@ -43,6 +43,7 @@ const AddTable = ({ className, ...rest }) => {
   }, []);
   return (
     <Formik
+    enableReinitialize
       initialValues={{
         name: branchName && `${branchName}-`+'',
         userName: branchName && `${branchName}-`+'',
@@ -96,7 +97,7 @@ const AddTable = ({ className, ...rest }) => {
           {...rest}
         >
           <Card>
-            <CardHeader subheader="Add new table" title="Add table" />
+            <CardHeader subheader="Add new Kitchen" title="Add Kitchen" />
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
@@ -159,7 +160,6 @@ const AddTable = ({ className, ...rest }) => {
                     variant="outlined"
                   >
                       <option key="" value="">
-                        Select a branch
                       </option>
                     {branches.map(branch => (
                       <option key={branch.id} value={branch.id}>

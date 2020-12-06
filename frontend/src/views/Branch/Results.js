@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
-  Avatar,
   Box,
   Card,
-  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +13,12 @@ import {
   TableRow,
   Typography,
   makeStyles,
+  CardContent,
+  TextField,
+  InputAdornment,
+  SvgIcon,
 } from '@material-ui/core';
+import { Search as SearchIcon } from 'react-feather';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -73,6 +75,28 @@ const Results = ({ className, branches, ...rest }) => {
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
+            <Box mt={3}>
+        <Card>
+          <CardContent>
+            <Box maxWidth={500}>
+              <TextField
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SvgIcon fontSize="small" color="action">
+                        <SearchIcon />
+                      </SvgIcon>
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder="Search customer"
+                variant="outlined"
+              />
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
       <PerfectScrollbar>
         <Box minWidth={1050}>
           <Table>

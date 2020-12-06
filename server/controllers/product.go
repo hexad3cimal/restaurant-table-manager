@@ -29,6 +29,12 @@ func (ctrl ProductController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	productModel.ID = uuid.NewV4().String()
 	productModel.Name = productForm.ProductName
 	productModel.CreatedAt = time.Now()
@@ -52,17 +58,36 @@ func (ctrl ProductController) Add(c *gin.Context) {
 func (ctrl ProductController) GetProductsOfBranch(c *gin.Context) {
 
 	branchId, gotValue := c.GetQuery("branchId")
-	if gotValue != true {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
-	products, err := product.GetProductsOfBranch(branchId)
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
-	} else {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+	isUserAssociatedWithBranch := false
+	isManagerOrAdmin := helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, branchId)
+	if !isManagerOrAdmin {
+		isUserAssociatedWithBranch = helpers.IsUserReallyAssociatedWithBranch(tokenModel.UserId, tokenModel.OrgId, branchId)
 	}
+
+	if isManagerOrAdmin || isUserAssociatedWithBranch {
+		if gotValue != true {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		products, err := product.GetProductsOfBranch(branchId)
+		if err == nil {
+			c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
+		c.Abort()
+		return
+
+	}
+	c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
 
 }
 
