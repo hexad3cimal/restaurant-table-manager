@@ -4,8 +4,8 @@
  */
 
 const config = {
-  name: 'react grommet saga',
-  description: 'react grommet saga',
+  name: 'Table manager',
+  description: 'Restaurant table manager',
 };
 
 export default config;

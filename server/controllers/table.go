@@ -70,6 +70,7 @@ func (ctrl TableController) Add(c *gin.Context) {
 	userModel.UserName = tableForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
 
+	userModel.LoginCode = uuid.NewV4().String()
 	userModel.Password = hashedPassword
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
 	userModel.ID = uuid.NewV4().String()
@@ -80,11 +81,6 @@ func (ctrl TableController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	// } else {
-	// 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-	// 	c.Abort()
-	// 	return
-	// }
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 
 }
@@ -184,5 +180,23 @@ func (ctrl TableController) GetTables(c *gin.Context) {
 			return
 		}
 	}
+	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+}
+
+func (ctrl TableController) GetTable(c *gin.Context) {
+
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 }

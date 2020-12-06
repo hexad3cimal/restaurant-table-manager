@@ -19,6 +19,7 @@ type UserModel struct {
 	RoleId             string    `db:"role_id" json:"roleId"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
+	LoginCode          string    `db:"login_code" json:"-"`
 	Active             bool      `db:"active" json:"-"`
 	Locked             bool      `db:"locked" json:"-"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
@@ -90,6 +91,15 @@ func (u User) GetUserByUsername(userName string) (user UserModel, err error) {
 
 func (u User) GetUserByEmail(email string) (user UserModel, err error) {
 	err = config.GetDB().Where("email=?", email).First(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
+
+	return user, nil
+}
+
+func (u User) GetUserByLoginCode(code string) (user UserModel, err error) {
+	err = config.GetDB().Where("login_code=?", code).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}

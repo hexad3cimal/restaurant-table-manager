@@ -9,6 +9,39 @@ import (
 type AuthController struct{}
 
 func (ctl AuthController) IstokenValid(c *gin.Context) {
+
+	loginCode, gotCode := c.GetQuery("loginCode")
+	if gotCode {
+
+		loggedInUser, getUserError := user.GetUserByLoginCode(loginCode)
+		if getUserError != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid login details"})
+			c.Abort()
+			return
+		}
+		tokenDetails, tokenError := auth.CreateToken()
+		if tokenError == nil {
+
+			tokenModel.BranchId = loggedInUser.BranchId
+			tokenModel.Email = loggedInUser.Email
+			tokenModel.UserId = loggedInUser.ID
+			tokenModel.OrgId = loggedInUser.OrgId
+			tokenModel.RoleId = loggedInUser.RoleId
+			tokenModel.AccessToken = tokenDetails.AccessToken
+			tokenModel.RefreshToken = tokenDetails.RefreshToken
+			tokenModel.ID = tokenDetails.AccessUUID
+			_, tokenAddError := token.Add(tokenModel)
+			if tokenAddError == nil {
+				c.Request.Header.Set("access_uuid", tokenModel.ID)
+				c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
+				c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
+				c.Next()
+				return
+			}
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid login details"})
+
+		}
+	}
 	err := auth.TokenValid(c.Request, false)
 	if err != nil {
 		logger.Error(err)
