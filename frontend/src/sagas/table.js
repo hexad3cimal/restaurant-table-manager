@@ -44,15 +44,19 @@ export function* addTable({ payload }) {
 /**
  * Get table details by id
  */
-export function* getTableById({ id }) {
+export function* getTableById({ payload }) {
   try {
-    const table = yield request(`${window.restAppConfig.api}table?id=${id}`, {
+
+    console.log(payload)
+    const url = payload.code ? `${window.restAppConfig.api}table?loginCode=${payload.code}` :
+    `${window.restAppConfig.api}table?id=${payload.id}`
+    const table = yield request(url, {
       method: 'GET',
     });
 
     yield put({
       type: ActionTypes.TABLE_GET_SUCCESS,
-      payload: table,
+      payload: table.data,
     });
   } catch (err) {
     /* istanbul ignore next */

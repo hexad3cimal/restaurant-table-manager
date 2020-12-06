@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Branch = () => {
+const TableView = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
@@ -52,4 +52,4 @@ const Branch = () => {
   );
 };
 
-export default Branch;
+export default TableView;

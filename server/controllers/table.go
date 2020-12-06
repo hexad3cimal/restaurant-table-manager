@@ -191,9 +191,20 @@ func (ctrl TableController) GetTable(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	loginCode, gotCode := c.GetQuery("loginCode")
+	var tableModel models.UserModel
+	var err error
+	if gotCode {
 
-	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		tableModel, err = user.GetUserByLoginCode(loginCode)
+	} else {
+		tableId, gotId := c.GetQuery("loginCode")
+		if gotId {
+			tableModel, err = user.GetUserById(tableId)
+		}
+	}
+	if err == nil && tableModel.OrgId == tokenModel.OrgId {
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tableModel})
 		c.Abort()
 		return
 	}

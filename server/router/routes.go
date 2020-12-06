@@ -82,6 +82,7 @@ func InitRouter() {
 		v1.GET("/table/org", AuthMiddleware(), isAdminMiddleware(), table.GetTablesOfOrg)
 		// v1.POST("/table/branch", AuthMiddleware(), table.GetTablesOfBranch)
 		v1.GET("/tables", AuthMiddleware(), table.GetTables)
+		v1.GET("/table", AuthMiddleware(), table.GetTable)
 
 		//branch related routes
 		branch := new(controllers.BranchController)

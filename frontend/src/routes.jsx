@@ -11,6 +11,8 @@ const NotFoundView = lazy(() => import('./views/errors/NotFoundView'));
 const BranchView = lazy(() => import('./views/Branch'));
 const TableView = lazy(() => import('./views/Table'));
 const TableDetailedView = lazy(() => import('./views/Table/Table'));
+const TableDashboard = lazy(() => import('./views/TableView'));
+
 const KitchenView = lazy(() => import('./views/Kitchen'));
 
 const ProductView = lazy(() => import('./views/Product'));
@@ -40,6 +42,8 @@ const routes = isLoggedIn => [
     children: [
       { path: 'login', element: <LoginView /> },
       { path: 'register', element: <RegisterView /> },
+      { path: 'table/:code', element: <TableDashboard /> },
+
       { path: '404', element: <NotFoundView /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],

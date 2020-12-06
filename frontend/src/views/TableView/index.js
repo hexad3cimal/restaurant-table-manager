@@ -6,6 +6,7 @@ import Page from '../../components/Page';
 import { getTableById, hideAlert } from '../../actions';
 import Toast from '../../modules/toast';
 import TableView from './Table';
+import { useParams } from 'react-router-dom';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -15,18 +16,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Branch = () => {
+const TableDashBoard = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const appState = useSelector(state => state.app);
-
+  const {code} = useParams();
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
   }
 
   useEffect(() => {
-    dispatch(getTableById());
+    dispatch(getTableById({code}));
   }, []);
 
   return (
@@ -38,4 +39,4 @@ const Branch = () => {
   );
 };
 
-export default Branch;
+export default TableDashBoard;

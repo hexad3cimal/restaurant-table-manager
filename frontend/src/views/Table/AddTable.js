@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import {
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import { request } from '../../modules/client';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -30,21 +31,45 @@ const AddTable = ({ className, ...rest }) => {
 
   const branches = (branchState && branchState.branches) || [];
 
+  const [branchName, setBranchName] = useState("");
+
+  useEffect(() => {
+    if(branches.length ===1)setBranchName(branches[0].name)
+  }, [branches]);
+
+
   useEffect(() => {
     dispatch(getBranches());
   }, []);
   return (
     <Formik
       initialValues={{
-        tableName: '',
-        branchId: '',
-        branchName: '',
+        tableName: branchName && `${branchName}-`+'',
+        userName: branchName && `${branchName}-`+'',
+        branchId: branchName && branches[0].id,
+        branchName: branchName && branchName || '',
         password: ''
       }}
       validationSchema={Yup.object().shape({
         tableName: Yup.string()
           .max(255)
           .required('Tablename  is required'),
+          userName: Yup.string()
+          .test('checkUsername', 'Username already taken', function(username) {
+            return new Promise((resolve, reject) => {
+              request(`${window.restAppConfig.api}/user/validate?username=${username}`)
+                .then(response => {
+                  if (response.data === true) resolve(true);
+                  else {
+                    resolve(false);
+                  }
+                })
+                .catch(error => {
+                  resolve(false);
+                });
+            });
+          })
+          .required('username is required'), 
         password: Yup.string()
           .max(255)
           .required('Password is required'),
@@ -75,7 +100,7 @@ const AddTable = ({ className, ...rest }) => {
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.tableName && errors.tableName)}
                     fullWidth
@@ -89,7 +114,21 @@ const AddTable = ({ className, ...rest }) => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.userName && errors.userName)}
+                    fullWidth
+                    helperText={touched.userName && errors.userName}
+                    label="Username"
+                    margin="normal"
+                    name="userName"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.userName}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.password && errors.password)}
                     fullWidth
@@ -104,7 +143,7 @@ const AddTable = ({ className, ...rest }) => {
                     type="password"
                   />
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     label="Select Branch"
@@ -118,8 +157,7 @@ const AddTable = ({ className, ...rest }) => {
                     value={values.branchId}
                     variant="outlined"
                   >
-                      <option key="" value="">
-                        Select a branch
+                    <option  value="">
                       </option>
                     {branches.map(branch => (
                       <option key={branch.id} value={branch.id}>
