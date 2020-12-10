@@ -14,6 +14,7 @@ import {
   Grid,
   TextField,
   makeStyles,
+  ButtonBase,
 } from '@material-ui/core';
 
 import * as Yup from 'yup';
@@ -31,6 +32,12 @@ const AddItem = ({ className, ...rest }) => {
 
   const branches = (branchState && branchState.branches) || [];
   const kitchens = (kitchenState && kitchenState.kitchens) || [];
+  const inputEl = React.useRef(null);
+  const onButtonClick = () => {
+    console.log("inside")
+    // `current` points to the mounted file input element
+    inputEl.current.click();
+  };
 
   useEffect(() => {
     dispatch(getBranches());
@@ -43,8 +50,8 @@ const AddItem = ({ className, ...rest }) => {
         kitchenId:  '',
         price: '',
         description: '',
-        discount:'',
-        image:'',
+        discount:0,
+        image:  inputEl.current && inputEl.current.target && inputEl.current.target.files && inputEl.current.target.files[0],
         quantity:0
       }}
       validationSchema={Yup.object().shape({
@@ -57,7 +64,7 @@ const AddItem = ({ className, ...rest }) => {
             if(branches && branches.length === 1){
               return true
             }else{
-              if(value.length > 10) return true
+              if(value && value.length > 10) return true
             }
             return false
           })
@@ -67,7 +74,7 @@ const AddItem = ({ className, ...rest }) => {
           if(kitchens && kitchens.length === 1){
             return true
           }else{
-            if(value.length > 10) return true
+            if(value && value.length > 10) return true
           }
           return false
         })
@@ -94,7 +101,12 @@ const AddItem = ({ className, ...rest }) => {
           }
           return kitchenNameArray;
         }, [])[0];
-        dispatch(addProduct(values));
+
+        const form = new FormData()
+        for(let value in values){
+            form.append(value, values[value])
+        }
+        dispatch(addProduct(form));
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values}) => (
@@ -173,6 +185,7 @@ const AddItem = ({ className, ...rest }) => {
                   </TextField>
                 </Grid>
                 <Grid item md={4} xs={12}>
+
                   <TextField
                     error={Boolean(touched.price && errors.price)}
                     fullWidth
@@ -217,6 +230,20 @@ const AddItem = ({ className, ...rest }) => {
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
+                <input
+        accept="image/*"
+        className={classes.input}
+        id="outlined-button-file"
+        multiple
+        type="file"
+        ref={inputEl}
+      />
+      <label htmlFor="outlined-button-file">
+
+        <ButtonBase
+        onClick={()=>onButtonClick()}
+        />
+      </label>
                   <TextField
                     error={Boolean(touched.description && errors.description)}
                     fullWidth

@@ -15,6 +15,9 @@ export function* add({payload}) {
   try {
     yield request(`${window.restAppConfig.api}product`, {
       method: 'POST',
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
       payload,
     });
     yield all([

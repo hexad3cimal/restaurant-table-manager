@@ -16,8 +16,8 @@ type ProductController struct{}
 func (ctrl ProductController) Add(c *gin.Context) {
 	var productForm mappers.ProductForm
 
-	if c.ShouldBindJSON(&productForm) != nil {
-		logger.Error("inavlid product form ", c.ShouldBindJSON(&productForm).Error())
+	if c.ShouldBind(&productForm) != nil {
+		logger.Error("inavlid product form ", c.ShouldBind(&productForm).Error())
 
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
 		c.Abort()
@@ -47,7 +47,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.Price = productForm.Price
 	productModel.Discount = productForm.Discount
 	productModel.Description = productForm.Description
-	productModel.Image = productForm.Image
+	// productModel.Image = productForm.Image
 
 	_, err := product.Add(productModel)
 	if err == nil {

@@ -49,9 +49,14 @@ export function request(url, options = {}){
     method: config.method,
   };
 
-  if (params.method !== 'GET') {
+  if(headers['Content-Type'] === 'multipart/form-data'){
+    params.body =  config.payload;
+    delete headers['Content-Type']
+  }
+  else if (params.method !== 'GET') {
     params.body = JSON.stringify(config.payload);
   }
+ 
 
   return fetch(url, params).then(async response => {
     const contentType = response.headers.get('content-type');

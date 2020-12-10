@@ -14,7 +14,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Search as SearchIcon } from 'react-feather';
-import { initiateProductAdd } from '../../actions';
+import { getKitchens, initiateProductAdd } from '../../actions';
 const useStyles = makeStyles(theme => ({
   root: {},
   importButton: {
@@ -34,7 +34,7 @@ const Toolbar = ({ className, ...rest }) => {
       <Box display="flex" justifyContent="flex-end">
         <Button className={classes.importButton}>Import</Button>
         <Button className={classes.exportButton}>Export</Button>
-        <Button onClick={() => dispatch(initiateProductAdd())} color="primary" variant="contained">
+        <Button onClick={() => {dispatch(initiateProductAdd()); dispatch(getKitchens())}} color="primary" variant="contained">
           Add Product
         </Button>
       </Box>

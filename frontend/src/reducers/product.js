@@ -68,14 +68,19 @@ export default {
       },
       [ActionTypes.PRODUCTS_GET]: draft => {
         draft.status = STATUS.RUNNING;
+        draft.add =false;
         draft.new = false;
       },
       [ActionTypes.PRODUCTS_GET_SUCCESS]: (draft, { payload }) => {
         draft.status = STATUS.READY;
         draft.products = payload;
+        draft.add =false;
+
       },
       [ActionTypes.PRODUCTS_GET_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;
+        draft.add =false;
+
         draft.error = payload;
         draft.products = [];
       }

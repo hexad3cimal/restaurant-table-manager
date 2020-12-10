@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-const AddTable = ({ className, ...rest }) => {
+const AddKitchen = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const branchState = useSelector(state => state.branch);
@@ -182,8 +182,8 @@ const AddTable = ({ className, ...rest }) => {
   );
 };
 
-AddTable.propTypes = {
+AddKitchen.propTypes = {
   className: PropTypes.string,
 };
 
-export default AddTable;
+export default AddKitchen;

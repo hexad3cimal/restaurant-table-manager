@@ -82,7 +82,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		for _, user := range users {
 			helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, user.ID)
 		}
-		helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, orderForm.KitchenId)
+		helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, orderModel.KitchenId)
 
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
