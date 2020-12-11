@@ -526,3 +526,9 @@
 {"function":"Refresh","level":"error","line":"69","msg":"token contains an invalid number of segments","time":"2020-12-10T23:06:01+05:30"}
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-10T23:06:38+05:30"}
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-10T23:06:38+05:30"}
+{"function":"Add","level":"error","line":"40","msg":"image upload failedhttp: no such file","time":"2020-12-11T21:18:39+05:30"}
+{"function":"Add","level":"error","line":"40","msg":"image upload failedopen ../images/background.png: no such file or directory","time":"2020-12-11T21:20:18+05:30"}
+{"function":"IstokenValid","level":"error","line":"47","msg":"token contains an invalid number of segments","time":"2020-12-11T21:23:02+05:30"}
+{"function":"Refresh","level":"error","line":"69","msg":"token contains an invalid number of segments","time":"2020-12-11T21:23:02+05:30"}
+{"function":"IstokenValid","level":"error","line":"47","msg":"token contains an invalid number of segments","time":"2020-12-11T21:23:03+05:30"}
+{"function":"Refresh","level":"error","line":"69","msg":"token contains an invalid number of segments","time":"2020-12-11T21:23:03+05:30"}

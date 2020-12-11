@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { getBranches, addProduct } from '../../actions';
+import React, { useEffect, useState } from "react";
+import clsx from "clsx";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import { getBranches, addProduct } from "../../actions";
 
 import {
   Box,
@@ -15,10 +15,10 @@ import {
   TextField,
   makeStyles,
   ButtonBase,
-} from '@material-ui/core';
+} from "@material-ui/core";
 
-import * as Yup from 'yup';
-import { Formik } from 'formik';
+import * as Yup from "yup";
+import { Formik } from "formik";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -27,89 +27,106 @@ const useStyles = makeStyles(() => ({
 const AddItem = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const branchState = useSelector(state => state.branch);
-  const kitchenState = useSelector(state => state.kitchen);
-
+  const branchState = useSelector((state) => state.branch);
+  const kitchenState = useSelector((state) => state.kitchen);
+  const [image, setImage] = useState(null);
   const branches = (branchState && branchState.branches) || [];
   const kitchens = (kitchenState && kitchenState.kitchens) || [];
   const inputEl = React.useRef(null);
   const onButtonClick = () => {
-    console.log("inside")
-    // `current` points to the mounted file input element
     inputEl.current.click();
   };
 
+  const fileChange = (e) => {
+    setImage(e.target.files[0]);
+  };
   useEffect(() => {
     dispatch(getBranches());
   }, []);
   return (
     <Formik
       initialValues={{
-        productName: '',
-        branchId:  '',
-        kitchenId:  '',
-        price: '',
-        description: '',
-        discount:0,
-        image:  inputEl.current && inputEl.current.target && inputEl.current.target.files && inputEl.current.target.files[0],
-        quantity:0
+        productName: "",
+        branchId: "",
+        kitchenId: "",
+        price: "",
+        description: "",
+        discount: 0,
+        file: null,
+        quantity: 0,
       }}
       validationSchema={Yup.object().shape({
         productName: Yup.string()
           .max(255)
-          .required('Product name  is required'),
+          .required("Product name  is required"),
 
-        branchId: Yup.string()
-          .test("branchIdtest","Please select a branch",function(value){
-            if(branches && branches.length === 1){
-              return true
-            }else{
-              if(value && value.length > 10) return true
+        branchId: Yup.string().test(
+          "branchIdtest",
+          "Please select a branch",
+          function (value) {
+            if (branches && branches.length === 1) {
+              return true;
+            } else {
+              if (value && value.length > 10) return true;
             }
-            return false
-          })
-        ,
-        kitchenId: Yup.string()
-        .test("kitchenIdtest","Please select a kitchen",function(value){
-          if(kitchens && kitchens.length === 1){
-            return true
-          }else{
-            if(value && value.length > 10) return true
+            return false;
           }
-          return false
-        })
-      ,
-        price: Yup.number()
-          .required('Price is required'),
+        ),
+        kitchenId: Yup.string().test(
+          "kitchenIdtest",
+          "Please select a kitchen",
+          function (value) {
+            if (kitchens && kitchens.length === 1) {
+              return true;
+            } else {
+              if (value && value.length > 10) return true;
+            }
+            return false;
+          }
+        ),
+        price: Yup.number().required("Price is required"),
       })}
-      onSubmit={values => {
-        if(branches && branches.length === 1){
+      onSubmit={(values) => {
+        if (branches && branches.length === 1) {
           values.branchId = branches && branches[0].id;
         }
-        values.branchName = branches.reduce(function(branchNameArray, branch) {
+        values.branchName = branches.reduce(function (branchNameArray, branch) {
           if (branch.id === values.branchId) {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
         }, [])[0];
-        if(kitchens && kitchens.length === 1){
+        if (kitchens && kitchens.length === 1) {
           values.kitchenId = kitchens && kitchens[0].id;
         }
-        values.kitchenName = kitchens.reduce(function(kitchenNameArray, kitchen) {
+        values.kitchenName = kitchens.reduce(function (
+          kitchenNameArray,
+          kitchen
+        ) {
           if (kitchen.id === values.kitchenId) {
             kitchenNameArray.push(kitchen.name);
           }
           return kitchenNameArray;
-        }, [])[0];
+        },
+        [])[0];
 
-        const form = new FormData()
-        for(let value in values){
-            form.append(value, values[value])
+        values.file= image;
+        const form = new FormData();
+        for (let value in values) {
+          form.append(value, values[value]);
         }
         dispatch(addProduct(form));
       }}
     >
-      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values}) => (
+      {({
+        errors,
+        handleBlur,
+        handleChange,
+        handleSubmit,
+        isSubmitting,
+        touched,
+        values,
+      }) => (
         <form
           onSubmit={handleSubmit}
           autoComplete="off"
@@ -148,12 +165,11 @@ const AddItem = ({ className, ...rest }) => {
                     select
                     SelectProps={{ native: true }}
                     value={values.branchId}
-                    disabled={(branches && branches.length ===1)}
+                    disabled={branches && branches.length === 1}
                     variant="outlined"
                   >
-                     <option key="" value="">
-                      </option>
-                    {branches.map(branch => (
+                    <option key="" value=""></option>
+                    {branches.map((branch) => (
                       <option key={branch.id} value={branch.id}>
                         {branch.name}
                       </option>
@@ -172,12 +188,11 @@ const AddItem = ({ className, ...rest }) => {
                     select
                     SelectProps={{ native: true }}
                     value={values.kitchenId}
-                    disabled={(kitchens && kitchens.length ===1)}
+                    disabled={kitchens && kitchens.length === 1}
                     variant="outlined"
                   >
-                     <option key="" value="">
-                      </option>
-                    {kitchens.map(kitchen => (
+                    <option key="" value=""></option>
+                    {kitchens.map((kitchen) => (
                       <option key={kitchen.id} value={kitchen.id}>
                         {kitchen.name}
                       </option>
@@ -185,7 +200,6 @@ const AddItem = ({ className, ...rest }) => {
                   </TextField>
                 </Grid>
                 <Grid item md={4} xs={12}>
-
                   <TextField
                     error={Boolean(touched.price && errors.price)}
                     fullWidth
@@ -230,20 +244,18 @@ const AddItem = ({ className, ...rest }) => {
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
-                <input
-        accept="image/*"
-        className={classes.input}
-        id="outlined-button-file"
-        multiple
-        type="file"
-        ref={inputEl}
-      />
-      <label htmlFor="outlined-button-file">
-
-        <ButtonBase
-        onClick={()=>onButtonClick()}
-        />
-      </label>
+                  <input
+                    accept="image/*"
+                    className={classes.input}
+                    id="outlined-button-file"
+                    multiple
+                    type="file"
+                    ref={inputEl}
+                    onChange={fileChange}
+                  />
+                  <label htmlFor="outlined-button-file">
+                    <ButtonBase onClick={() => onButtonClick()} />
+                  </label>
                   <TextField
                     error={Boolean(touched.description && errors.description)}
                     fullWidth
@@ -257,7 +269,6 @@ const AddItem = ({ className, ...rest }) => {
                     variant="outlined"
                   />
                 </Grid>
-               
               </Grid>
             </CardContent>
             <Divider />

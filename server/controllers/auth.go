@@ -33,7 +33,7 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 			_, tokenAddError := token.Add(tokenModel)
 			if tokenAddError == nil {
 				c.Request.Header.Set("access_uuid", tokenModel.ID)
-				c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
+				c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 				c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
 				c.Next()
 				return

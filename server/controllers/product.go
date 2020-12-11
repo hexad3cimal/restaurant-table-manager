@@ -35,6 +35,13 @@ func (ctrl ProductController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	imageName, imageUploadError := helpers.SaveFile(c.Request, "/home/hexad3cimal/photos/")
+	if imageUploadError != nil {
+		logger.Error("image upload failed" + imageUploadError.Error())
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	productModel.ID = uuid.NewV4().String()
 	productModel.Name = productForm.ProductName
 	productModel.CreatedAt = time.Now()
@@ -47,7 +54,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.Price = productForm.Price
 	productModel.Discount = productForm.Discount
 	productModel.Description = productForm.Description
-	// productModel.Image = productForm.Image
+	productModel.Image = imageName
 
 	_, err := product.Add(productModel)
 	if err == nil {

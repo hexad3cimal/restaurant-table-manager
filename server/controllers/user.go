@@ -42,7 +42,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		tokenModel.ID = tokenDetails.AccessUUID
 		_, tokenAddError := token.Add(tokenModel)
 		if tokenAddError == nil {
-			c.SetCookie("token", tokenDetails.AccessToken, 300, "/", "localhost", false, true)
+			c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
 			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
 			c.Abort()
