@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
   makeStyles,
+  Grid,
 } from '@material-ui/core';
 import Page from '../../components/Page';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +25,20 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(3),
     paddingTop: theme.spacing(3),
   },
+  box:{
+    display: 'flex'
+  },
+  homeBox: {
+    height: '100%',
+    backgroundImage: `url('/images/bg.png')`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'contain',
+    margin: theme.spacing(6)
+  },
+  loginBox: {
+    height: '100%',
+    marginTop: theme.spacing(10)
+  }
 }));
 
 const LoginView = () => {
@@ -50,8 +65,11 @@ const LoginView = () => {
   }
   return (
     <Page className={classes.root} title="Login">
-      <Box display="flex" flexDirection="column" height="100%" justifyContent="center">
-        <Container maxWidth="sm">
+      <Box className={classes.box}>
+        <Container className={classes.box} flexDirection="row">
+        <Grid item md={12} xs={0} className={classes.homeBox}>
+        </Grid>
+        <Grid className={classes.loginBox} item md={12} xs={12}>
           <Formik
             initialValues={{
               userName: 'username',
@@ -79,6 +97,7 @@ const LoginView = () => {
               touched,
               values,
             }) => (
+
               <form onSubmit={handleSubmit}>
                 <Box mb={3}>
                   <Typography color="textPrimary" variant="h2">
@@ -134,6 +153,7 @@ const LoginView = () => {
               </form>
             )}
           </Formik>
+        </Grid>
         </Container>
       </Box>
     </Page>

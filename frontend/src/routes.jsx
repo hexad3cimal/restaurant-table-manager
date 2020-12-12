@@ -40,6 +40,7 @@ const routes = isLoggedIn => [
     path: '/',
     element: <MainLayout />,
     children: [
+      { path: '/', element: <Navigate to="/login" /> },
       { path: 'login', element: <LoginView /> },
       { path: 'register', element: <RegisterView /> },
       { path: 'table/:code', element: <TableDashboard /> },
