@@ -47,7 +47,6 @@ export function* addTable({ payload }) {
 export function* getTableById({ payload }) {
   try {
 
-    console.log(payload)
     const url = payload.code ? `${window.restAppConfig.api}table?loginCode=${payload.code}` :
     `${window.restAppConfig.api}table?id=${payload.id}`
     const table = yield request(url, {

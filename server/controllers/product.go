@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"table-booking/config"
 	"table-booking/helpers"
 	"table-booking/mappers"
 	"table-booking/models"
@@ -35,7 +36,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	imageName, imageUploadError := helpers.SaveFile(c.Request, "/home/hexad3cimal/photos/")
+	imageName, imageUploadError := helpers.SaveFile(c.Request, config.GetConfig().Uploads.Base+config.GetConfig().Uploads.Products)
 	if imageUploadError != nil {
 		logger.Error("image upload failed" + imageUploadError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -54,7 +55,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.Price = productForm.Price
 	productModel.Discount = productForm.Discount
 	productModel.Description = productForm.Description
-	productModel.Image = imageName
+	productModel.Image = config.GetConfig().Uploads.Products + imageName
 
 	_, err := product.Add(productModel)
 	if err == nil {

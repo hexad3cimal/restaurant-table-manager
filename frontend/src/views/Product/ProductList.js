@@ -13,6 +13,7 @@ import {
   TableRow,
   Typography,
   makeStyles,
+  Avatar,
 } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -107,11 +108,10 @@ const ProductList = ({ className, products, ...rest }) => {
                   </TableCell> */}
                   <TableCell>
                     <Box alignItems="center" display="flex">
-                      {/* <Avatar className={classes.avatar} src={customer.avatarUrl}>
-                        {getInitials(customer.name)}
-                      </Avatar> */}
+                      <Avatar className={classes.avatar} src={product.image}>
+                      </Avatar>
                       <Typography color="textPrimary" variant="body1">
-                        {product.productName}
+                        {product.name}
                       </Typography>
                     </Box>
                   </TableCell>

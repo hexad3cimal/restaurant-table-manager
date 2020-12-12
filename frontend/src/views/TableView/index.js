@@ -27,8 +27,10 @@ const TableDashBoard = () => {
   }
 
   useEffect(() => {
-    dispatch(getTableById({code}));
-  }, []);
+    if(code){
+      dispatch(getTableById({code}));
+    }
+  }, [code]);
 
   return (
     <Page className={classes.root} title="Tables">

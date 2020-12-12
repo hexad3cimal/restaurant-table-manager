@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 )
 
 func SaveFile(r *http.Request, folder string) (string, error) {
@@ -15,14 +17,14 @@ func SaveFile(r *http.Request, folder string) (string, error) {
 	}
 	defer file.Close()
 
-	f, err := os.OpenFile(folder+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	fileName := strconv.FormatInt(time.Now().Unix(), 10) + handler.Filename
+	f, err := os.OpenFile(folder+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 
 	if err != nil {
 		return "", err
 	}
 
-	// Copy the file to the destination path
 	io.Copy(f, file)
 
-	return handler.Filename, nil
+	return fileName, nil
 }

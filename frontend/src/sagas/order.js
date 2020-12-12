@@ -85,7 +85,6 @@ export function* getByTableId({ payload }) {
     });
   } catch (err) {
     /* istanbul ignore next */
-    console.log(err)
     yield all([
       put({
         type: ActionTypes.ORDER_GET_BY_TABLE_ID_FAILURE,

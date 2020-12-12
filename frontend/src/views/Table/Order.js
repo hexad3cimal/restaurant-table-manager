@@ -48,7 +48,7 @@ const Order = ({ className, table, ...rest }) => {
           onSubmit={(values, formik) => {
             values.productName = products.reduce(function(productNameArray, product) {
               if (product.id === values.productId) {
-                productNameArray.push(product.productName);
+                productNameArray.push(product.name);
               }
               return productNameArray;
             }, [])[0]
@@ -90,7 +90,7 @@ const Order = ({ className, table, ...rest }) => {
                       </option>
                     {products.map(product => (
                       <option key={product.id} value={product.id}>
-                        {product.productName}
+                        {product.name}
                       </option>
                     ))}
                   </TextField>

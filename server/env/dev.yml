@@ -6,3 +6,6 @@ db:
     username: 'postgres'
     password: ''
 secret: 123e4567#e89b&12d3*a4562426614174000
+uploads:
+    base: /home/hexad3cimal/restaurant-table-manager/frontend/public
+    products: /images/products/

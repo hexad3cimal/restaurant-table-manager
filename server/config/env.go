@@ -15,10 +15,16 @@ type Db struct {
 	UserName string
 	Password string
 }
+
+type Uploads struct {
+	Base     string
+	Products string
+}
 type Configuration struct {
-	Port   string
-	Db     Db
-	Secret string
+	Port    string
+	Db      Db
+	Secret  string
+	Uploads Uploads
 }
 
 func InitConfig() {

@@ -38,7 +38,8 @@ const TableView = ({ className, ...rest }) => {
   const table= tableState && tableState.selectedTable || {}
 
   useEffect(()=>{
-    dispatch(getOrderByTableId(table.id))
+    if(table.id)
+      dispatch(getOrderByTableId(table.id))
   },[dispatch, table])
   const onClick = () => {
     dispatch(getProducts())
