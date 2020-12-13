@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import Order from './Order';
-import { getOrderByTableId, getProducts, initiateOrderAdd } from '../../actions';
+import { getOrderByTableId, getProducts, getTopProductsOfBranch, initiateOrderAdd } from '../../actions';
 
 
 const useStyles = makeStyles(() => ({
@@ -39,8 +39,11 @@ const TableView = ({ className, ...rest }) => {
   const table= tableState && tableState.selectedTable || {}
 
   useEffect(()=>{
-    if(table.id)
+    if(table.id){
       dispatch(getOrderByTableId(table.id))
+      dispatch(getTopProductsOfBranch())
+
+    }
   },[dispatch, table && table.id])
   const onClick = () => {
     dispatch(getProducts())

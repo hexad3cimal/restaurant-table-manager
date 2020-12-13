@@ -15,6 +15,8 @@ import {
   TextField,
   makeStyles,
   ButtonBase,
+  Checkbox,
+  FormControlLabel,
 } from "@material-ui/core";
 
 import * as Yup from "yup";
@@ -53,6 +55,7 @@ const AddItem = ({ className, ...rest }) => {
         description: "",
         discount: 0,
         file: null,
+        highlight: false,
         quantity: 0,
       }}
       validationSchema={Yup.object().shape({
@@ -199,7 +202,7 @@ const AddItem = ({ className, ...rest }) => {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={3} xs={12}>
                   <TextField
                     error={Boolean(touched.price && errors.price)}
                     fullWidth
@@ -213,7 +216,7 @@ const AddItem = ({ className, ...rest }) => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={3} xs={12}>
                   <TextField
                     error={Boolean(touched.discount && errors.discount)}
                     fullWidth
@@ -228,7 +231,7 @@ const AddItem = ({ className, ...rest }) => {
                     type="number"
                   />
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={3} xs={12}>
                   <TextField
                     error={Boolean(touched.quantity && errors.quantity)}
                     fullWidth
@@ -243,6 +246,13 @@ const AddItem = ({ className, ...rest }) => {
                     type="number"
                   />
                 </Grid>
+                <Grid item md={3} xs={12}>
+                
+                <FormControlLabel  control={<Checkbox checked={values.highlight} name="highlight" onChange={handleChange} />}
+        label="Highlight"
+      />
+                </Grid>
+
                 <Grid item md={6} xs={12}>
                   <input
                     accept="image/*"

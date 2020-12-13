@@ -24,19 +24,23 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("Get tokenmodel failed " + getTokenError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
 
-	table, getTableError := table.GetTableById(orderForm.TableId)
+	table, getTableError := user.GetUserById(orderForm.TableId)
 	if getTableError != nil {
+		logger.Error("Get tokenmodel failed " + getTableError.Error())
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
 
 	if !helpers.IsUserAllowedToOrder(tokenModel.UserId, table.BranchId, tokenModel.OrgId, tokenModel.RoleId) {
+		logger.Error("user not allowed for ordering " + tokenModel.UserId)
+
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -44,6 +48,8 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 	productModel, getProductError := product.GetById(orderForm.ProductId)
 	if getProductError != nil {
+		logger.Error("Get productModel failed " + getProductError.Error())
+
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return

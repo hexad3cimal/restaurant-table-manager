@@ -94,6 +94,7 @@ func InitRouter() {
 		v1.POST("/product", AuthMiddleware(), product.Add)
 		v1.GET("/products", AuthMiddleware(), product.GetProducts)
 		v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
+		v1.GET("/product/top", AuthMiddleware(), product.GetTopProducts)
 
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)

@@ -99,6 +99,33 @@ export function* getBranches() {
   }
 }
 
+export function* getTopProducts() {
+  try {
+    const branchProducts = yield request(`${window.restAppConfig.api}product/top`, {
+      method: 'GET',
+    });
+
+    yield all([
+      put({
+        type: ActionTypes.BRANCH_GET_TOP_PRODUCTS_SUCCESS,
+        payload: branchProducts && branchProducts.data,
+      }),
+    ]);
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.BRANCH_GET_TOP_PRODUCTS_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: 'Error while gettting branch Products, please retry',
+      }),
+    ]);
+  }
+}
+
 /**
  * Branch Sagas
  */
@@ -107,5 +134,6 @@ export default function* root() {
     takeLatest(ActionTypes.BRANCH_ADD, add),
     takeLatest(ActionTypes.BRANCH_GET, getById),
     takeLatest(ActionTypes.BRANCHES_GET, getBranches),
+    takeLatest(ActionTypes.BRANCH_GET_TOP_PRODUCTS, getTopProducts),
   ]);
 }

@@ -8,6 +8,7 @@ export const branchState = {
   new: false,
   error: null,
   branches: [],
+  topProducts: [],
   selectedBranch: null,
 };
 
@@ -77,8 +78,20 @@ export default {
       [ActionTypes.BRANCHES_GET_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;
         draft.error = payload;
-      }
+      },
+    [ActionTypes.BRANCH_GET_TOP_PRODUCTS]: draft => {
+      draft.status = STATUS.RUNNING;
+      draft.new = false;
     },
+    [ActionTypes.BRANCH_GET_TOP_PRODUCTS_SUCCESS]: (draft, { payload }) => {
+      draft.status = STATUS.READY;
+      draft.topProducts = payload;
+    },
+    [ActionTypes.BRANCH_GET_TOP_PRODUCTS_FAILURE]: (draft, { payload }) => {
+      draft.status = STATUS.ERROR;
+      draft.error = payload;
+    }
+  },
     branchState,
   ),
 };

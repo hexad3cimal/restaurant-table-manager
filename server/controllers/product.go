@@ -54,6 +54,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
 	productModel.Discount = productForm.Discount
+	productModel.Highlight = productForm.Highlight
 	productModel.Description = productForm.Description
 	productModel.Image = config.GetConfig().Uploads.Products + imageName
 
@@ -135,6 +136,50 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 			return
 		}
 		products, error = product.GetProductsOfBranch(currentUser.BranchId)
+
+		if error != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+	}
+	if error == nil {
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
+	} else {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	}
+
+}
+
+func (ctrl ProductController) GetTopProducts(c *gin.Context) {
+
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
+
+	if getRoleError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	var products []models.ProductModel
+	var error error
+	if userRoleName == "admin" {
+		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
+
+		if error != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+	} else {
+
+		products, error = product.GetMostOrderedProductsOfBranch(tokenModel.BranchId)
 
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})

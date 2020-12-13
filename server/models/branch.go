@@ -15,9 +15,20 @@ type BranchModel struct {
 	Contact   string    `db:"contact" json:"contact"`
 	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	Orders    []Order
+	Product   []Product
 }
 
 type Branch struct{}
+
+// func (branch Branch) GetMostOrderedProducts(branchId string) (returnModel []ProductModel, err error) {
+// 	err = config.GetDB().Table("product_models").Joins("joins order_models on product_models.branch_id = branch_models.ID").Where("product_models.branch_id = ?", branchId).Where("product_models.created_at BETWEEN ? AND ?", time.Now(), time.Now().AddDate(0, 0, -1)).Find(&returnModel).Error
+// 	if err != nil {
+
+// 		return []ProductModel{}, err
+// 	}
+// 	return returnModel, err
+// }
 
 func (branch Branch) Add(branchModel BranchModel) (returnModel BranchModel, err error) {
 

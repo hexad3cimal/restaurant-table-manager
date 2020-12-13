@@ -8,7 +8,7 @@ import (
 type RoleModel struct {
 	ID        string    `db:"id, primarykey" json:"id"`
 	OrgId     string    `db:"org_id" json:"org_id"`
-	Active    bool      `db:"active" json:"-"`
+	Active    bool      `db:"active" json:"-" sql:"DEFAULT:true"`
 	Name      string    `db:"name" json:"name"`
 	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`

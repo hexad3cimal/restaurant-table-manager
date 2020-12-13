@@ -2748,3 +2748,26 @@
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-12T11:44:19+05:30"}
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-12T11:44:19+05:30"}
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-12T11:44:19+05:30"}
+{"function":"Login","level":"error","line":"27","msg":" login failed for iftar-jovin","time":"2020-12-13T16:17:32+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T18:13:47+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T18:13:47+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:09:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T19:13:01+05:30"}
+{"function":"Add","level":"error","line":"42","msg":"user not allowed for ordering 68c208ec-0ff3-4790-853e-1e6b8cc12833","time":"2020-12-13T20:11:26+05:30"}
+{"function":"Add","level":"error","line":"42","msg":"user not allowed for ordering 68c208ec-0ff3-4790-853e-1e6b8cc12833","time":"2020-12-13T20:22:19+05:30"}
+{"function":"AdminOrManagerOfTheOrgAndBranch","level":"error","line":"45","msg":"fetchedRole failed record not found","time":"2020-12-13T20:26:55+05:30"}
+{"function":"Add","level":"error","line":"42","msg":"user not allowed for ordering 68c208ec-0ff3-4790-853e-1e6b8cc12833","time":"2020-12-13T20:26:55+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2020-12-13T21:38:09+05:30"}

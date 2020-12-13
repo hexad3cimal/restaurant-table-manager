@@ -34,12 +34,15 @@ func IsAdmin(userId string, orgId string) (isAdmin bool) {
 func AdminOrManagerOfTheOrgAndBranch(userId string, orgId string, branchId string) (isAdmin bool) {
 	userObject, getUserError := user.GetUserById(userId)
 	if getUserError != nil || userObject.OrgId != orgId {
+		logger.Error("getUserError failed " + getUserError.Error())
 		return false
+
 	}
 
 	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, orgId)
 
 	if err != nil {
+		logger.Error("fetchedRole failed " + err.Error())
 		return false
 	}
 	if fetchedRole.Name == "admin" && userObject.OrgId == orgId {
@@ -47,6 +50,7 @@ func AdminOrManagerOfTheOrgAndBranch(userId string, orgId string, branchId strin
 		return true
 
 	}
+	logger.Info(fetchedRole.Name, userObject.OrgId, orgId, userObject.BranchId, branchId)
 	if fetchedRole.Name == "manager" && userObject.OrgId == orgId && userObject.BranchId == branchId {
 		return true
 
@@ -66,7 +70,7 @@ func IsUserReallyAssociatedWithBranch(userId string, branchId string, orgId stri
 }
 
 func IsUserAllowedToOrder(userId string, branchId string, orgId string, roleId string) (associated bool) {
-	if AdminOrManagerOfTheOrgAndBranch(userId, branchId, orgId) {
+	if AdminOrManagerOfTheOrgAndBranch(userId, orgId, branchId) {
 		return true
 	}
 	fetchedRole, err := role.GetRoleByIdAndOrg(roleId, orgId)

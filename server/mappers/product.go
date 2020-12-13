@@ -5,6 +5,7 @@ import "mime/multipart"
 type ProductForm struct {
 	ProductName string                `form:"productName" binding:"required"`
 	OrgId       string                `form:"orgId"`
+	Highlight   bool                  `form:"highlight"`
 	BranchId    string                `form:"branchId" binding:"required"`
 	BranchName  string                `form:"branchName" binding:"required"`
 	KitchenId   string                `form:"kitchenId" binding:"required"`
