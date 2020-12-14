@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
-  Avatar,
   Box,
-  Button,
   Divider,
   Drawer,
   Hidden,
@@ -23,12 +21,8 @@ import {
   Users as UsersIcon,
 } from 'react-feather';
 import NavItem from './NavItem';
+import { useSelector } from 'react-redux';
 
-const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  jobTitle: 'Senior Developer',
-  name: 'Katarina Smith',
-};
 
 const items = [
   {
@@ -98,6 +92,8 @@ const NavBar = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const location = useLocation();
 
+  const user = useSelector( state => state.user)
+  console.log(user.user)
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();
@@ -108,17 +104,8 @@ const NavBar = ({ onMobileClose, openMobile }) => {
   const content = (
     <Box height="100%" display="flex" flexDirection="column">
       <Box alignItems="center" display="flex" flexDirection="column" p={2}>
-        <Avatar
-          className={classes.avatar}
-          component={RouterLink}
-          src={user.avatar}
-          to="/app/account"
-        />
         <Typography className={classes.name} color="textPrimary" variant="h5">
-          {user.name}
-        </Typography>
-        <Typography color="textSecondary" variant="body2">
-          {user.jobTitle}
+          {user.user.name}
         </Typography>
       </Box>
       <Divider />
@@ -128,25 +115,6 @@ const NavBar = ({ onMobileClose, openMobile }) => {
             <NavItem href={item.href} key={item.title} title={item.title} icon={item.icon} />
           ))}
         </List>
-      </Box>
-      <Box flexGrow={1} />
-      <Box p={2} m={2} bgcolor="background.dark">
-        <Typography align="center" gutterBottom variant="h4">
-          Need more?
-        </Typography>
-        <Typography align="center" variant="body2">
-          Upgrade to PRO version and access 20 more screens
-        </Typography>
-        <Box display="flex" justifyContent="center" mt={2}>
-          <Button
-            color="primary"
-            component="a"
-            href="https://react-material-kit.devias.io"
-            variant="contained"
-          >
-            See PRO version
-          </Button>
-        </Box>
       </Box>
     </Box>
   );

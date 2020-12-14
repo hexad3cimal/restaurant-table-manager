@@ -8,7 +8,7 @@ export const userState = {
   registered: false,
   status: STATUS.IDLE,
   error: null,
-  data: {},
+  user: {},
 };
 
 export default {
@@ -25,7 +25,7 @@ export default {
       [ActionTypes.USER_LOGIN_SUCCESS]: (draft, { payload }) => {
         draft.isAuthenticated = true;
         draft.status = STATUS.READY;
-        draft.data.user = payload;
+        draft.user = payload;
         set('user', payload);
       },
       [ActionTypes.USER_LOGOUT]: draft => {
