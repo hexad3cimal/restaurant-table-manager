@@ -67,6 +67,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	orderModel.Quantity = orderForm.Quantity
 	orderModel.Note = orderForm.Notes
 	orderModel.Status = orderForm.Status
+	orderModel.RefCode = helpers.GetString()
 
 	_, err := order.Add(orderModel)
 	if err == nil {
@@ -151,22 +152,18 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	var products []models.ProductModel
+	var orders []models.OrderModel
 	var error error
 	if userRoleName == "admin" {
-		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
+		orders = order.GetOrdersOfOrg(tokenModel.OrgId)
 
-		if error != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
 	}
+	if userRoleName == "manager" {
+		orders = order.GetOrdersOfBranch(tokenModel.BranchId)
 
-	products, error = product.GetProductsOfBranch(tokenModel.BranchId)
-
+	}
 	if error == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": orders})
 	} else {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}

@@ -99,7 +99,7 @@ func InitRouter() {
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)
 		v1.GET("/order", AuthMiddleware(), order.GetOrdersOfTable)
-		// v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
+		v1.GET("/orders", AuthMiddleware(), order.GetOrders)
 
 		kitchen := new(controllers.KitchenController)
 		v1.POST("/kitchen", AuthMiddleware(), kitchen.Add)

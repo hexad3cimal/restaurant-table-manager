@@ -7,6 +7,7 @@ import (
 
 type OrderModel struct {
 	ID          string    `db:"id, primarykey" json:"id"`
+	RefCode     string    `db:"ref_code" json:"refCode"`
 	OrgId       string    `db:"org_id" json:"orgId"`
 	TableId     string    `db:"table_id" json:"tableId"`
 	BranchId    string    `db:"branch_id" json:"branchId"`
