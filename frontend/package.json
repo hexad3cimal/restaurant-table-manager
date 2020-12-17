@@ -56,7 +56,8 @@
     "husky": "^4.3.4",
     "lint-staged": "^10.5.3",
     "redux-immutable-state-invariant": "^2.1.0",
-    "redux-logger": "^3.0.6"
+    "redux-logger": "^3.0.6",
+    "redux-saga-testing": "^2.0.1"
   },
   "proxy": "http://localhost:8090",
   "lint-staged": {
