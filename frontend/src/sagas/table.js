@@ -42,6 +42,39 @@ export function* addTable({ payload }) {
 }
 
 /**
+ * Generate code
+ */
+export function* editTable({ payload }) {
+  try {
+    yield request(`${window.restAppConfig.api}table`, {
+      method: 'PUT',
+      payload,
+    });
+    yield all([
+      yield put({
+        type: ActionTypes.EDIT_TABLE_SUCCESS,
+      }),
+      yield put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: `Edited ${payload.name} successfully!`,
+      }),
+    ]);
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.TABLE_ADD_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: 'Could not add table,please retry',
+      }),
+    ]);
+  }
+}
+
+/**
  * Get table details by id
  */
 export function* getTableById({ payload }) {
@@ -168,6 +201,7 @@ export function* getTablesForOrg() {
 export default function* root() {
   yield all([
     takeLatest(ActionTypes.TABLE_ADD, addTable),
+    takeLatest(ActionTypes.EDIT_TABLE, editTable),
     takeLatest(ActionTypes.TABLE_GET, getTableById),
     takeLatest(ActionTypes.TABLES_GET, getTables),
     takeLatest(ActionTypes.TABLES_GET_BRANCH, getTablesForOrg),

@@ -15,3 +15,13 @@ type RegisterForm struct {
 	OrgId    string `json:"orgId"`
 	Role     string `json:"role"`
 }
+
+type UserEditForm struct {
+	UserName  string `json:"userName" binding:"required,max=100"`
+	FullName  string `json:"name"`
+	Address   string `json:"address"`
+	Contact   string `json:"contact"`
+	Email     string `json:"email" binding:"required,email"`
+	Password  string `json:"password" binding:"required"`
+	LoginCode string `json:"loginCode"`
+}

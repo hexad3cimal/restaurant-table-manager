@@ -19,7 +19,7 @@ type UserModel struct {
 	RoleId             string    `db:"role_id" json:"roleId"`
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
-	LoginCode          string    `db:"login_code" json:"-"`
+	LoginCode          string    `db:"login_code" json:"loginCode"`
 	Active             bool      `db:"active" json:"-"`
 	Locked             bool      `db:"locked" json:"-"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`

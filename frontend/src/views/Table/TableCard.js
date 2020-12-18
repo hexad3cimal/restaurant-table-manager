@@ -9,11 +9,12 @@ import {
   Grid,
   Typography,
   makeStyles,
+  Button,
 } from '@material-ui/core';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import { useDispatch } from 'react-redux';
-import { selectedTable } from '../../actions/table';
+import { selectedTable ,updateTable} from '../../actions/';
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid';
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -39,12 +40,17 @@ const TableCard = ({ className, table, ...rest }) => {
     dispatch(selectedTable(table))
     navigate("/app/table-details", { replace: true })
   }
+  const generateNewCode = (table) =>{
+    table.loginCode = uuidv4()
+    dispatch(updateTable(table))
+  }
+
   return (
     <Card
       className={clsx(classes.root, className, table.occupied ? classes.occupied : null)}
       {...rest}
     >
-      <CardContent onClick={() => {onClick(table)}}>
+      <CardContent >
         {/* <Box display="flex" justifyContent="center" mb={3}>
           <Avatar alt="Product" src={product.media} variant="square" />
         </Box> */}
@@ -59,18 +65,23 @@ const TableCard = ({ className, table, ...rest }) => {
       <Divider />
       <Box p={2}>
         <Grid container justify="space-between" spacing={2}>
-          <Grid className={classes.statsItem} item>
-            <AccessTimeIcon className={classes.statsIcon} color="action" />
-            <Typography color="textSecondary" display="inline" variant="body2">
-              Updated 2hr ago
-            </Typography>
-          </Grid>
-          {/* <Grid className={classes.statsItem} item>
-            <GetAppIcon className={classes.statsIcon} color="action" />
-            <Typography color="textSecondary" display="inline" variant="body2">
-              {product.totalDownloads} Downloads
-            </Typography>
-          </Grid> */}
+        <Typography align="center" color="textPrimary" variant="body1">
+          Login code
+        </Typography>
+        <Typography align="center" color="textPrimary" variant="body1">
+          {table.loginCode}
+        </Typography>
+        </Grid>
+      </Box>
+      <Divider />
+      <Box p={2}>
+        <Grid container justify="space-between" spacing={2}>
+        <Button onClick={() => {onClick(table)}} color="primary" variant="contained">
+          View
+        </Button>
+        <Button onClick={() => {generateNewCode(table)}} color="primary" variant="contained">
+          Generate new code
+        </Button>
         </Grid>
       </Box>
     </Card>

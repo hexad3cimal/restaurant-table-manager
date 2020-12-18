@@ -26,10 +26,20 @@ export default {
         draft.error = payload;
       },
       [ActionTypes.TABLE_ADD_SUCCESS]: draft => {
-        draft.isAuthenticated = true;
         draft.status = STATUS.IDLE;
         draft.add = false;
         draft.new = true;
+      },
+      [ActionTypes.EDIT_TABLE]: draft => {
+        draft.status = STATUS.RUNNING;
+      },
+      [ActionTypes.EDIT_TABLE_FAILURE]: (draft, { payload }) => {
+        draft.status = STATUS.ERROR;
+        draft.error = payload;
+      },
+      [ActionTypes.GEDIT_TABLE_SUCCESS]: (draft, { payload }) => {
+        draft.status = STATUS.IDLE;
+        draft.tables = [...draft.tables,...payload]
       },
       [ActionTypes.TABLE_EDIT]: draft => {
         draft.status = STATUS.RUNNING;
@@ -39,7 +49,6 @@ export default {
         draft.error = payload;
       },
       [ActionTypes.TABLE_EDIT_SUCCESS]: draft => {
-        draft.isAuthenticated = true;
         draft.status = STATUS.READY;
       },
       [ActionTypes.TABLE_DELETE]: draft => {
@@ -50,7 +59,6 @@ export default {
         draft.error = payload;
       },
       [ActionTypes.TABLE_DELETE_SUCCESS]: draft => {
-        draft.isAuthenticated = true;
         draft.status = STATUS.READY;
       },
       [ActionTypes.TABLE_GET]: draft => {
