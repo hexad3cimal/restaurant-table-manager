@@ -14,10 +14,12 @@ import (
 
 type TableController struct{}
 
-func (ctrl TableController) Add(c *gin.Context) {
+func (ctrl TableController) AddOrEdit(c *gin.Context) {
 	var tableForm mappers.TableForm
-
+	var userModel models.UserModel
+	var userGetError error
 	if c.ShouldBindJSON(&tableForm) != nil {
+		logger.Error(c.ShouldBindJSON(&tableForm))
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
 		c.Abort()
 		return
@@ -34,46 +36,48 @@ func (ctrl TableController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	// tableModel.Active = true
-	// tableModel.ID = uuid.NewV4().String()
-	// tableModel.Name = tableForm.TableName
-	// tableModel.CreatedAt = time.Now()
-	// tableModel.OrgId = tokenModel.OrgId
-	// tableModel.BranchId = tableForm.BranchId
-	// tableModel.BranchName = tableForm.BranchName
-	// tableModel.Occupied = false
-	// _, err := table.Add(tableModel)
-	// if err == nil {
-	//get branch role for current organisation
-	roleModel, roleGetError := role.GetRoleByNameAndOrgId("table", tokenModel.OrgId)
-	if roleGetError != nil {
-		table.DeleteById(tableModel.ID)
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
+	if !tableForm.Edit {
+
+		//get branch role for current organisation
+		roleModel, roleGetError := role.GetRoleByNameAndOrgId("table", tokenModel.OrgId)
+		if roleGetError != nil || tableForm.Password == "" {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+		userModel.RoleId = roleModel.ID
+		userModel.OrgId = tokenModel.OrgId
+		userModel.ID = uuid.NewV4().String()
+		userModel.LoginCode = uuid.NewV4().String()
+		userModel.ForgotPasswordCode = uuid.NewV4().String()
+
+	} else {
+		userModel, userGetError = user.GetUserById(tableForm.ID)
+		if userGetError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
 	}
 
-	//add new user with table role
-	userModel.RoleId = roleModel.ID
-	userModel.OrgId = tokenModel.OrgId
 	userModel.BranchId = tableForm.BranchId
 	userModel.BranchName = tableForm.BranchName
-	bytePassword := []byte(tableForm.Password)
-	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
-	if err != nil {
-		table.DeleteById(tableModel.ID)
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
+	userModel.LoginCode = tableForm.LoginCode
+	if tableForm.Password != "" {
+		bytePassword := []byte(tableForm.Password)
+		hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		userModel.Password = hashedPassword
 	}
+
 	userModel.Name = tableForm.TableName
 	userModel.UserName = tableForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
-
-	userModel.LoginCode = uuid.NewV4().String()
-	userModel.Password = hashedPassword
-	userModel.ForgotPasswordCode = uuid.NewV4().String()
-	userModel.ID = uuid.NewV4().String()
 	_, userError := user.Register(userModel)
 	if userError != nil {
 		table.DeleteById(tableModel.ID)

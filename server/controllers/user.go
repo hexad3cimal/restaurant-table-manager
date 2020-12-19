@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 	"table-booking/helpers"
@@ -8,6 +9,7 @@ import (
 	"table-booking/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/twinj/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -247,14 +249,23 @@ func (ctrl UserController) Update(c *gin.Context) {
 
 func (ctrl UserController) Validate(c *gin.Context) {
 	username, gotUsername := c.GetQuery("username")
+	tokenModel, _ := token.GetTokenById(c.GetHeader("access_uuid"))
+
 	if gotUsername == true {
-		_, getUserError := user.GetUserByUsername(strings.ToLower(username))
-		if getUserError == nil {
-			c.JSON(http.StatusOK, gin.H{"data": false})
+		user, getUserError := user.GetUserByUsername(strings.ToLower(username))
+		if getUserError != nil {
+			if errors.Is(getUserError, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusOK, gin.H{"data": true})
+				c.Abort()
+				return
+			}
+		}
+		if user.ID == tokenModel.UserId {
+			c.JSON(http.StatusOK, gin.H{"data": true})
 			c.Abort()
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data": true})
+		c.JSON(http.StatusOK, gin.H{"data": false})
 		c.Abort()
 		return
 	}

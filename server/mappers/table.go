@@ -1,11 +1,14 @@
 package mappers
 
 type TableForm struct {
-	TableName  string `json:"tableName" binding:"required"`
-	Password   string `json:"password" binding:"required"`
+	ID         string `json:"id"`
+	TableName  string `json:"name" binding:"required"`
+	Password   string `json:"password"`
+	LoginCode  string `json:"loginCode"`
 	BranchId   string `json:"branchId" binding:"required"`
 	BranchName string `json:"branchName" binding:"required"`
 	UserName   string `json:"userName" binding:"required"`
+	Edit       bool   `json:"edit" binding:"required"`
 }
 
 type GetTableForm struct {

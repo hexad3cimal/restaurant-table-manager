@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import {
@@ -16,6 +16,7 @@ import { selectedTable ,editTable} from '../../actions/';
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { Bounce } from "react-awesome-reveal";
+import AddTable from './AddTable';
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -37,9 +38,14 @@ const TableCard = ({ className, table, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [edit, setEdit] = useState(false)
   const onClick = (table) =>{
     dispatch(selectedTable(table))
     navigate("/app/table-details", { replace: true })
+  }
+  const onEdit = (table) =>{
+    dispatch(selectedTable(table))
+    setEdit(true)
   }
   const generateNewCode = (table) =>{
     const tableClone = Object.assign({}, table); 
@@ -49,6 +55,7 @@ const TableCard = ({ className, table, ...rest }) => {
 
   return (
     <Bounce>
+      {!edit ? 
     <Card
       className={clsx(classes.root, className, table.occupied ? classes.occupied : null)}
       {...rest}
@@ -82,12 +89,15 @@ const TableCard = ({ className, table, ...rest }) => {
         <Button onClick={() => {onClick(table)}} color="primary" variant="contained">
           View
         </Button>
+        <Button onClick={() => {onEdit(table)}} color="primary" variant="contained">
+          Edit
+        </Button>
         <Button onClick={() => {generateNewCode(table)}} color="primary" variant="contained">
           Generate new code
         </Button>
         </Grid>
       </Box>
-    </Card>
+      </Card> : <AddTable edit={true} /> }
     </Bounce>
   );
 };
