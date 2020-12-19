@@ -9,7 +9,7 @@ export const {
   setSelectedTable: selectedTable,
   tablesGet: getTables,
   tablesGetBranch: getTablesOfBranch,
-  updateTable,
+  editTable,
 } = createActions({
   [ActionTypes.TABLE_ADD_INITIATE]: () => ({}),
   [ActionTypes.TABLE_ADD]: payload => payload,
@@ -17,5 +17,5 @@ export const {
   [ActionTypes.SET_SELECTED_TABLE]: payload => payload,
   [ActionTypes.TABLES_GET]: () => ({}),
   [ActionTypes.TABLES_GET_BRANCH]: () => ({}),
-  [ActionTypes.UPDATE_TABLE]: payload => payload,
+  [ActionTypes.EDIT_TABLE]: payload => payload,
 });

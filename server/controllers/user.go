@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strings"
+	"table-booking/helpers"
 	"table-booking/mappers"
 	"table-booking/models"
 
@@ -187,6 +188,60 @@ func (ctrl UserController) Register(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"data": mappers.Response{Error: nil, Message: "success", ResponseCode: 2000, Data: make([]interface{}, 0)}})
+}
+
+func (ctrl UserController) Update(c *gin.Context) {
+	var userUpdateForm mappers.UserEditForm
+	if c.ShouldBindJSON(&userUpdateForm) != nil {
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
+		c.Abort()
+		return
+	}
+
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+
+	isAdminOrManager := helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId)
+
+	if !isAdminOrManager {
+		if userModel.ID != userUpdateForm.ID {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+	}
+	var userModel models.UserModel
+	var getUserError error
+	if !isAdminOrManager {
+		userModel, getUserError = user.GetUserById(tokenModel.UserId)
+	} else {
+		userModel, getUserError = user.GetUserById(userUpdateForm.ID)
+
+	}
+	if getUserError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	userModel.UserName = userUpdateForm.UserName
+	userModel.UserNameLowerCase = strings.ToLower(userUpdateForm.UserName)
+	userModel.Name = userUpdateForm.FullName
+	userModel.Email = userUpdateForm.Email
+	userModel.LoginCode = userUpdateForm.LoginCode
+	_, editUserErr := user.Register(userModel)
+
+	if editUserErr != nil {
+
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error occured"})
+		c.Abort()
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": mappers.Response{Error: nil, Message: "success", ResponseCode: 2000, Data: make([]interface{}, 0)}})
 }
 

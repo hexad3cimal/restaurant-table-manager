@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 
 import MainLayout from './layouts/MainLayout';
 import DashboardLayout from './layouts/DashboardLayout';
+import { Fade } from "react-awesome-reveal";
 
 const LoginView = lazy(() => import('./views/auth/LoginView'));
 const RegisterView = lazy(() => import('./views/auth/RegisterView'));
@@ -20,7 +21,7 @@ const ProductView = lazy(() => import('./views/Product'));
 const routes = isLoggedIn => [
   {
     path: 'app',
-    element: isLoggedIn ? <DashboardLayout /> : <Navigate to="/404" />,
+    element: isLoggedIn ?<Fade><DashboardLayout /></Fade> : <Navigate to="/404" />,
     children: [
       // { path: 'account', element: <AccountView /> },
       // { path: 'customers', element: <CustomerListView /> },

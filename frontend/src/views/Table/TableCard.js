@@ -12,9 +12,10 @@ import {
   Button,
 } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
-import { selectedTable ,updateTable} from '../../actions/';
+import { selectedTable ,editTable} from '../../actions/';
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
+import { Bounce } from "react-awesome-reveal";
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -41,11 +42,13 @@ const TableCard = ({ className, table, ...rest }) => {
     navigate("/app/table-details", { replace: true })
   }
   const generateNewCode = (table) =>{
-    table.loginCode = uuidv4()
-    dispatch(updateTable(table))
+    const tableClone = Object.assign({}, table); 
+    tableClone.loginCode = uuidv4()
+    dispatch(editTable(tableClone))
   }
 
   return (
+    <Bounce>
     <Card
       className={clsx(classes.root, className, table.occupied ? classes.occupied : null)}
       {...rest}
@@ -85,6 +88,7 @@ const TableCard = ({ className, table, ...rest }) => {
         </Grid>
       </Box>
     </Card>
+    </Bounce>
   );
 };
 

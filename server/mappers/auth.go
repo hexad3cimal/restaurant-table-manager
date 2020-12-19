@@ -17,11 +17,11 @@ type RegisterForm struct {
 }
 
 type UserEditForm struct {
+	ID        string `json:"id" binding:"required"`
 	UserName  string `json:"userName" binding:"required,max=100"`
 	FullName  string `json:"name"`
 	Address   string `json:"address"`
 	Contact   string `json:"contact"`
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password" binding:"required"`
+	Email     string `json:"email""`
 	LoginCode string `json:"loginCode"`
 }
