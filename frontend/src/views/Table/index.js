@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Page from '../../components/Page';
 import TableList from './TableList';
-import Toolbar from './Toolbar';
 import { getTables, hideAlert } from '../../actions';
 import AddTable from './AddTable';
 import Toast from '../../modules/toast';
@@ -42,8 +41,6 @@ const TableView = () => {
           </Box>
         ) : (
           <Box mt={3}>
-            <Toolbar />
-
             <TableList />
           </Box>
         )}
