@@ -249,10 +249,9 @@ func (ctrl UserController) Update(c *gin.Context) {
 
 func (ctrl UserController) Validate(c *gin.Context) {
 	username, gotUsername := c.GetQuery("username")
-	tokenModel, _ := token.GetTokenById(c.GetHeader("access_uuid"))
 
 	if gotUsername == true {
-		user, getUserError := user.GetUserByUsername(strings.ToLower(username))
+		_, getUserError := user.GetUserByUsername(strings.ToLower(username))
 		if getUserError != nil {
 			if errors.Is(getUserError, gorm.ErrRecordNotFound) {
 				c.JSON(http.StatusOK, gin.H{"data": true})
@@ -260,11 +259,16 @@ func (ctrl UserController) Validate(c *gin.Context) {
 				return
 			}
 		}
-		if user.ID == tokenModel.UserId {
-			c.JSON(http.StatusOK, gin.H{"data": true})
-			c.Abort()
-			return
+		id, gotEdit := c.GetQuery("edit")
+		if gotEdit {
+			userModel, _ := user.GetUserById(id)
+			if userModel.UserName == username {
+				c.JSON(http.StatusOK, gin.H{"data": true})
+				c.Abort()
+				return
+			}
 		}
+
 		c.JSON(http.StatusOK, gin.H{"data": false})
 		c.Abort()
 		return

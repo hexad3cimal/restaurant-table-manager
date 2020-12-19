@@ -70,7 +70,7 @@ const AddTable = ({ className, edit }) => {
           .test("checkUsername", "Username already taken", function (username) {
             return new Promise((resolve, reject) => {
               request(
-                `${window.restAppConfig.api}/user/auth/validate?username=${username}`
+                `${window.restAppConfig.api}/user/auth/validate?username=${username}&edit=${table.id}`
               )
                 .then((response) => {
                   if (response.data === true) resolve(true);
@@ -186,6 +186,7 @@ const AddTable = ({ className, edit }) => {
                     SelectProps={{ native: true }}
                     value={values.branchId}
                     variant="outlined"
+                    InputLabelProps={{ shrink: values.branchId }}  
                   >
                     <option value=""></option>
                     {branches.map((branch) => (
