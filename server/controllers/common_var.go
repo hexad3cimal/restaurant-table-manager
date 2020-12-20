@@ -34,3 +34,6 @@ var tokenModel models.TokenModel
 
 var typeService = new(models.Type)
 var typeModel models.TypeModel
+
+var category = new(models.Category)
+var categoryModel models.CategoryModel

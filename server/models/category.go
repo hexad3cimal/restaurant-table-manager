@@ -72,3 +72,25 @@ func (category Category) GetCategoryByIdAndOrg(categoryId string, orgId string) 
 
 	return categoryModel, err
 }
+
+func (foodType FoodType) GetByOrgId(orgId string) (categoryModels []CategoryModel, err error) {
+
+	err = config.GetDB().Where("org_id=?", orgId).Find(&categoryModels).Error
+	if err != nil {
+
+		return []CategoryModel{}, err
+	}
+
+	return categoryModels, err
+}
+
+func (foodType FoodType) GetByBranchId(branchId string) (categoryModels []CategoryModel, err error) {
+
+	err = config.GetDB().Where("branch_id=?", branchId).Find(&categoryModels).Error
+	if err != nil {
+
+		return []CategoryModel{}, err
+	}
+
+	return categoryModels, err
+}
