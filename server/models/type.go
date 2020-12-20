@@ -49,7 +49,7 @@ func (foodType FoodType) Get(id string) (foodTypeModel FoodTypeModel, err error)
 	return foodTypeModel, err
 }
 
-func (foodType FoodType) GetFoodTypeByNameAndOrgId(foodTypeName string, orgId string) (foodTypeModel FoodTypeModel, err error) {
+func (foodType FoodType) GetByNameAndOrgId(foodTypeName string, orgId string) (foodTypeModel FoodTypeModel, err error) {
 
 	err = config.GetDB().Where("name=?", foodTypeName).Where("org_id=?", orgId).First(&foodTypeModel).Error
 	if err != nil {
@@ -60,7 +60,7 @@ func (foodType FoodType) GetFoodTypeByNameAndOrgId(foodTypeName string, orgId st
 	return foodTypeModel, err
 }
 
-func (foodType FoodType) GetFoodTypeByIdAndOrg(foodTypeId string, orgId string) (foodTypeModel FoodTypeModel, err error) {
+func (foodType FoodType) GetByIdAndOrg(foodTypeId string, orgId string) (foodTypeModel FoodTypeModel, err error) {
 
 	err = config.GetDB().Where("id=?", foodTypeId).Where("org_id=?", orgId).First(&foodTypeModel).Error
 	if err != nil {
@@ -69,4 +69,26 @@ func (foodType FoodType) GetFoodTypeByIdAndOrg(foodTypeId string, orgId string) 
 	}
 
 	return foodTypeModel, err
+}
+
+func (foodType FoodType) GetByOrgId(orgId string) (foodTypeModels []FoodTypeModel, err error) {
+
+	err = config.GetDB().Where("org_id=?", orgId).Find(&foodTypeModels).Error
+	if err != nil {
+
+		return []FoodTypeModel{}, err
+	}
+
+	return foodTypeModels, err
+}
+
+func (foodType FoodType) GetByBranchId(branchId string) (foodTypeModels []FoodTypeModel, err error) {
+
+	err = config.GetDB().Where("branch_id=?", branchId).Find(&foodTypeModels).Error
+	if err != nil {
+
+		return []FoodTypeModel{}, err
+	}
+
+	return foodTypeModels, err
 }
