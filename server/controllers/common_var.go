@@ -37,3 +37,6 @@ var typeModel models.TypeModel
 
 var category = new(models.Category)
 var categoryModel models.CategoryModel
+
+var tag = new(models.Tag)
+var tagModel models.TagModel
