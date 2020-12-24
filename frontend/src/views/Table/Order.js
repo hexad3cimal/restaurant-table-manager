@@ -41,7 +41,8 @@ const Order = ({ className, table, ...rest }) => {
       justifyContent="center"
     >
     
-      <Container maxWidth="sm">
+      <Container xs={12}>
+        <Grid md={6}>
         <Formik
         enableReinitialize
           initialValues={{
@@ -85,7 +86,7 @@ const Order = ({ className, table, ...rest }) => {
             values,
           }) => (
             <form onSubmit={handleSubmit}>
-              <Card>
+              <Card >
                 <CardHeader subheader="Place an order" title="Place order" />
                 <Divider />
                 <CardContent>
@@ -154,10 +155,8 @@ Place Order                  </Button>
             </form>
           )}
         </Formik>
-        
-      </Container>
-        <Container maxWidth="sm">
-        <Grid>
+        </Grid>
+        <Grid md={6}>
           <Slider products={topProductsOfBranch} onClick={onTopProductClick} />
         </Grid>
       </Container>

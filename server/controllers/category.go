@@ -10,7 +10,7 @@ import (
 	"github.com/twinj/uuid"
 )
 
-category CategoryController struct{}
+type CategoryController struct{}
 
 func (ctrl CategoryController) Add(c *gin.Context) {
 	var categoryForm mappers.TypeForm
@@ -33,7 +33,7 @@ func (ctrl CategoryController) Add(c *gin.Context) {
 	categoryModel.BranchId = categoryForm.BranchId
 	categoryModel.ID = uuid.NewV4().String()
 	_, categoryAddErr := category.Add(categoryModel)
-	if branchAddErr != nil {
+	if categoryAddErr != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -73,7 +73,7 @@ func (ctrl CategoryController) GetTypes(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	var categories []models.TypeModel
+	var categories []models.CategoryModel
 	var error error
 	if userRoleName == "admin" {
 		categories, error = category.GetByOrgId(tokenModel.OrgId)
@@ -84,7 +84,7 @@ func (ctrl CategoryController) GetTypes(c *gin.Context) {
 		}
 	}
 	if userRoleName == "manager" {
-		categories, error = branch.GetByBranchId(tokenModel.OrgId)
+		categories, error = category.GetByBranchId(tokenModel.OrgId)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

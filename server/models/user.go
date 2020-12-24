@@ -28,6 +28,7 @@ type UserModel struct {
 	UserNameLowerCase  string    `db:"user_name_lower_case" json:"userNameLower"`
 	UpdatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	Role               RoleModel
 }
 type User struct {
 }

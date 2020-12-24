@@ -33,7 +33,7 @@ func (ctrl TypeController) Add(c *gin.Context) {
 	typeModel.BranchId = typeForm.BranchId
 	typeModel.ID = uuid.NewV4().String()
 	_, typeAddErr := typeService.Add(typeModel)
-	if branchAddErr != nil {
+	if typeAddErr != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -73,7 +73,7 @@ func (ctrl TypeController) GetTypes(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	var types []models.TypeModel
+	var types []models.FoodTypeModel
 	var error error
 	if userRoleName == "admin" {
 		types, error = typeService.GetByOrgId(tokenModel.OrgId)
@@ -84,7 +84,7 @@ func (ctrl TypeController) GetTypes(c *gin.Context) {
 		}
 	}
 	if userRoleName == "manager" {
-		types, error = branch.GetByBranchId(tokenModel.OrgId)
+		types, error = typeService.GetByBranchId(tokenModel.OrgId)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

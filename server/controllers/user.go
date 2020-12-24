@@ -47,7 +47,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		if tokenAddError == nil {
 			c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
-			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name})
+			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name, "role": loggerInUser.Role.Name})
 			c.Abort()
 			return
 			// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})

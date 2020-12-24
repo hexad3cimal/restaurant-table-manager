@@ -32,8 +32,8 @@ var order = new(models.Order)
 var token = new(models.Token)
 var tokenModel models.TokenModel
 
-var typeService = new(models.Type)
-var typeModel models.TypeModel
+var typeService = new(models.FoodType)
+var typeModel models.FoodTypeModel
 
 var category = new(models.Category)
 var categoryModel models.CategoryModel
