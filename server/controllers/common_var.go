@@ -40,3 +40,6 @@ var categoryModel models.CategoryModel
 
 var tag = new(models.Tag)
 var tagModel models.TagModel
+
+var orderItem = new(models.OrderItem)
+var orderItemModel models.OrderItemModel

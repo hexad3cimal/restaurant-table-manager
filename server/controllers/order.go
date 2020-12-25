@@ -55,22 +55,37 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		return
 	}
 	orderModel.ID = uuid.NewV4().String()
-	orderModel.ProductName = orderForm.ProductName
-	orderModel.ProductId = orderForm.ProductId
 	orderModel.CreatedAt = time.Now()
 	orderModel.OrgId = tokenModel.OrgId
-	orderModel.KitchenId = productModel.KitchenId
-	orderModel.KitchenName = productModel.KitchenName
 	orderModel.BranchId = table.BranchId
 	orderModel.BranchName = table.BranchName
 	orderModel.TableId = table.ID
-	orderModel.Quantity = orderForm.Quantity
-	orderModel.Note = orderForm.Notes
 	orderModel.Status = orderForm.Status
 	orderModel.RefCode = helpers.GetString()
 
 	_, err := order.Add(orderModel)
 	if err == nil {
+		var orderItemAddError error
+		for _, product := range orderForm.Products {
+			orderItemModel.ID = uuid.NewV4().String()
+			orderItemModel.CreatedAt = time.Now()
+			orderItemModel.OrgId = tokenModel.OrgId
+			orderItemModel.BranchId = table.BranchId
+			orderItemModel.BranchName = table.BranchName
+			orderItemModel.Status = orderForm.Status
+			orderItemModel.ProductId = product.ProductId
+			orderItemModel.ProductName = product.ProductName
+			orderItemModel.TableId = table.ID
+			_, orderItemAddError := orderItem.Add(orderItemModel)
+		}
+		if orderItemAddError != nil {
+			order.DeleteById(orderModel.ID)
+			orderItem.DeleteByOrderId(orderModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
 		managerRole, rolesGetError := role.GetRoleByNameAndOrgId("manager", tokenModel.OrgId)
 		if rolesGetError != nil {
 			order.DeleteById(orderModel.ID)

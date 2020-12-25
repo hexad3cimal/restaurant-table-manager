@@ -6,21 +6,16 @@ import (
 )
 
 type OrderModel struct {
-	ID          string    `db:"id, primarykey" json:"id"`
-	RefCode     string    `db:"ref_code" json:"refCode"`
-	OrgId       string    `db:"org_id" json:"orgId"`
-	TableId     string    `db:"table_id" json:"tableId"`
-	BranchId    string    `db:"branch_id" json:"branchId"`
-	BranchName  string    `db:"branch_name" json:"branchName"`
-	Note        string    `db:"note" json:"note"`
-	Quantity    int32     `db:"quantity" json:"quantity"`
-	ProductId   string    `db:"product_id" json:"productId"`
-	KitchenId   string    `db:"kitchen_id" json:"kitchenId"`
-	KitchenName string    `db:"kitchen_name" json:"kitchenName"`
-	ProductName string    `db:"product_name" json:"productName"`
-	Status      string    `db:"status" json:"status"`
-	UpdatedAt   time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	CreatedAt   time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	ID         string    `db:"id, primarykey" json:"id"`
+	RefCode    string    `db:"ref_code" json:"refCode"`
+	OrgId      string    `db:"org_id" json:"orgId"`
+	TableId    string    `db:"table_id" json:"tableId"`
+	BranchId   string    `db:"branch_id" json:"branchId"`
+	BranchName string    `db:"branch_name" json:"branchName"`
+	Note       string    `db:"note" json:"note"`
+	Status     string    `db:"status" json:"status"`
+	UpdatedAt  time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt  time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
 
 type Order struct{}
