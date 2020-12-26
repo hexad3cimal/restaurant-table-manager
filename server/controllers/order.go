@@ -46,14 +46,6 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		return
 	}
 
-	productModel, getProductError := product.GetById(orderForm.ProductId)
-	if getProductError != nil {
-		logger.Error("Get productModel failed " + getProductError.Error())
-
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
 	orderModel.ID = uuid.NewV4().String()
 	orderModel.CreatedAt = time.Now()
 	orderModel.OrgId = tokenModel.OrgId
@@ -66,17 +58,18 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	_, err := order.Add(orderModel)
 	if err == nil {
 		var orderItemAddError error
-		for _, product := range orderForm.Products {
+		for _, productMapper := range orderForm.Products {
+
 			orderItemModel.ID = uuid.NewV4().String()
 			orderItemModel.CreatedAt = time.Now()
 			orderItemModel.OrgId = tokenModel.OrgId
 			orderItemModel.BranchId = table.BranchId
 			orderItemModel.BranchName = table.BranchName
 			orderItemModel.Status = orderForm.Status
-			orderItemModel.ProductId = product.ProductId
-			orderItemModel.ProductName = product.ProductName
+			orderItemModel.ProductId = productMapper.ProductId
+			orderItemModel.ProductName = productMapper.ProductName
 			orderItemModel.TableId = table.ID
-			_, orderItemAddError := orderItem.Add(orderItemModel)
+			_, orderItemAddError = orderItem.Add(orderItemModel)
 		}
 		if orderItemAddError != nil {
 			order.DeleteById(orderModel.ID)
@@ -104,7 +97,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		for _, user := range users {
 			helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, user.ID)
 		}
-		helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, orderModel.KitchenId)
+		// helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, orderModel.KitchenId)
 
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {

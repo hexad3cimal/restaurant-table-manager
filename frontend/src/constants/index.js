@@ -76,6 +76,7 @@ export const ActionTypes = keyMirror({
   PRODUCTS_GET_SUCCESS: undefined,
   PRODUCTS_GET_FAILURE: undefined,
   ORDER_ADD_INITIATE: undefined,
+  ORDER_ADD_PRODUCT: undefined,
   ORDER_ADD: undefined,
   ORDER_ADD_SUCCESS: undefined,
   ORDER_ADD_FAILURE: undefined,
