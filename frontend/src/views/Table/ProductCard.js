@@ -12,21 +12,28 @@ import {
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Flip } from "react-awesome-reveal";
-import { addProductToOrder } from "../../actions";
+import { addProductToOrder, removeProductFromOrder } from "../../actions";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import IndeterminateCheckBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order) || {};
-  const orderedProducts = orderState.orderedProducts || [];
-  let count = orderedProducts.filter((p) => {
+  const selectedProducts = orderState.selectedProducts || [];
+  let count = selectedProducts.filter((p) => {
     return p.id === product.id;
   });
 
   const onAdd = (product) => {
-    dispatch(addProductToOrder(product));
+    const productClone = Object.assign({}, product)
+    productClone.quantity = 1
+    dispatch(addProductToOrder(productClone));
   };
+
+  const onRemove = (product) => {
+    dispatch(removeProductFromOrder(product));
+  };
+
   return (
     <Flip direction="vertical">
       <Card>
@@ -63,9 +70,11 @@ const ProductCard = ({ product }) => {
               gutterBottom
               variant="h4"
             >
-              {count}
+              {count[0] &&count[0].quantity}
             </Typography>
-            <IconButton aria-label="remove">
+            <IconButton  onClick={() => {
+                onRemove(product);
+              }} aria-label="remove">
               <IndeterminateCheckBoxIcon />
             </IconButton>
           </Grid>

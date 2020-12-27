@@ -44,10 +44,10 @@ const Order = ({ className, table, ...rest }) => {
       flexWrap="row"
       width="100%"
     >
-        <Grid md={6}>
+        <Grid md={12} xs={12}>
           <Slider products={topProductsOfBranch} />
         </Grid>
-        <Grid md={6}>
+        <Grid md={12} xs={12}>
        {products.map(p=>{
          return <ProductCard product={p} />
        })}
