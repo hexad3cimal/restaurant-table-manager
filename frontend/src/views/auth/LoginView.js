@@ -72,8 +72,8 @@ const LoginView = () => {
         <Grid className={classes.loginBox} item md={12} xs={12}>
           <Formik
             initialValues={{
-              userName: 'username',
-              password: 'password',
+              userName: '',
+              password: '',
             }}
             validationSchema={Yup.object().shape({
               userName: Yup.string()

@@ -1,112 +1,48 @@
-import React from "react";
-import Carousel from "react-material-ui-carousel";
+import React, { useEffect, useState } from "react";
 
-import { Card, CardMedia, Typography, Grid, Button, makeStyles } from "@material-ui/core";
+import { Button, Card } from "@material-ui/core";
+import SliderCard from "./SliderCard";
 
-const useStyles = makeStyles(() => ({
-    banner: { height: "15rem", position: "relative" },
-    bannerGrid: { height: "80%" },
-    media: {
-      backgroundColor: "white",
-      height: "100%",
-      overflow: "hidden",
-      position: "relative",
-    },
-    mediaCaption: {
-      textOverflow: "ellipsis",
-      position: "absolute",
-      bottom: 0,
-      backgroundColor: "black",
-      color: "white",
-      opacity: " 0.6",
-      width: "100%",
-      height: "15%",
-      font: {
-        size: "2rem",
-        weight: 200,
-      },
-
-      transition: "300ms",
-      cursor: "pointer",
-    },
-  }));
-function Banner(props) {
-  const totalItems = props.item.length ? props.item.length : 0;
-
-  let items = [];
-
-  const styles = useStyles()
-
-  for (let i = 0; i < totalItems; i++) {
-    const item = props.item[i];
-
-    const media = (
-      <Grid item key={item.name}>
-        <CardMedia
-          className={styles.media}
-          image={item.image}
-          title={item.name}
-        >
-          <Typography className={styles.mediaCaption}>{item.name}</Typography>
-        </CardMedia>
-        <Button
-          variant="outlined"
-          onClick={() => props.onClick(item)}
-          className="ViewButton"
-        >
-          Add to order 
-        </Button>
-      </Grid>
-    );
-
-    items.push(media);
-  }
-
-  return (
-    <Card style={{ margin: "1rem" }} raised className={styles.banner}>
-      <Grid
-        style={{ margin: "1rem" }}
-        container
-        spacing={6}
-        className={styles.bannerGrid}
-      >
-        {items}
-      </Grid>
-    </Card>
-  );
-}
-
-const Slider = (props) => {
-  let productArray = [];
-  const products = [];
-  props.products.forEach((product, index) => {
-    if (index % 3 === 0 && productArray.length > 0) {
-      products.push(productArray);
-      productArray = [];
-    } else if (props.products.length === index + 1) {
-      productArray.push(product);
-      products.push(productArray);
-      return false;
+const Slider = ({ items }) => {
+  const [itemsArray, setItems] = useState([]);
+  const [next, setNext] = useState(0);
+  useEffect(() => {
+    if (next) {
+      setItems(items.slice(4, 9));
+    } else {
+      setItems(items.slice(0, 4));
     }
-    productArray.push(product);
-  });
+  }, [next]);
 
   return (
-    <Carousel
-      autoPlay={false}
-      navButtonsAlwaysVisible={false}
+    <Card
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignContent: "space-around"
+      }}
     >
-      {products.map((item, index) => {
-        return (
-          <Banner
-            item={item}
-            onClick={props.onClick}
-            key={index}
-            contentPosition={item.contentPosition}
-          />
-        );
+      {next ? (
+        <Button
+          onClick={() => {
+            setNext(!next);
+          }}
+        >
+          Previous
+        </Button>
+      ) : null}
+
+      {itemsArray.map((item, index) => {
+        return <SliderCard item={item} />;
       })}
-    </Carousel>
+      <Button
+        onClick={() => {
+          setNext(!next);
+        }}
+      >
+        Next
+      </Button>
+    </Card>
   );
 };
 export default Slider;

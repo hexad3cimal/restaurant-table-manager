@@ -60,7 +60,7 @@ const Order = ({ className, table, ...rest }) => {
       width="100%"
     >
         <Grid lg={12}>
-          <Slider products={topProductsOfBranch} />
+          <Slider items={topProductsOfBranch} />
         </Grid>
         <Grid lg={12}>
         <Box mt={3}>
