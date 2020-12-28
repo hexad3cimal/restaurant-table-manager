@@ -32,12 +32,12 @@ export default {
         draft.new = true;
       },
       [ActionTypes.ORDER_ADD_PRODUCT]: (draft, { payload }) => {
-        const product = draft.selectedProducts.filter((p) => {
+        const product = draft.selectedProducts.find((p) => {
           return payload.id === p.id;
         });
-        if (product.length >0 ) {
+        if (product ) {
           draft.selectedProducts = draft.selectedProducts.map((p) => {
-           if(p.id === product[0].id){p.quantity = p.quantity + 1 }
+           if(p.id === product.id){p.quantity = p.quantity + 1 }
             return p;
           });
         } else {

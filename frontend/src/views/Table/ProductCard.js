@@ -20,7 +20,7 @@ const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order) || {};
   const selectedProducts = orderState.selectedProducts || [];
-  let count = selectedProducts.filter((p) => {
+  let selectedProduct = selectedProducts.find((p) => {
     return p.id === product.id;
   });
 
@@ -36,7 +36,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Flip direction="vertical">
-      <Card>
+      <Card style={{marginBottom: '1rem'}}>
         <CardContent>
           <Box display="flex" justifyContent="center" mb={3}>
             <Avatar alt="Product" src={product.image} variant="square" />
@@ -70,7 +70,7 @@ const ProductCard = ({ product }) => {
               gutterBottom
               variant="h4"
             >
-              {count[0] &&count[0].quantity}
+              {selectedProduct && selectedProduct.quantity}
             </Typography>
             <IconButton  onClick={() => {
                 onRemove(product);
