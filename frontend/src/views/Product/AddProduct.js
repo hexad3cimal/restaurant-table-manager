@@ -14,19 +14,19 @@ import {
   Grid,
   TextField,
   makeStyles,
-  ButtonBase,
   Checkbox,
   FormControlLabel,
 } from "@material-ui/core";
 
 import * as Yup from "yup";
 import { Formik } from "formik";
+import { isFormValid } from "../../modules/helpers";
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-const AddItem = ({ className, ...rest }) => {
+const AddProduct = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const branchState = useSelector((state) => state.branch);
@@ -34,9 +34,9 @@ const AddItem = ({ className, ...rest }) => {
   const [image, setImage] = useState(null);
   const branches = (branchState && branchState.branches) || [];
   const kitchens = (kitchenState && kitchenState.kitchens) || [];
-  const inputEl = React.useRef(null);
+  const fileEl = React.useRef(null);
   const onButtonClick = () => {
-    inputEl.current.click();
+    fileEl.current.click();
   };
 
   const fileChange = (e) => {
@@ -57,6 +57,7 @@ const AddItem = ({ className, ...rest }) => {
         file: null,
         highlight: false,
         quantity: 0,
+        tags: "",
       }}
       validationSchema={Yup.object().shape({
         productName: Yup.string()
@@ -113,7 +114,8 @@ const AddItem = ({ className, ...rest }) => {
         },
         [])[0];
 
-        values.file= image;
+        values.file = image;
+        values.tags = values.tags.split(",");
         const form = new FormData();
         for (let value in values) {
           form.append(value, values[value]);
@@ -154,6 +156,35 @@ const AddItem = ({ className, ...rest }) => {
                     onChange={handleChange}
                     value={values.productName}
                     variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <TextField
+                    error={Boolean(touched.price && errors.price)}
+                    fullWidth
+                    helperText={touched.price && errors.price}
+                    label="Price"
+                    margin="normal"
+                    name="price"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.price}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <TextField
+                    error={Boolean(touched.discount && errors.discount)}
+                    fullWidth
+                    helperText={touched.discount && errors.discount}
+                    label="Discount"
+                    margin="normal"
+                    name="discount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.discount}
+                    variant="outlined"
+                    type="number"
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -202,36 +233,8 @@ const AddItem = ({ className, ...rest }) => {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    error={Boolean(touched.price && errors.price)}
-                    fullWidth
-                    helperText={touched.price && errors.price}
-                    label="Price"
-                    margin="normal"
-                    name="price"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.price}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    error={Boolean(touched.discount && errors.discount)}
-                    fullWidth
-                    helperText={touched.discount && errors.discount}
-                    label="Discount"
-                    margin="normal"
-                    name="discount"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.discount}
-                    variant="outlined"
-                    type="number"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
+
+                <Grid item md={2} xs={3}>
                   <TextField
                     error={Boolean(touched.quantity && errors.quantity)}
                     fullWidth
@@ -246,26 +249,33 @@ const AddItem = ({ className, ...rest }) => {
                     type="number"
                   />
                 </Grid>
-                <Grid item md={3} xs={12}>
-                
-                <FormControlLabel  control={<Checkbox checked={values.highlight} name="highlight" onChange={handleChange} />}
-        label="Highlight"
-      />
+                <Grid item md={2} xs={3}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={values.highlight}
+                        name="highlight"
+                        onChange={handleChange}
+                      />
+                    }
+                    label="Highlight"
+                  />
                 </Grid>
 
-                <Grid item md={6} xs={12}>
+                <Grid item md={2} xs={3}>
                   <input
                     accept="image/*"
                     className={classes.input}
-                    id="outlined-button-file"
                     multiple
                     type="file"
-                    ref={inputEl}
+                    ref={fileEl}
                     onChange={fileChange}
+                    style={{display:"none"}}
                   />
-                  <label htmlFor="outlined-button-file">
-                    <ButtonBase onClick={() => onButtonClick()} />
-                  </label>
+                    <Button variant={image? 'contained' : 'outlined'} color="primary" onClick={() => onButtonClick()}>{image? image.name : 'Upload Pic'}</Button>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+
                   <TextField
                     error={Boolean(touched.description && errors.description)}
                     fullWidth
@@ -280,11 +290,30 @@ const AddItem = ({ className, ...rest }) => {
                   />
                 </Grid>
               </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  error={Boolean(touched.tags && errors.tags)}
+                  fullWidth
+                  helperText={touched.tags && errors.tags}
+                  label="Tags"
+                  margin="normal"
+                  name="tags"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.tags}
+                  variant="outlined"
+                />
+              </Grid>
             </CardContent>
             <Divider />
             <Box display="flex" justifyContent="flex-end" p={2}>
-              <Button color="primary" type="submit" variant="contained">
-                Save details
+              <Button
+                color="primary"
+                type="submit"
+                disabled={isSubmitting || !isFormValid(errors, touched)}
+                variant="contained"
+              >
+                Add
               </Button>
             </Box>
           </Card>
@@ -294,8 +323,8 @@ const AddItem = ({ className, ...rest }) => {
   );
 };
 
-AddItem.propTypes = {
+AddProduct.propTypes = {
   className: PropTypes.string,
 };
 
-export default AddItem;
+export default AddProduct;

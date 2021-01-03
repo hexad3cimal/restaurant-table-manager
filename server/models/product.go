@@ -3,25 +3,28 @@ package models
 import (
 	"table-booking/config"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type ProductModel struct {
-	ID          string    `db:"id, primarykey" json:"id"`
-	OrgId       string    `db:"org_id" json:"orgId"`
-	BranchId    string    `db:"branch_id" json:"branchId"`
-	BranchName  string    `db:"branch_name" json:"branchName"`
-	KitchenId   string    `db:"kitchen_id" json:"kitchenId"`
-	KitchenName string    `db:"kitchen_name" json:"kitchenName"`
-	Name        string    `db:"name" json:"name"`
-	Quantity    int       `db:"quantity" json:"quantity"`
-	Price       string    `db:"price" json:"price"`
-	Discount    int       `db:"discount" json:"discount"`
-	Description string    `db:"description" json:"description"`
-	Image       string    `db:"image" json:"image"`
-	Highlight   bool      `db:"highlight" json:"highlight"`
-	Active      bool      `db:"active" json:"active" sql:"DEFAULT:true"`
-	UpdatedAt   time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	CreatedAt   time.Time `db:"created_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	ID          string         `db:"id, primarykey" json:"id"`
+	OrgId       string         `db:"org_id" json:"orgId"`
+	BranchId    string         `db:"branch_id" json:"branchId"`
+	BranchName  string         `db:"branch_name" json:"branchName"`
+	KitchenId   string         `db:"kitchen_id" json:"kitchenId"`
+	KitchenName string         `db:"kitchen_name" json:"kitchenName"`
+	Name        string         `db:"name" json:"name"`
+	Quantity    int            `db:"quantity" json:"quantity"`
+	Price       string         `db:"price" json:"price"`
+	Tags        pq.StringArray `gorm:"type:string[] "db:"tags" json:"tags"`
+	Discount    int            `db:"discount" json:"discount"`
+	Description string         `db:"description" json:"description"`
+	Image       string         `db:"image" json:"image"`
+	Highlight   bool           `db:"highlight" json:"highlight"`
+	Active      bool           `db:"active" json:"active" sql:"DEFAULT:true"`
+	UpdatedAt   time.Time      `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt   time.Time      `db:"created_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
 
 type Product struct{}

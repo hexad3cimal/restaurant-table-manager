@@ -25,8 +25,8 @@ const ProductCard = ({ product }) => {
   });
 
   const onAdd = (product) => {
-    const productClone = Object.assign({}, product)
-    productClone.quantity = 1
+    const productClone = Object.assign({}, product);
+    productClone.quantity = 1;
     dispatch(addProductToOrder(productClone));
   };
 
@@ -36,7 +36,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Flip direction="vertical">
-      <Card style={{marginBottom: '1rem'}}>
+      <Card style={{ marginBottom: "1rem" }}>
         <CardContent>
           <Box display="flex" justifyContent="center" mb={3}>
             <Avatar alt="Product" src={product.image} variant="square" />
@@ -62,7 +62,7 @@ const ProductCard = ({ product }) => {
               }}
               aria-label="add"
             >
-              <ControlPointIcon />
+              <ControlPointIcon style={{ fill: "green" }} />
             </IconButton>
             <Typography
               align="center"
@@ -72,10 +72,13 @@ const ProductCard = ({ product }) => {
             >
               {selectedProduct && selectedProduct.quantity}
             </Typography>
-            <IconButton  onClick={() => {
+            <IconButton
+              onClick={() => {
                 onRemove(product);
-              }} aria-label="remove">
-              <IndeterminateCheckBoxIcon />
+              }}
+              aria-label="remove"
+            >
+              <IndeterminateCheckBoxIcon style={{ fill: "red" }} />
             </IconButton>
           </Grid>
         </Box>

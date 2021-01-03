@@ -53,6 +53,7 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.KitchenName = productForm.KitchenName
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
+	productModel.Tags = productForm.Tags
 	productModel.Discount = productForm.Discount
 	productModel.Highlight = productForm.Highlight
 	productModel.Description = productForm.Description

@@ -19,7 +19,7 @@ const Slider = ({ items }) => {
       style={{
         display: "flex",
         flexDirection: "row",
-        alignContent: "space-around"
+        justifyContent: "space-between"
       }}
     >
       {next ? (
@@ -32,8 +32,8 @@ const Slider = ({ items }) => {
         </Button>
       ) : null}
 
-      {itemsArray.map((item, index) => {
-        return <SliderCard item={item} />;
+      {itemsArray.map((item) => {
+        return <SliderCard key={item.id} item={item} />;
       })}
       <Button
         onClick={() => {
