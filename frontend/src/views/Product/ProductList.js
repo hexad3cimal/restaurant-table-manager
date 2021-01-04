@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -25,54 +25,27 @@ const useStyles = makeStyles(theme => ({
 
 const ProductList = ({ className, products, ...rest }) => {
   const classes = useStyles();
-  // const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
 
-  // const handleSelectAll = event => {
-  //   let newSelectedCustomerIds;
-
-  //   if (event.target.checked) {
-  //     newSelectedCustomerIds = branches.map(customer => customer.id);
-  //   } else {
-  //     newSelectedCustomerIds = [];
-  //   }
-
-  //   setSelectedCustomerIds(newSelectedCustomerIds);
-  // };
-
-  // const handleSelectOne = (event, id) => {
-  //   const selectedIndex = selectedCustomerIds.indexOf(id);
-  //   let newSelectedCustomerIds = [];
-
-  //   if (selectedIndex === -1) {
-  //     newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds, id);
-  //   } else if (selectedIndex === 0) {
-  //     newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(1));
-  //   } else if (selectedIndex === selectedCustomerIds.length - 1) {
-  //     newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(0, -1));
-  //   } else if (selectedIndex > 0) {
-  //     newSelectedCustomerIds = newSelectedCustomerIds.concat(
-  //       selectedCustomerIds.slice(0, selectedIndex),
-  //       selectedCustomerIds.slice(selectedIndex + 1),
-  //     );
-  //   }
-
-  //   setSelectedCustomerIds(newSelectedCustomerIds);
-  // };
-
+  const [tableRows, setTableRows] = useState([])
   const handleLimitChange = event => {
     setLimit(event.target.value);
   };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
+    setTableRows(products.slice(newPage*limit,((newPage*limit)+limit) > products.length ? products.length :  (newPage*limit)+limit))
   };
+
+  useEffect(()=>{
+    setTableRows(products.slice(0,limit))
+  },[limit])
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
       <PerfectScrollbar>
-        <Box minWidth={1050}>
+        <Box >
           <Table>
             <TableHead>
               <TableRow>
@@ -90,10 +63,12 @@ const ProductList = ({ className, products, ...rest }) => {
                 <TableCell>Name</TableCell>
                 <TableCell>Price</TableCell>
                 <TableCell>Description</TableCell>
+                <TableCell>Tags</TableCell>
+
               </TableRow>
             </TableHead>
             <TableBody>
-              {products && products.slice(0, limit).map(product => (
+              {tableRows.map(product => (
                 <TableRow
                   hover
                   key={product.id}
@@ -117,6 +92,8 @@ const ProductList = ({ className, products, ...rest }) => {
                   </TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.description}</TableCell>
+                  <TableCell>{product.tags}</TableCell>
+
                   {/* <TableCell>{moment(customer.createdAt).format('DD/MM/YYYY')}</TableCell> */}
                 </TableRow>
               ))}
@@ -127,7 +104,7 @@ const ProductList = ({ className, products, ...rest }) => {
       <TablePagination
         component="div"
         count={products.length}
-        onChangePage={handlePageChange}
+        onChangePage={(event, newPage) => handlePageChange(event, newPage)}
         onChangeRowsPerPage={handleLimitChange}
         page={page}
         rowsPerPage={limit}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 	"table-booking/config"
 	"table-booking/helpers"
 	"table-booking/mappers"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	"github.com/twinj/uuid"
 )
 
@@ -53,7 +55,13 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.KitchenName = productForm.KitchenName
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
-	productModel.Tags = productForm.Tags
+	tags := strings.Split(productForm.Tags, ",")
+	logger.Info("productForm.Tags", productForm.Tags)
+
+	logger.Info("tags", tags)
+	productModel.Tags = pq.StringArray(tags)
+	logger.Info("Tags", productModel.Tags)
+
 	productModel.Discount = productForm.Discount
 	productModel.Highlight = productForm.Highlight
 	productModel.Description = productForm.Description

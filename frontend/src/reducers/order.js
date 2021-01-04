@@ -35,12 +35,15 @@ export default {
         const product = draft.selectedProducts.find((p) => {
           return payload.id === p.id;
         });
-        if (product ) {
+        if (product) {
           draft.selectedProducts = draft.selectedProducts.map((p) => {
-           if(p.id === product.id){p.quantity = p.quantity + 1 }
+           if(p.id === product.id){p.quantity = p.quantity + 1;
+            p.cost = parseInt(p.quantity) * parseInt(payload.price)
+          }
             return p;
           });
         } else {
+          payload.cost = payload.price
           draft.selectedProducts = [...draft.selectedProducts, payload];
         }
       },
@@ -48,7 +51,10 @@ export default {
         draft.selectedProducts  = draft.selectedProducts.filter((p) => {
           if(payload.id === p.id){
             p.quantity =  p.quantity-1
-            if(p.quantity)return true
+            if(p.quantity){
+              p.cost = parseInt(p.quantity) * parseInt(payload.price)
+              return true
+            }
             return false
           }else{
             return true

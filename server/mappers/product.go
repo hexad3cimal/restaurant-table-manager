@@ -11,7 +11,7 @@ type ProductForm struct {
 	KitchenId   string                `form:"kitchenId" binding:"required"`
 	KitchenName string                `form:"kitchenName" binding:"required"`
 	Description string                `form:"description" binding:"required"`
-	Tags        []string              `form:"tags`
+	Tags        string                `form:"tags"`
 	Image       *multipart.FileHeader `form:"file"  binding:"omitempty"`
 	Price       string                `form:"price" binding:"required"`
 	Quantity    int                   `form:"quantity"`

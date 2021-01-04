@@ -115,7 +115,6 @@ const AddProduct = ({ className, ...rest }) => {
         [])[0];
 
         values.file = image;
-        values.tags = values.tags.split(",");
         const form = new FormData();
         for (let value in values) {
           form.append(value, values[value]);
@@ -128,7 +127,6 @@ const AddProduct = ({ className, ...rest }) => {
         handleBlur,
         handleChange,
         handleSubmit,
-        isSubmitting,
         touched,
         values,
       }) => (
@@ -310,7 +308,7 @@ const AddProduct = ({ className, ...rest }) => {
               <Button
                 color="primary"
                 type="submit"
-                disabled={isSubmitting || !isFormValid(errors, touched)}
+                disabled={!isFormValid(errors, touched)}
                 variant="contained"
               >
                 Add

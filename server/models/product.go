@@ -17,7 +17,7 @@ type ProductModel struct {
 	Name        string         `db:"name" json:"name"`
 	Quantity    int            `db:"quantity" json:"quantity"`
 	Price       string         `db:"price" json:"price"`
-	Tags        pq.StringArray `gorm:"type:string[] "db:"tags" json:"tags"`
+	Tags        pq.StringArray `gorm:"type:text[];"db:"tags" json:"tags"`
 	Discount    int            `db:"discount" json:"discount"`
 	Description string         `db:"description" json:"description"`
 	Image       string         `db:"image" json:"image"`

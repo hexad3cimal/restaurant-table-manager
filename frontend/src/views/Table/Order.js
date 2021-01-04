@@ -19,6 +19,7 @@ import {
   InputAdornment,
   SvgIcon,
   TextField,
+  Typography,
   // TextField,
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
@@ -58,11 +59,19 @@ const Order = ({ className, table, ...rest }) => {
   }, [productsInState]);
 
   return (
-    <Grid container spacing={3}>
-      <Grid lg={12}>
+    <Grid container>
+      <Grid spacing={3} xs={12}>
+        <Typography
+          align="center"
+          color="textPrimary"
+          gutterBottom
+          variant="h4"
+        >
+          Top ordered dishes
+        </Typography>
         <Slider items={topProductsOfBranch} />
       </Grid>
-      <Grid lg={8}>
+      <Grid lg={7} style={{ margin: "1rem" }}>
         <Box>
           <Card style={{ marginBottom: "1rem" }}>
             <CardContent>
@@ -88,11 +97,19 @@ const Order = ({ className, table, ...rest }) => {
             </CardContent>
           </Card>
         </Box>
-        {products.map((p) => {
-          return <ProductCard product={p} />;
-        })}
+        <Grid
+          style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+        >
+          {products.map((p) => {
+            return (
+              <Grid lg={6} xs={12}>
+                <ProductCard product={p} />
+              </Grid>
+            );
+          })}
+        </Grid>
       </Grid>
-      <Grid lg={4}>
+      <Grid style={{ marginTop: "1rem" }} lg={4}>
         <Cart />
       </Grid>
     </Grid>

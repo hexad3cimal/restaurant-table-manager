@@ -13,14 +13,15 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/jinzhu/gorm v1.9.14
-	github.com/lib/pq v1.1.1
+	github.com/lib/pq v1.3.0
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
+	gorm.io/datatypes v1.0.0
 )

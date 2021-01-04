@@ -7,8 +7,9 @@ import {
   Divider,
   Grid,
   Typography,
-  Avatar,
   IconButton,
+  CardMedia,
+  makeStyles,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Flip } from "react-awesome-reveal";
@@ -16,7 +17,14 @@ import { addProductToOrder, removeProductFromOrder } from "../../actions";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import IndeterminateCheckBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 
+const useStyles = makeStyles({
+  media: {
+    height: 140,
+  },
+});
+
 const ProductCard = ({ product }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order) || {};
   const selectedProducts = orderState.selectedProducts || [];
@@ -36,21 +44,26 @@ const ProductCard = ({ product }) => {
 
   return (
     <Flip direction="vertical">
-      <Card style={{ marginBottom: "1rem" }}>
+      <Card style={{ margin: ".5rem" }}>
         <CardContent>
-          <Box display="flex" justifyContent="center" mb={3}>
-            <Avatar alt="Product" src={product.image} variant="square" />
-          </Box>
+          <CardMedia
+            image={product.image}
+            title={product.name}
+            className={classes.media}
+          />
           <Typography
             align="center"
-            color="textPrimary"
             gutterBottom
-            variant="h4"
+            variant="h5"
+            style={{ color: "black" }}
           >
             {product.name}
           </Typography>
-          <Typography align="center" color="textPrimary" variant="body1">
-            {product.descrption}
+          <Typography align="center" style={{ color: "black" }} variant="body2">
+            Rs {product.price}
+          </Typography>
+          <Typography align="center" color="grey" variant="body2">
+            {product.description}
           </Typography>
         </CardContent>
         <Divider />
@@ -61,24 +74,28 @@ const ProductCard = ({ product }) => {
                 onAdd(product);
               }}
               aria-label="add"
+              style={{fontSize:'1rem'}}
             >
-              <ControlPointIcon style={{ fill: "green" }} />
+              <ControlPointIcon style={{ fill: "green" }} /> Add
             </IconButton>
             <Typography
               align="center"
               color="textPrimary"
               gutterBottom
-              variant="h4"
+              style={{fontSize:'1rem'}}
+
             >
-              {selectedProduct && selectedProduct.quantity}
+              {selectedProduct && selectedProduct.quantity + ' Nos' } 
             </Typography>
             <IconButton
               onClick={() => {
                 onRemove(product);
               }}
               aria-label="remove"
+              style={{fontSize:'1rem'}}
+
             >
-              <IndeterminateCheckBoxIcon style={{ fill: "red" }} />
+              <IndeterminateCheckBoxIcon style={{ fill: "#f94144" }} /> Remove
             </IconButton>
           </Grid>
         </Box>
