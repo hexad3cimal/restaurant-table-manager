@@ -58,7 +58,10 @@ export function keyMirror(obj) {
 
 export const spread = produce(Object.assign);
 
-
+export const getRandomNumber = (limit) => {
+  const numbers = Array(limit).fill().map((_, index) => index + 1);
+  return numbers.sort(() => Math.random() - 0.5);
+}
 export const handleRefreshToken = (url) => {
   setTimeout( () => { request(url, {method: 'GET'})},1000*60*1)
 }

@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useRef,
   useState,
   //useState
 } from "react";
@@ -23,6 +24,7 @@ import {
   // TextField,
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
+import { getRandomNumber } from "../../modules/helpers";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getTopProductsOfBranch } from "../../actions";
@@ -34,6 +36,7 @@ const Order = ({ className, table, ...rest }) => {
   const dispatch = useDispatch();
   const productState = useSelector((state) => state.product);
   const [products, setProducts] = useState([]);
+  let colorArrayRef = useRef([])
   // const tableState = useSelector((state) => state.table);
   const branchState = useSelector((state) => state.branch);
   const topProductsOfBranch = (branchState && branchState.topProducts) || [];
@@ -42,6 +45,7 @@ const Order = ({ className, table, ...rest }) => {
   // const onTopProductClick = (product) => {
   //   setProduct(product.id)
   // };
+  if(colorArrayRef.current.length === 0)colorArrayRef.current= getRandomNumber(4)
   const handleSearch = (value) => {
     setProducts(
       productsInState.filter((product) => {
@@ -100,10 +104,10 @@ const Order = ({ className, table, ...rest }) => {
         <Grid
           style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
         >
-          {products.map((p) => {
+          {products.map((p,i) => {
             return (
               <Grid lg={6} xs={12}>
-                <ProductCard product={p} />
+                <ProductCard key={p.id} product={p} index={colorArrayRef.current[i%4]} />
               </Grid>
             );
           })}

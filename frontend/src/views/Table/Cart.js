@@ -5,15 +5,19 @@ import {
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Card,
+  CardActions,
+  CardContent,
   Divider,
+  Grid,
   makeStyles,
   Typography,
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import { Fade } from "react-awesome-reveal";
 
 import CartItem from "./CartItem";
 const useStyles = makeStyles((theme) => ({
@@ -55,10 +59,26 @@ const Cart = () => {
   const orderState = useSelector((state) => state.order) || {};
   const selectedProducts = orderState.selectedProducts || [];
   const classes = useStyles();
+  let totalCost = 0;
+  selectedProducts.forEach( p => {
+    if(p.cost>p.price)
+      totalCost =totalCost+parseInt(p.cost)
+      else{
+        totalCost =totalCost+parseInt(p.price)
+      }
+  })
   const renderCart = () => {
     if (isMobile) {
       return (
-        <Accordion  style={{ bottom: "0", position: "fixed", width:'90%' , overflow:'scroll'}}>
+        <Accordion
+          style={{
+            bottom: "0",
+            position: "fixed",
+            width: "90%",
+            maxHeight: "70vh",
+            overflow: "scroll",
+          }}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1c-content"
@@ -70,20 +90,18 @@ const Cart = () => {
               </Typography>
             </div>
           </AccordionSummary>
-          <AccordionDetails  className={classes.details}>
-          <PerfectScrollbar>
+          <AccordionDetails className={classes.details}>
             <Card
               style={{
                 display: "flex",
                 flexDirection: "column",
-                width:'100%'
+                width: "100%",
               }}
             >
               {selectedProducts.map((item) => {
                 return <CartItem key={item.id} item={item} />;
               })}
             </Card>
-            </PerfectScrollbar>
           </AccordionDetails>
           <Divider />
           <AccordionActions>
@@ -94,24 +112,41 @@ const Cart = () => {
     }
 
     return (
-      <Card
-        style={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Typography
-          gutterBottom
-          variant="h5"
-          style={{ padding: "1rem", color: "black" }}
-          component="h2"
+      <Fade>
+        <Card
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          Items in cart
-        </Typography>
-        {selectedProducts.map((item) => {
-          return <CartItem key={item.id} item={item} />;
-        })}
+          <Typography
+            gutterBottom
+            variant="h5"
+            style={{ padding: "1rem", color: "black" }}
+            component="h2"
+          >
+            Items in cart
+          </Typography>
+          {selectedProducts.map((item) => {
+            return <CartItem key={item.id} item={item} />;
+          })}
+        </Card>
+        {selectedProducts.length>0 ?  <Grid xs={12}>
+      <Fade>
+      <Card>
+        <CardContent>
+          <Box p={2}>
+      Total {totalCost}
+             
+          </Box>
+        </CardContent>
+        <CardActions>
+
+        </CardActions>
       </Card>
+      </Fade>
+    </Grid>: <div></div>}
+      </Fade>
     );
   };
 
