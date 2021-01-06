@@ -23,7 +23,19 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     border: "1px solid black",
-    color: "black",
+    color: theme.palette.text.primary,
+  },
+  productName: {
+    color: theme.palette.text.primary,
+    fontSize: '1.6rem'
+  },
+  price: {
+    color: theme.palette.text.primary,
+    fontSize: '1rem'
+  },
+  description: {
+    color: theme.palette.text.primary,
+    fontSize: '.7rem'
   },
   addButton: {
     fill: theme.colors.red,
@@ -42,7 +54,7 @@ const ProductCard = ({ product, index }) => {
     return p.id === product.id;
   });
 
-  const cardColors = ["", "#ffd166", "#06d6a0", "#9d4edd", "#8ac926"];
+  const cardColors = ["", "#ffd166", "#06d6a0", "#c77dff", "#8ac926"];
   const onAdd = (product) => {
     const productClone = Object.assign({}, product);
     productClone.quantity = 1;
@@ -65,17 +77,15 @@ const ProductCard = ({ product, index }) => {
             />
           )}
           <Typography
-            align="center"
             gutterBottom
-            variant="h5"
-            
+            className={classes.productName}
           >
             {product.name}
           </Typography>
-          <Typography align="center"  variant="body2">
+          <Typography  className={classes.price}>
             Rs {product.price}
           </Typography>
-          <Typography align="center" variant="body2">
+          <Typography className={classes.description}>
             {product.description}
           </Typography>
         </CardContent>

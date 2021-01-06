@@ -53,6 +53,9 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	orderModel.BranchName = table.BranchName
 	orderModel.TableId = table.ID
 	orderModel.Status = orderForm.Status
+	orderModel.Price = orderForm.Price
+	orderModel.Note = orderForm.Notes
+
 	orderModel.RefCode = helpers.GetString()
 
 	_, err := order.Add(orderModel)
@@ -68,6 +71,9 @@ func (ctrl OrderController) Add(c *gin.Context) {
 			orderItemModel.Status = orderForm.Status
 			orderItemModel.ProductId = productMapper.ProductId
 			orderItemModel.ProductName = productMapper.ProductName
+			orderItemModel.Quantity = productMapper.Quantity
+			orderItemModel.KitchenId = productMapper.KitchenId
+			orderItemModel.KitchenName = productMapper.KitchenName
 			orderItemModel.TableId = table.ID
 			_, orderItemAddError = orderItem.Add(orderItemModel)
 		}

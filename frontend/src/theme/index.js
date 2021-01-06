@@ -22,9 +22,10 @@ const theme = createMuiTheme({
   },
   colors: {
     red: '#e71d36',
-    cardColors: ["", "#ffd166", "#06d6a0", "#9d4edd", "#8ac926"],
+    cardColors: ["", "#ffd166", "#06d6a0", "#c77dff", "#8ac926"],
     green: "#548c27",
-    grey: '#8a817c'
+    grey: '#8a817c',
+    white:'#fefae0'
   },
 
   shadows,

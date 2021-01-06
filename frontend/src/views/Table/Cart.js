@@ -15,14 +15,35 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Fade } from "react-awesome-reveal";
 
 import CartItem from "./CartItem";
+import { addOrder } from "../../actions";
+import { Plus } from "react-feather";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+  },
+  emptyCart: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  emptyCartImage: {
+    width: "10rem",
+    alignSelf: "center",
+  },
+  emptyCartText: {
+    color: theme.palette.text.primary,
+    fontSize: "1.2rem",
+    alignSelf: "center",
+    paddingBottom: "1rem",
+  },
+  cartTitle: {
+    color: theme.palette.text.primary,
+    fontSize: "1.4rem",
+    padding: "1rem",
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -30,6 +51,13 @@ const useStyles = makeStyles((theme) => ({
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
+  },
+  orderButton: {
+    backgroundColor: theme.colors.green,
+  },
+  orderBox: {
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   icon: {
     verticalAlign: "bottom",
@@ -56,7 +84,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Cart = () => {
+  const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order) || {};
+  const tableState = useSelector((state) => state.table) || {};
   const selectedProducts = orderState.selectedProducts || [];
   const classes = useStyles();
   let totalCost = 0;
@@ -66,6 +96,14 @@ const Cart = () => {
       totalCost = totalCost + parseInt(p.price);
     }
   });
+  const placeOrder = () => {
+    const order = {}
+    order.tableId = tableState.selectedTable.id
+    order.products = selectedProducts;
+    order.price = totalCost.toString()
+    order.status= "ordered"
+    dispatch(addOrder(order));
+  };
   const renderCart = () => {
     if (isMobile) {
       return (
@@ -84,7 +122,7 @@ const Cart = () => {
             id="panel1c-header"
           >
             <div className={classes.column}>
-              <Typography className={classes.heading}>
+              <Typography className={classes.cartTitle}>
                 Items in your cart
               </Typography>
             </div>
@@ -104,7 +142,9 @@ const Cart = () => {
           </AccordionDetails>
           <Divider />
           <AccordionActions>
-            <Button size="small">Checkout</Button>
+            <Button className={classes.orderButton} size="small">
+              Checkout
+            </Button>
           </AccordionActions>
         </Accordion>
       );
@@ -116,16 +156,28 @@ const Cart = () => {
           style={{
             display: "flex",
             flexDirection: "column",
+            minHeight: "20vh",
           }}
         >
-          <Typography
-            gutterBottom
-            variant="h5"
-            style={{ padding: "1rem", color: "black" }}
-            component="h2"
-          >
-            Items in cart
+          <Typography gutterBottom className={classes.cartTitle} component="h2">
+            Items in your cart
           </Typography>
+          {selectedProducts.length === 0 && (
+            <Box className={classes.emptyCart}>
+              <img
+                alt="empty-cart"
+                src="/images/empty-plate.png"
+                className={classes.emptyCartImage}
+              />
+              <Typography
+                variant="h5"
+                component="h2"
+                className={classes.emptyCartText}
+              >
+                Uh, oh! your cart looks empty
+              </Typography>
+            </Box>
+          )}
           {selectedProducts.map((item) => {
             return <CartItem key={item.id} item={item} />;
           })}
@@ -135,10 +187,21 @@ const Cart = () => {
             <Fade>
               <Card>
                 <CardContent>
-                  <Box p={2}>
-                    <Typography align="right" gutterBottom variant="h5">
-                      Total {totalCost}
+                  <Box className={classes.orderBox}>
+                    <Typography gutterBottom variant="h5">
+                      Total Cost: {totalCost}
                     </Typography>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        placeOrder();
+                      }}
+                      disabled={!selectedProducts.length}
+                      className={classes.orderButton}
+                      endIcon={<Plus />}
+                    >
+                      Place Order
+                    </Button>
                   </Box>
                 </CardContent>
                 <CardActions></CardActions>

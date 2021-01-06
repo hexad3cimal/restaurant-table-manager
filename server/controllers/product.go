@@ -56,7 +56,6 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
 	tags := strings.Split(productForm.Tags, ",")
-	logger.Info("productForm.Tags", productForm.Tags)
 
 	logger.Info("tags", tags)
 	productModel.Tags = pq.StringArray(tags)
