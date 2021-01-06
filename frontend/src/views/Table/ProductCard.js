@@ -17,15 +17,21 @@ import { addProductToOrder, removeProductFromOrder } from "../../actions";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import IndeterminateCheckBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   media: {
     height: 140,
   },
   button: {
-    border: '1px solid black',
-    color: 'black'
-  }
-});
+    border: "1px solid black",
+    color: "black",
+  },
+  addButton: {
+    fill: theme.colors.red,
+  },
+  removeButton: {
+    fill: theme.colors.green,
+  },
+}));
 
 const ProductCard = ({ product, index }) => {
   const classes = useStyles();
@@ -62,14 +68,14 @@ const ProductCard = ({ product, index }) => {
             align="center"
             gutterBottom
             variant="h5"
-            style={{ color: "black" }}
+            
           >
             {product.name}
           </Typography>
-          <Typography align="center" style={{ color: "black" }} variant="body2">
+          <Typography align="center"  variant="body2">
             Rs {product.price}
           </Typography>
-          <Typography align="center" color="grey" variant="body2">
+          <Typography align="center" variant="body2">
             {product.description}
           </Typography>
         </CardContent>
@@ -83,7 +89,7 @@ const ProductCard = ({ product, index }) => {
                 onAdd(product);
               }}
               className={classes.button}
-              endIcon={<ControlPointIcon style={{ fill: "green" }} />}
+              endIcon={<ControlPointIcon className={classes.removeButton} />}
             >
               Add
             </Button>
@@ -105,7 +111,7 @@ const ProductCard = ({ product, index }) => {
               }}
               className={classes.button}
               endIcon={
-                <IndeterminateCheckBoxIcon style={{ fill: "#f94144" }} />
+                <IndeterminateCheckBoxIcon className={classes.addButton} />
               }
             >
               Remove

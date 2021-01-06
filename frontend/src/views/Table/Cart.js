@@ -60,13 +60,12 @@ const Cart = () => {
   const selectedProducts = orderState.selectedProducts || [];
   const classes = useStyles();
   let totalCost = 0;
-  selectedProducts.forEach( p => {
-    if(p.cost>p.price)
-      totalCost =totalCost+parseInt(p.cost)
-      else{
-        totalCost =totalCost+parseInt(p.price)
-      }
-  })
+  selectedProducts.forEach((p) => {
+    if (p.cost > p.price) totalCost = totalCost + parseInt(p.cost);
+    else {
+      totalCost = totalCost + parseInt(p.price);
+    }
+  });
   const renderCart = () => {
     if (isMobile) {
       return (
@@ -131,21 +130,24 @@ const Cart = () => {
             return <CartItem key={item.id} item={item} />;
           })}
         </Card>
-        {selectedProducts.length>0 ?  <Grid xs={12}>
-      <Fade>
-      <Card>
-        <CardContent>
-          <Box p={2}>
-      Total {totalCost}
-             
-          </Box>
-        </CardContent>
-        <CardActions>
-
-        </CardActions>
-      </Card>
-      </Fade>
-    </Grid>: <div></div>}
+        {selectedProducts.length > 0 ? (
+          <Grid xs={12}>
+            <Fade>
+              <Card>
+                <CardContent>
+                  <Box p={2}>
+                    <Typography align="right" gutterBottom variant="h5">
+                      Total {totalCost}
+                    </Typography>
+                  </Box>
+                </CardContent>
+                <CardActions></CardActions>
+              </Card>
+            </Fade>
+          </Grid>
+        ) : (
+          <div></div>
+        )}
       </Fade>
     );
   };
