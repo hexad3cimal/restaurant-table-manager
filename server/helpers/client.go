@@ -38,6 +38,12 @@ type JoinDisconnectPayload struct {
 
 // CreateNewSocketUser creates a new socket user
 func CreateNewSocketUser(hub *Hub, connection *websocket.Conn, username string, userId string) {
+	clients := getAllConnectedUsers(hub)
+	for _, alreadyRegisteredClient := range clients {
+		if alreadyRegisteredClient.UserID == userId {
+			return
+		}
+	}
 	client := &Client{
 		hub:                 hub,
 		webSocketConnection: connection,
@@ -78,7 +84,7 @@ func HandleUserDisconnectEvent(hub *Hub, client *Client) {
 // EmitToSpecificClient will emit the socket event to specific socket user
 func EmitToSpecificClient(hub *Hub, payload SocketEventStruct, userID string) {
 	for client := range hub.clients {
-		logger.Info(client.UserID)
+		logger.Info(client)
 		if client.UserID == userID {
 			select {
 			case client.send <- payload:
@@ -111,7 +117,6 @@ func handleSocketPayloadEvents(client *Client, socketEventPayload SocketEventStr
 			EventName: socketEventPayload.EventName,
 			EventPayload: JoinDisconnectPayload{
 				UserID: client.UserID,
-				Users:  getAllConnectedUsers(client.hub),
 			},
 		})
 
@@ -121,7 +126,6 @@ func handleSocketPayloadEvents(client *Client, socketEventPayload SocketEventStr
 			EventName: socketEventPayload.EventName,
 			EventPayload: JoinDisconnectPayload{
 				UserID: client.UserID,
-				Users:  getAllConnectedUsers(client.hub),
 			},
 		})
 

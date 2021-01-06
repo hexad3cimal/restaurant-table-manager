@@ -3462,3 +3462,29 @@
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T17:48:45+05:30"}
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T17:48:45+05:30"}
 {"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T17:48:45+05:30"}
+{"function":"Add","level":"error","line":"42","msg":"user not allowed for ordering 6981cc4a-a98e-46ea-8397-b5912b8b8ba0","time":"2021-01-06T19:21:54+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T19:22:30+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T19:22:30+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T19:22:30+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T19:22:40+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T19:22:40+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T19:22:40+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T20:03:21+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for iftar-kalpetta","time":"2021-01-06T21:17:35+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"176","msg":"error: %vEOF","time":"2021-01-06T21:18:17+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:32:38+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:37:11+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:38:10+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:38:50+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:41:17+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:41:37+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:42:31+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:42:31+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:45:08+05:30"}
+{"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:45:13+05:30"}

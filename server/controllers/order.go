@@ -76,6 +76,10 @@ func (ctrl OrderController) Add(c *gin.Context) {
 			orderItemModel.KitchenName = productMapper.KitchenName
 			orderItemModel.TableId = table.ID
 			_, orderItemAddError = orderItem.Add(orderItemModel)
+			if orderItemAddError == nil {
+
+				helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderItemModel}, orderItemModel.KitchenId)
+			}
 		}
 		if orderItemAddError != nil {
 			order.DeleteById(orderModel.ID)
@@ -103,7 +107,6 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		for _, user := range users {
 			helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, user.ID)
 		}
-		// helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderModel}, orderModel.KitchenId)
 
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {

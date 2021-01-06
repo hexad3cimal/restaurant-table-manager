@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import NavBar from './NavBar';
@@ -36,8 +36,12 @@ const useStyles = makeStyles(theme => ({
 const DashboardLayout = () => {
   const classes = useStyles();
   const [isMobileNavOpen, setMobileNavOpen] = useState(false);
-  socketConnection();
+  const connection = socketConnection();
+useEffect(()=>{
+  console.log(connection)
+  connection.onmessage = (message)=>{alert(message)}
 
+},[connection])
   return (
     <div className={classes.root}>
       <TopBar onMobileNavOpen={() => setMobileNavOpen(true)} />

@@ -14,6 +14,8 @@ func main() {
 	config.InitConfig()
 	config.InitDB()
 	helpers.InitHub()
+	hub := helpers.GetHub()
+	go hub.Run()
 	db := config.GetDB()
 	db.AutoMigrate(&models.OrganizationModel{})
 	db.AutoMigrate(&models.UserModel{})

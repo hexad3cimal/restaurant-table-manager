@@ -9,7 +9,6 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/twinj/uuid"
 )
 
@@ -113,22 +112,9 @@ func InitRouter() {
 	router.NoRoute(func(c *gin.Context) {
 		c.File("../ui/build/index.html")
 	})
-	router.Any("/events", AuthMiddleware(), func(c *gin.Context) {
-		hub := helpers.GetHub()
-		go hub.Run()
+	socket := new(controllers.SocketController)
 
-		var upgrader = websocket.Upgrader{
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
-			CheckOrigin:     func(r *http.Request) bool { return true },
-		}
-
-		connection, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			panic(err)
-		}
-		helpers.CreateNewSocketUser(hub, connection, c.GetHeader("user_name"), c.GetHeader("user_id"))
-	})
+	router.Any("/events", AuthMiddleware(), socket.Handle)
 	router.Run(":" + config.GetConfig().Port)
 
 }
