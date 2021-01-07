@@ -58,7 +58,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 	orderModel.RefCode = helpers.GetString()
 
-	_, err := order.Add(orderModel)
+	addedOrder, err := order.Add(orderModel)
 	if err == nil {
 		var orderItemAddError error
 		for _, productMapper := range orderForm.Products {
@@ -75,6 +75,8 @@ func (ctrl OrderController) Add(c *gin.Context) {
 			orderItemModel.KitchenId = productMapper.KitchenId
 			orderItemModel.KitchenName = productMapper.KitchenName
 			orderItemModel.TableId = table.ID
+			orderItemModel.OrderId = addedOrder.ID
+
 			_, orderItemAddError = orderItem.Add(orderItemModel)
 			if orderItemAddError == nil {
 

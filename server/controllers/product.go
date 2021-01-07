@@ -178,7 +178,7 @@ func (ctrl ProductController) GetTopProducts(c *gin.Context) {
 	var products []models.ProductModel
 	var error error
 	if userRoleName == "admin" {
-		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
+		products, error = product.GetMostOrderedProductsOfBranch(tokenModel.OrgId)
 
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})

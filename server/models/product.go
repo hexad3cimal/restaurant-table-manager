@@ -42,7 +42,7 @@ func (product Product) Add(productModel ProductModel) (returnModel ProductModel,
 func (product Product) GetMostOrderedProductsOfBranch(branchId string) (returnModel []ProductModel, err error) {
 
 	//err = config.GetDB().Limit(10).Table("product_models").Select("product_models.*,count(product_models.id) as productCount").Joins("join order_models on product_models.id = order_models.product_id").Where("product_models.branch_id = ?", branchId).Group("product_models.id").Find(&returnModel).Error
-	err = config.GetDB().Raw("SELECT product_models.*,count(product_models.id) as productCount 	FROM product_models join order_models on product_models.id = order_models.product_id WHERE product_models.branch_id = ? GROUP BY product_models.id ORDER BY productCount desc LIMIT 10", branchId).Find(&returnModel).Error
+	err = config.GetDB().Raw("SELECT product_models.*,count(product_models.id) as productCount 	FROM product_models join order_item_models on product_models.id = order_item_models.product_id WHERE product_models.branch_id = ? GROUP BY product_models.id ORDER BY productCount desc LIMIT 10", branchId).Find(&returnModel).Error
 	if err != nil {
 
 		return []ProductModel{}, err
