@@ -115,18 +115,12 @@ func handleSocketPayloadEvents(client *Client, socketEventPayload SocketEventStr
 		logger.Info("Join Event triggered")
 		BroadcastSocketEventToAllClient(client.hub, SocketEventStruct{
 			EventName: socketEventPayload.EventName,
-			EventPayload: JoinDisconnectPayload{
-				UserID: client.UserID,
-			},
 		})
 
 	case "disconnect":
 		logger.Info("Disconnect Event triggered")
 		BroadcastSocketEventToAllClient(client.hub, SocketEventStruct{
 			EventName: socketEventPayload.EventName,
-			EventPayload: JoinDisconnectPayload{
-				UserID: client.UserID,
-			},
 		})
 
 	case "message":

@@ -1,15 +1,12 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  //useState
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
 import {
   Box,
+  Button,
   Card,
   CardContent,
+  FormControl,
   //Button,
   //Card,
   //CardContent,
@@ -18,40 +15,85 @@ import {
   //CardHeader,
   Grid,
   InputAdornment,
+  InputLabel,
+  makeStyles,
+  MenuItem,
+  Select,
   SvgIcon,
   TextField,
-  Typography,
   // TextField,
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
-import { getRandomNumber } from "../../modules/helpers";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getTopProductsOfBranch } from "../../actions";
-import Slider from "./Slider";
 import ProductCard from "./ProductCard";
 import Cart from "./Cart";
+const useStyles = makeStyles((theme) => ({
+  sortBy: {
+    width: "10rem",
+  },
+  helperBox: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: "1rem",
+    justifyContent: "space-between",
+  },
+}));
 
-const Order = ({ className, table, ...rest }) => {
+const Order = ({ className, table}) => {
   const dispatch = useDispatch();
+  const classes = useStyles();
   const productState = useSelector((state) => state.product);
   const [products, setProducts] = useState([]);
-  let colorArrayRef = useRef([])
+  const sortBy = useRef('');
+  const searchBy = useRef('');
+
   // const tableState = useSelector((state) => state.table);
   const branchState = useSelector((state) => state.branch);
   const topProductsOfBranch = (branchState && branchState.topProducts) || [];
   const productsInState = (productState && productState.products) || [];
-  // const [product, setProduct] = useState(null);
-  // const onTopProductClick = (product) => {
-  //   setProduct(product.id)
-  // };
-  if(colorArrayRef.current.length === 0)colorArrayRef.current= getRandomNumber(4)
   const handleSearch = (value) => {
+    searchBy.current = value;
     setProducts(
       productsInState.filter((product) => {
         return product.name.toLowerCase().includes(value.toLowerCase());
       })
     );
+  };
+
+  const sortItems = (sort) => {
+    let productsClone = productsInState.slice(0);
+    sortBy.current = sort;
+    if (searchBy.current) {
+      productsClone = productsClone.filter((product) => {
+        return product.name
+          .toLowerCase()
+          .includes(searchBy.current.toLowerCase());
+      });
+    }
+    switch (sort) {
+      case "ascending":
+        setProducts(
+          productsClone.sort((prod1, prod2) =>
+            prod1.price.localeCompare(prod2.price, { numeric: true })
+          )
+        );
+        break;
+      case "descending":
+        setProducts(
+          productsClone.sort((prod1, prod2) =>
+            prod2.price.localeCompare(prod1.price, { numeric: true })
+          )
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleTopProductsClick = () => {
+    setProducts(topProductsOfBranch);
   };
 
   useEffect(() => {
@@ -64,39 +106,57 @@ const Order = ({ className, table, ...rest }) => {
 
   return (
     <Grid container>
-      <Grid spacing={3} xs={12}>
-        <Typography
-          align="center"
-          color="textPrimary"
-          gutterBottom
-          variant="h4"
-        >
-          Top ordered dishes
-        </Typography>
-        <Slider items={topProductsOfBranch} />
-      </Grid>
       <Grid lg={7} style={{ margin: "1rem" }}>
         <Box>
           <Card style={{ marginBottom: "1rem" }}>
             <CardContent>
-              <Box>
-                <TextField
-                  fullWidth
-                  onChange={(event) => {
-                    handleSearch(event.target.value);
+              <TextField
+                fullWidth
+                onChange={(event) => {
+                  handleSearch(event.target.value);
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SvgIcon fontSize="small" color="action">
+                        <SearchIcon />
+                      </SvgIcon>
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder="Search for dishes"
+                variant="outlined"
+                value={searchBy.current}
+              />
+              <Box className={classes.helperBox}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    handleTopProductsClick();
                   }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SvgIcon fontSize="small" color="action">
-                          <SearchIcon />
-                        </SvgIcon>
-                      </InputAdornment>
-                    ),
-                  }}
-                  placeholder="Search for dishes"
-                  variant="outlined"
-                />
+                  className={classes.button}
+                >
+                  Top ordered
+                </Button>
+                <FormControl className={classes.sortBy} variant="outlined">
+                  <InputLabel id="demo-simple-select-outlined-label">
+                    Sort by
+                  </InputLabel>
+                  <Select
+                    value={sortBy.current}
+                    onChange={(event) => {
+                      sortItems(event.target.value);
+                    }}
+                    label="Sort by"
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value={"ascending"}>Price low to high</MenuItem>
+                    <MenuItem value={"descending"}>Price high to low</MenuItem>
+                  </Select>
+                </FormControl>
               </Box>
             </CardContent>
           </Card>
@@ -104,10 +164,10 @@ const Order = ({ className, table, ...rest }) => {
         <Grid
           style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
         >
-          {products.map((p,i) => {
+          {products.map((p, i) => {
             return (
               <Grid lg={6} xs={12}>
-                <ProductCard key={p.id} product={p} index={colorArrayRef.current[i%4]} />
+                <ProductCard key={p.id} product={p} />
               </Grid>
             );
           })}

@@ -46,7 +46,7 @@ const CartItem = ({ item }) => {
     <Grid xs={12}>
       <Fade>
         <Card>
-          <CardContent>
+          <CardContent style={{padding: 'unset'}}>
             <Box p={2}>
               <Grid container justify="space-around" spacing={2}>
                 <Grid xs={3}>

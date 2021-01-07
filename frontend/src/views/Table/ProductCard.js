@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.primary,
     fontSize: '1.6rem'
   },
+  productCard:{
+    margin: ".5rem",
+    backgroundColor: theme.colors.white
+  },
   price: {
     color: theme.palette.text.primary,
     fontSize: '1rem'
@@ -45,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProductCard = ({ product, index }) => {
+const ProductCard = ({ product }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order) || {};
@@ -54,7 +58,6 @@ const ProductCard = ({ product, index }) => {
     return p.id === product.id;
   });
 
-  const cardColors = ["", "#ffd166", "#06d6a0", "#c77dff", "#8ac926"];
   const onAdd = (product) => {
     const productClone = Object.assign({}, product);
     productClone.quantity = 1;
@@ -67,7 +70,7 @@ const ProductCard = ({ product, index }) => {
 
   return (
     <Flip direction="vertical">
-      <Card style={{ margin: ".5rem", background: cardColors[index] }}>
+      <Card className={classes.productCard} >
         <CardContent>
           {product.image && (
             <CardMedia

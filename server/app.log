@@ -3488,3 +3488,8 @@
 {"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:42:31+05:30"}
 {"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:45:08+05:30"}
 {"function":"readPump","level":"error","line":"180","msg":"error: %vEOF","time":"2021-01-06T21:45:13+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T12:29:45+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T12:52:38+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T20:08:28+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T20:16:02+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T20:18:13+05:30"}
