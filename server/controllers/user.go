@@ -25,36 +25,46 @@ func (ctrl UserController) Login(c *gin.Context) {
 		return
 	}
 
-	loggerInUser, loginErr := user.Login(loginForm)
+	loggedInUser, loginErr := user.Login(loginForm)
 	if loginErr != nil {
 		logger.Error(" login failed for " + loginForm.UserName)
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": loginErr.Error()})
 		c.Abort()
 		return
 	}
-	tokenDetails, tokenError := auth.CreateToken()
-	if tokenError == nil {
+	if !loggedInUser.Active {
+		logger.Error(" In active user " + loginForm.UserName)
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": loginErr.Error()})
+		c.Abort()
+		return
+	}
 
-		tokenModel.BranchId = loggerInUser.BranchId
-		tokenModel.Email = loggerInUser.Email
-		tokenModel.UserId = loggerInUser.ID
-		tokenModel.OrgId = loggerInUser.OrgId
-		tokenModel.RoleId = loggerInUser.RoleId
+	tokenDetails, tokenError := auth.CreateToken()
+
+	if tokenError == nil {
+		tokenModel.BranchId = loggedInUser.BranchId
+		tokenModel.Email = loggedInUser.Email
+		tokenModel.UserId = loggedInUser.ID
+		tokenModel.OrgId = loggedInUser.OrgId
+		tokenModel.RoleId = loggedInUser.RoleId
 		tokenModel.AccessToken = tokenDetails.AccessToken
 		tokenModel.RefreshToken = tokenDetails.RefreshToken
 		tokenModel.ID = tokenDetails.AccessUUID
+
+		//Add token to db with required details
 		_, tokenAddError := token.Add(tokenModel)
 		if tokenAddError == nil {
 			c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
-			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggerInUser.Name, "role": loggerInUser.Role.Name})
+			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name, "role": loggedInUser.Role.Name})
 			c.Abort()
 			return
-			// c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": user.Name, "token": token.AccessToken, "refresh-token": token.RefreshToken})
 		}
+
 		logger.Error(" login failed for " + loginForm.UserName)
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenAddError.Error()})
-
+		c.Abort()
+		return
 	}
 
 	c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": tokenError.Error()})

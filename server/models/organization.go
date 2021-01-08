@@ -12,6 +12,7 @@ type OrganizationModel struct {
 	Email     string    `db:"email" json:"email"`
 	Address   string    `db:"name" json:"address"`
 	Contact   string    `db:"contact" json:"contact"`
+	Active    bool      `db:"active" json:"-" sql:"DEFAULT:true"`
 	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }

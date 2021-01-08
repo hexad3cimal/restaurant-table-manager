@@ -20,8 +20,8 @@ type UserModel struct {
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
 	LoginCode          string    `db:"login_code" json:"loginCode"`
-	Active             bool      `db:"active" json:"-"`
-	Locked             bool      `db:"locked" json:"-"`
+	Active             bool      `db:"active" json:"-" sql:"DEFAULT:true"`
+	Locked             bool      `db:"locked" json:"-" sql:"DEFAULT:false"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
 	Name               string    `db:"name" json:"name"`
 	UserName           string    `db:"user_name" json:"userName"`
