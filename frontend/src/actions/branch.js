@@ -9,7 +9,7 @@ export const {
   branchesGet: getBranches,
   branchGetTopProducts: getTopProductsOfBranch
 } = createActions({
-  [ActionTypes.BRANCH_ADD_INITIATE]: () => ({}),
+  [ActionTypes.BRANCH_ADD_INITIATE]: payload => payload,
   [ActionTypes.BRANCH_ADD]: payload => payload,
   [ActionTypes.BRANCH_GET]: payload => payload,
   [ActionTypes.BRANCHES_GET]: () => ({}),

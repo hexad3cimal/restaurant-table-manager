@@ -34,7 +34,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 	}
 	if !loggedInUser.Active {
 		logger.Error(" In active user " + loginForm.UserName)
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details", "error": loginErr.Error()})
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid login details"})
 		c.Abort()
 		return
 	}
@@ -56,7 +56,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		if tokenAddError == nil {
 			c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
-			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name, "role": loggedInUser.Role.Name})
+			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name, "role": loggedInUser.Role.Name, "org": loggedInUser.Organization.Name})
 			c.Abort()
 			return
 		}
@@ -114,6 +114,8 @@ func (ctrl UserController) Register(c *gin.Context) {
 	userModel.OrgId = addedOrganization.ID
 	userModel.UserName = registerForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(registerForm.UserName)
+	userModel.Active = true
+	userModel.Locked = false
 	bytePassword := []byte(registerForm.Password)
 	hashedPassword, passwordHashErr := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if passwordHashErr != nil {

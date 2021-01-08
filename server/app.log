@@ -3494,3 +3494,9 @@
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T20:16:02+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T20:18:13+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-07T23:20:03+05:30"}
+{"function":"Login","level":"error","line":"36","msg":" In active user jovin","time":"2021-01-08T13:03:14+05:30"}
+{"function":"Login","level":"error","line":"36","msg":" In active user jovin","time":"2021-01-08T13:07:43+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-08T15:39:01+05:30"}
+{"function":"Login","level":"error","line":"36","msg":" In active user jovin","time":"2021-01-08T15:59:25+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-08T16:00:12+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-08T16:01:12+05:30"}

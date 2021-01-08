@@ -20,22 +20,23 @@ type UserModel struct {
 	Password           []byte    `db:"password" json:"-"`
 	ForgotPasswordCode string    `db:"forgot_password" json:"-"`
 	LoginCode          string    `db:"login_code" json:"loginCode"`
-	Active             bool      `db:"active" json:"-" sql:"DEFAULT:true"`
-	Locked             bool      `db:"locked" json:"-" sql:"DEFAULT:false"`
+	Active             bool      `db:"active" json:"-" gorm:"default:true"`
+	Locked             bool      `db:"locked" json:"-" gorm:"default:false"`
 	LockedUntil        time.Time `db:"locked_until" json:"-"`
 	Name               string    `db:"name" json:"name"`
 	UserName           string    `db:"user_name" json:"userName"`
 	UserNameLowerCase  string    `db:"user_name_lower_case" json:"userNameLower"`
-	UpdatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	CreatedAt          time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	Role               RoleModel
+	UpdatedAt          time.Time `db:"updated_at"  gorm:"default:current_timestamp"`
+	CreatedAt          time.Time `db:"created_at" json:"-" gorm:"default:current_timestamp"`
+	Role               RoleModel `gorm:"foreignKey:roleID;references:id"`
+	Organization       OrganizationModel
 }
 type User struct {
 }
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
-	config.GetDB().Where("user_name=?", form.UserName).First(&user)
+	config.GetDB().Preload("Organization").Preload("Role").Where("user_name=?", form.UserName).First(&user)
 
 	bytePassword := []byte(form.Password)
 	byteHashedPassword := []byte(user.Password)
@@ -46,7 +47,7 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 		return user, errors.New("invalid password")
 	}
 
-	if user.Locked == true {
+	if user.Locked {
 		return user, errors.New("user is locked")
 	}
 

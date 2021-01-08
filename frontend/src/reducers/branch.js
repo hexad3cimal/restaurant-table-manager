@@ -15,8 +15,8 @@ export const branchState = {
 export default {
   branch: handleActions(
     {
-      [ActionTypes.BRANCH_ADD_INITIATE]: draft => {
-        draft.add = true;
+      [ActionTypes.BRANCH_ADD_INITIATE]: (draft, { payload }) => {
+        draft.add = payload;
       },
       [ActionTypes.BRANCH_ADD]: draft => {
         draft.status = STATUS.RUNNING;

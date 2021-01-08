@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import * as Yup from "yup";
 import { Formik } from "formik";
 import {
   Box,
@@ -32,21 +31,116 @@ const RegisterView = () => {
   const dispatch = useDispatch();
   const appState = useSelector((state) => state.app);
   const user = useSelector((state) => state.user);
-  const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{5,})");
+  const formErrors = useRef({});
+  const formValues = useRef({});
+
+  const passwordRegex = new RegExp(
+    "^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{5,})"
+  );
+  const emailRegex = new RegExp(
+    "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+  );
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
 
     if (user.registered) navigate("/login");
   }
+
+  const remoteValidate = async (url) => {
+    const result = await request(url)
+      .then((response) => {
+        if (response.data === true) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .catch((error) => {
+        return false;
+      });
+    return result;
+  };
+
+  const errorRules = {
+    newEmail: {
+      required: true,
+      remoteValidate: true,
+      url: `${window.restAppConfig.api}user/validate?email`,
+      regex: emailRegex,
+      errorMessages: {
+        required: "Email is Required",
+        remoteValidate: "Email already Taken",
+        regex: "Enter a valid email",
+      },
+    },
+    newUserName: {
+      required: true,
+      remoteValidate: true,
+      url: `${window.restAppConfig.api}user/validate?username`,
+      errorMessages: {
+        required: "Username is Required",
+        remoteValidate: "Username already Taken",
+      },
+    },
+    newPassword: {
+      required: true,
+      regex: passwordRegex,
+      errorMessages: {
+        required: "Password is Required",
+        regex:
+          "Password should contain at least 1 numeric,special character and be of atleast 5 characters",
+      },
+    },
+    passwordConfirm: {
+      required: true,
+      compareWith: "newPassword",
+      errorMessages: {
+        required: "Please confirm the password",
+        compareWith: "Password doesn't match",
+      },
+    },
+    name: {
+      required: true,
+      errorMessages: { required: "Full name is Required" },
+    },
+  };
+  const validate = async (values) => {
+    const errors = {};
+    for (let value in values) {
+      if (errorRules[value].required && !values[value]) {
+        errors[value] = errorRules[value]["errorMessages"]["required"];
+      }
+      if (errorRules[value].remoteValidate) {
+        if (
+          formValues.current[value] !== values[value] ||
+          formErrors.current[value]
+        ) {
+          const result = await remoteValidate(
+            `${errorRules[value].url}=${values[value]}`
+          );
+          if (!result)
+            errors[value] =
+              errorRules[value]["errorMessages"]["remoteValidate"];
+        }
+      }
+      if (errorRules[value].regex) {
+        if (!errorRules[value].regex.test(values[value]))
+          errors[value] = errorRules[value]["errorMessages"]["regex"];
+      }
+      if (errorRules[value].compareWith) {
+        if (values[value] !== values[errorRules[value]["compareWith"]])
+          errors[value] = errorRules[value]["errorMessages"]["compareWith"];
+      }
+    }
+
+    formErrors.current = errors;
+    formValues.current = values;
+    return errors;
+  };
   return (
     <Page className={classes.root} title="Register">
-      <Box
-        display="flex"
-        flexDirection="column"
-        height="100%"
-        justifyContent="center"
-      >
+      <Box display="flex" height="100%" justifyContent="center">
         <Container maxWidth="sm">
           <Formik
             initialValues={{
@@ -56,73 +150,7 @@ const RegisterView = () => {
               newPassword: "",
               passwordConfirm: "",
             }}
-            validationSchema={Yup.object().shape({
-              newEmail: Yup.string()
-                .email("Must be a valid email")
-                .test("checkEmail", "Email already taken", function (email) {
-                  return new Promise((resolve, reject) => {
-                    request(
-                      `${window.restAppConfig.api}/user/validate?email=${email}`
-                    )
-                      .then((response) => {
-                        if (response.data === true) resolve(true);
-                        else {
-                          resolve(false);
-                        }
-                      })
-                      .catch((error) => {
-                        resolve(false);
-                      });
-                  });
-                })
-                .required("Email is required"),
-              newUserName: Yup.string()
-                .test(
-                  "checkUsername",
-                  "Username already taken",
-                  function (username) {
-                    return new Promise((resolve, reject) => {
-                      request(
-                        `${window.restAppConfig.api}/user/validate?username=${username}`
-                      )
-                        .then((response) => {
-                          if (response.data === true) resolve(true);
-                          else {
-                            resolve(false);
-                          }
-                        })
-                        .catch((error) => {
-                          resolve(false);
-                        });
-                    });
-                  }
-                )
-                .required("username is required"),
-              newPassword: Yup.string().test(
-                "passwordComplexity",
-                "Password should contain at least 1 numeric,special character and be of atleast 5 characters",
-                function (newPassword) {
-                  return new Promise((resolve, reject) => {
-                    if (passwordRegex.test(newPassword)) resolve(true);
-                    resolve(false);
-                  });
-                }
-              )
-                .max(20)
-                .required("password is required"),
-              passwordConfirm: Yup.string()
-                .test(
-                  "confirmPasswordCheck",
-                  "Password doesn't match",
-                  function (passwordConfirm) {
-                    return new Promise((resolve, reject) => {
-                      if (this.parent.newPassword === passwordConfirm) resolve(true);
-                      resolve(false);
-                    });
-                  }
-                )
-                .required("Please confirm password"),
-            })}
+            validate={validate}
             onSubmit={(values) => {
               values.org = true;
               dispatch(register(values));
@@ -147,7 +175,7 @@ const RegisterView = () => {
                     gutterBottom
                     variant="body2"
                   >
-                    Use your email to create new account
+                    Fill in details to create new account
                   </Typography>
                 </Box>
                 <TextField

@@ -14,7 +14,7 @@ import {
   TextField,
   makeStyles,
 } from '@material-ui/core';
-import { addBranch } from '../../actions';
+import { addBranch, initiateBranchAdd } from '../../actions';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { request } from '../../modules/client';
@@ -171,9 +171,12 @@ const AddBranch = ({ className, ...rest }) => {
               </Grid>
             </CardContent>
             <Divider />
-            <Box display="flex" justifyContent="flex-end" p={2}>
+            <Box display="flex" justifyContent="space-between" p={2}>
+            <Button color="secondary"  onClick={()=> dispatch(initiateBranchAdd(false))} type="button" variant="contained">
+                Go back
+              </Button>
               <Button color="primary" type="submit" variant="contained">
-                Save details
+                Add Branch
               </Button>
             </Box>
           </Card>
