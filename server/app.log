@@ -3500,3 +3500,4 @@
 {"function":"Login","level":"error","line":"36","msg":" In active user jovin","time":"2021-01-08T15:59:25+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-08T16:00:12+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-08T16:01:12+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for jovin1","time":"2021-01-09T21:53:51+05:30"}

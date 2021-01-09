@@ -67,7 +67,7 @@ const LoginView = () => {
     <Page className={classes.root} title="Login">
       <Box className={classes.box}>
         <Container className={classes.box} flexDirection="row">
-        <Grid item md={12} xs={0} className={classes.homeBox}>
+        <Grid item md={12} xs={false} className={classes.homeBox}>
         </Grid>
         <Grid className={classes.loginBox} item md={12} xs={12}>
           <Formik
