@@ -114,6 +114,7 @@ const LoginView = () => {
                   label="Username"
                   margin="normal"
                   name="userName"
+                  type="text"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.userName}
@@ -140,6 +141,7 @@ const LoginView = () => {
                     size="large"
                     type="submit"
                     variant="contained"
+                    data-testid="label"
                   >
                     Sign in now
                   </Button>
