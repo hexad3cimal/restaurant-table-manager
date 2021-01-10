@@ -14,13 +14,17 @@ import (
 
 type BranchController struct{}
 
-func (ctrl BranchController) Add(c *gin.Context) {
+func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 	var branchForm mappers.BranchForm
-
 	if c.ShouldBindJSON(&branchForm) != nil {
-		logger.Error("inavlid branch form ")
+		logger.Error("invalid branch form ")
 
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid request"})
+		c.Abort()
+		return
+	}
+	if !branchForm.Edit && branchForm.Password == "" {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "Invalid request"})
 		c.Abort()
 		return
 	}
@@ -35,7 +39,14 @@ func (ctrl BranchController) Add(c *gin.Context) {
 		return
 	}
 	userModel.OrgId = tokenModel.OrgId
-	userModel.ID = uuid.NewV4().String()
+	if branchForm.Edit {
+		userModel.ID = branchForm.Id
+		userModel.BranchId = branchForm.BranchId
+	} else {
+		userModel.ID = uuid.NewV4().String()
+		userModel.ForgotPasswordCode = uuid.NewV4().String()
+		userModel.BranchId = uuid.NewV4().String()
+	}
 
 	//get branch role for current organisation
 	roleModel, roleGetError := role.GetRoleByNameAndOrgId("manager", tokenModel.OrgId)
@@ -48,20 +59,22 @@ func (ctrl BranchController) Add(c *gin.Context) {
 	//add new user with branch role
 	userModel.RoleId = roleModel.ID
 	userModel.RoleName = roleModel.Name
-	bytePassword := []byte(branchForm.Password)
-	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
+	if branchForm.Password != "" {
+		bytePassword := []byte(branchForm.Password)
+		hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		userModel.Password = hashedPassword
 	}
+
 	userModel.UserName = branchForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(branchForm.UserName)
 
 	userModel.Email = branchForm.Email
-	userModel.Password = hashedPassword
-	userModel.ForgotPasswordCode = uuid.NewV4().String()
-	userModel.BranchId = uuid.NewV4().String()
+
 	branchUserModel, userError := user.Register(userModel)
 
 	if userError != nil {
@@ -70,32 +83,35 @@ func (ctrl BranchController) Add(c *gin.Context) {
 		return
 	}
 
-	//get branch role for current organisation
-	kitchenRoleModel, kitchenRoleGetError := role.GetRoleByNameAndOrgId("kitchen", tokenModel.OrgId)
-	if kitchenRoleGetError != nil {
-		user.DeleteById(userModel.ID)
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
+	if !branchForm.Edit {
+		//get branch role for current organisation
+		kitchenRoleModel, kitchenRoleGetError := role.GetRoleByNameAndOrgId("kitchen", tokenModel.OrgId)
+		if kitchenRoleGetError != nil {
+			user.DeleteById(userModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+		userModel.Name = branchForm.Name
+		userModel.UserName = branchForm.UserName + "-kitchen"
+		userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
+		userModel.RoleId = kitchenRoleModel.ID
+		userModel.RoleName = kitchenRoleModel.Name
+		userModel.Email = branchForm.Email
+		userModel.Password = branchUserModel.Password
+		userModel.ForgotPasswordCode = uuid.NewV4().String()
+		userModel.BranchId = branchUserModel.ID
+		userModel.ID = uuid.NewV4().String()
+		_, kitchenUserError := user.Register(userModel)
+		if kitchenUserError != nil {
+			user.DeleteById(branchUserModel.ID)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
 	}
 
-	userModel.Name = branchForm.Name
-	userModel.UserName = branchForm.UserName + "-kitchen"
-	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
-	userModel.RoleId = kitchenRoleModel.ID
-	userModel.RoleName = kitchenRoleModel.Name
-	userModel.Email = branchForm.Email
-	userModel.Password = hashedPassword
-	userModel.ForgotPasswordCode = uuid.NewV4().String()
-	userModel.BranchId = branchUserModel.ID
-	userModel.ID = uuid.NewV4().String()
-	_, kitchenUserError := user.Register(userModel)
-	if kitchenUserError != nil {
-		user.DeleteById(branchUserModel.ID)
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
 	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 }
 

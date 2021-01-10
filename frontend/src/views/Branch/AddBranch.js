@@ -10,7 +10,7 @@ import {
   Grid,
   TextField,
 } from '@material-ui/core';
-import { addBranch, hideAlert, initiateBranchAdd } from '../../actions';
+import { addBranch, hideAlert, initiateBranchAdd, setBranch as setBranchInState } from '../../actions';
 import { Formik } from 'formik';
 import { isFormValid, remoteValidate } from '../../modules/helpers';
 import Toast from '../../modules/toast';
@@ -33,6 +33,7 @@ const AddBranch = () => {
     passwordConfirm: '',
     email: '',
     contact: '',
+    edit: false
   })
 
   const passwordRegex = new RegExp(
@@ -62,14 +63,14 @@ const AddBranch = () => {
     newUserName: {
       required: true,
       remoteValidate: true,
-      url: `${window.restAppConfig.api}user/validate?username`,
+      url: branch.id ? `${window.restAppConfig.api}user/validate?username&edit=${branch.id}` : `${window.restAppConfig.api}user/validate?username`,
       errorMessages: {
         required: "Username is Required",
         remoteValidate: "Username already Taken",
       },
     },
     newPassword: {
-      required: branchState.selectedBranch ? false: true,
+      required: branch.id ? false: true,
       regex: passwordRegex,
       errorMessages: {
         required: "Password is Required",
@@ -78,7 +79,7 @@ const AddBranch = () => {
       },
     },
     passwordConfirm: {
-      required: branchState.selectedBranch ? false: true,
+      required: branch.id ? false: true,
       compareWith: "newPassword",
       errorMessages: {
         required: "Please confirm the password",
@@ -90,6 +91,11 @@ const AddBranch = () => {
       errorMessages: { required: "Full name is Required" },
     },
   };
+
+  const back = ()=>{
+    dispatch(initiateBranchAdd(false))
+    dispatch(setBranchInState({}))
+  }
   
   const validate = async (values) => {
     const errors = {};
@@ -132,8 +138,9 @@ const AddBranch = () => {
     <Formik
     enableReinitialize
       initialValues={branch}
-     validate={validate}
+      validate={validate}
       onSubmit={(values,formik) => {
+        if(branch.id)values.edit=true
         dispatch(addBranch(values));
         formik.setSubmitting(false);
       }}
@@ -144,7 +151,7 @@ const AddBranch = () => {
           autoComplete="off"
         >
           <Card>
-            <CardHeader subheader="Add new branch" title="Add new branch" />
+            <CardHeader title={branch.id? "Edit branch" : "Add new branch"}/>
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
@@ -219,9 +226,9 @@ const AddBranch = () => {
                     value={values.newPassword}
                     variant="outlined"
                     type="password"
+                    autoComplete="off"
                   />
                 </Grid>
-
                 <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.passwordConfirm && errors.passwordConfirm)}
@@ -258,11 +265,11 @@ const AddBranch = () => {
             </CardContent>
             <Divider />
             <Box display="flex" justifyContent="space-between" p={2}>
-            <Button color="secondary"  onClick={()=> dispatch(initiateBranchAdd(false))} type="button" variant="contained">
+            <Button color="secondary"  onClick={()=> {back()}} type="button" variant="contained">
                 Go back
               </Button>
               <Button color="primary" type="submit"  disabled={isSubmitting || !isFormValid(errors, touched)} variant="contained">
-                Add Branch
+                {branch.id ? 'Update Branch' : 'Add Branch'}
               </Button>
             </Box>
           </Card>

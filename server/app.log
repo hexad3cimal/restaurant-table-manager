@@ -3513,3 +3513,8 @@
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T19:15:05+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T19:25:03+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T19:40:58+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T21:18:01+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T21:18:02+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T21:18:02+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T22:16:44+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T22:19:58+05:30"}

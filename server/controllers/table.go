@@ -16,7 +16,6 @@ type TableController struct{}
 
 func (ctrl TableController) AddOrEdit(c *gin.Context) {
 	var tableForm mappers.TableForm
-	var userModel models.UserModel
 	var userGetError error
 	if c.ShouldBindJSON(&tableForm) != nil {
 		logger.Error(c.ShouldBindJSON(&tableForm))
