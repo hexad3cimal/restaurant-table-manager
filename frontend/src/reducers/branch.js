@@ -5,6 +5,7 @@ import { STATUS, ActionTypes } from '../constants/index';
 export const branchState = {
   status: STATUS.IDLE,
   add: false,
+  edit:false,
   new: false,
   error: null,
   branches: [],
@@ -61,6 +62,10 @@ export default {
         draft.status = STATUS.READY;
         draft.selectedBranch = payload;
         draft.new = false;
+      },
+      [ActionTypes.BRANCH_SET_IN_STATE]: (draft, { payload }) => {
+        draft.selectedBranch = payload;
+        draft.edit = true;
       },
       [ActionTypes.BRANCH_GET_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;

@@ -6,9 +6,6 @@ import (
 	"table-booking/models"
 )
 
-var branch = new(models.Branch)
-var branchModel models.BranchModel
-
 var user = new(models.User)
 var userModel models.UserModel
 
@@ -20,7 +17,6 @@ var tableModel models.TableModel
 
 var logger = config.InitLogger()
 
-var org = new(models.Organization)
 var auth = new(authutils.Auth)
 
 var productModel models.ProductModel

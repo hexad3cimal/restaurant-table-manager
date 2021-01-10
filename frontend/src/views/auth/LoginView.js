@@ -52,11 +52,11 @@ const LoginView = () => {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
     if (user.isAuthenticated) {
-      if(user.role === 'table'){
+      if(user.user.role === 'table'){
         navigate('/table', { replace: true });
         return;
       }
-      if(user.role === 'kitchen'){
+      if(user.user.role === 'kitchen'){
         navigate('/kitchen', { replace: true });
         return;
       }

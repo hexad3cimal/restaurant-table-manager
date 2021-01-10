@@ -65,3 +65,18 @@ export const getRandomNumber = (limit) => {
 export const handleRefreshToken = (url) => {
   setTimeout( () => { request(url, {method: 'GET'})},1000*60*1)
 }
+
+export const remoteValidate = async (url) => {
+  const result = await request(url)
+    .then((response) => {
+      if (response.data === true) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch((error) => {
+      return false;
+    });
+  return result;
+};

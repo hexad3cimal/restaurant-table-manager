@@ -14,8 +14,7 @@ import Page from "../../components/Page";
 import { useDispatch, useSelector } from "react-redux";
 import { register, hideAlert } from "../../actions";
 import Toast from "../../modules/toast";
-import { isFormValid } from "../../modules/helpers";
-import { request } from "../../modules/client";
+import { isFormValid, remoteValidate } from "../../modules/helpers";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -47,20 +46,7 @@ const RegisterView = () => {
     if (user.registered) navigate("/login");
   }
 
-  const remoteValidate = async (url) => {
-    const result = await request(url)
-      .then((response) => {
-        if (response.data === true) {
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch((error) => {
-        return false;
-      });
-    return result;
-  };
+  
 
   const errorRules = {
     newEmail: {

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import PerfectScrollbar from "react-perfect-scrollbar";
 import {
   Box,
   Card,
@@ -17,32 +16,37 @@ import {
   TextField,
   InputAdornment,
   SvgIcon,
-} from '@material-ui/core';
-import { Search as SearchIcon } from 'react-feather';
+  Button,
+} from "@material-ui/core";
+import { Search as SearchIcon } from "react-feather";
+import { useDispatch } from "react-redux";
+import { initiateBranchAdd, setBranch } from "../../actions";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {},
-  avatar: {
-    marginRight: theme.spacing(2),
-  },
 }));
 
-const Results = ({ className, branches, ...rest }) => {
+const Results = ({ branches }) => {
   const classes = useStyles();
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const dispatch = useDispatch();
 
-  const handleLimitChange = event => {
+  const handleLimitChange = (event) => {
     setLimit(event.target.value);
   };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
+  const onEdit = (branch) => {
+    dispatch(setBranch(branch))
+    dispatch(initiateBranchAdd(true))
+  };
 
   return (
-    <Card className={clsx(classes.root, className)} {...rest}>
-            <Box mt={3}>
+    <Card className={classes.root}>
+      <Box mt={3}>
         <Card>
           <CardContent>
             <Box maxWidth={500}>
@@ -69,51 +73,35 @@ const Results = ({ className, branches, ...rest }) => {
           <Table>
             <TableHead>
               <TableRow>
-                {/* <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedCustomerIds.length === customers.length}
-                    color="primary"
-                    indeterminate={
-                      selectedCustomerIds.length > 0 &&
-                      selectedCustomerIds.length < customers.length
-                    }
-                    onChange={handleSelectAll}
-                  />
-                </TableCell> */}
                 <TableCell>Name</TableCell>
                 <TableCell>Address</TableCell>
                 <TableCell>Phone</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {branches && branches.slice(0, limit).map(branch => (
-                <TableRow
-                  hover
-                  key={branch.id}
-                  // selected={selectedCustomerIds.indexOf(customer.id) !== -1}
-                >
-                  {/* <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCustomerIds.indexOf(customer.id) !== -1}
-                      onChange={event => handleSelectOne(event, customer.id)}
-                      value="true"
-                    />
-                  </TableCell> */}
-                  <TableCell>
-                    <Box alignItems="center" display="flex">
-                      {/* <Avatar className={classes.avatar} src={customer.avatarUrl}>
-                        {getInitials(customer.name)}
-                      </Avatar> */}
-                      <Typography color="textPrimary" variant="body1">
-                        {branch.name}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>{branch.address}</TableCell>
-                  <TableCell>{branch.contact}</TableCell>
-                  {/* <TableCell>{moment(customer.createdAt).format('DD/MM/YYYY')}</TableCell> */}
-                </TableRow>
-              ))}
+              {branches &&
+                branches.slice(0, limit).map((branch) => (
+                  <TableRow hover key={branch.id}>
+                    <TableCell>
+                      <Box alignItems="center" display="flex">
+                        <Typography color="textPrimary" variant="body1">
+                          {branch.name}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{branch.address}</TableCell>
+                    <TableCell>{branch.contact}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        onClick={() => onEdit(branch)}
+                      >
+                        Edit
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </Box>

@@ -12,7 +12,7 @@ const Toolbar = ({ className, ...rest }) => {
   const dispatch = useDispatch();
 
   return (
-      <Box display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="flex-end" style={{margin:'1rem'}}>
         <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
           Add branch
         </Button>

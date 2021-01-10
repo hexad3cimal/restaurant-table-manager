@@ -56,7 +56,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		if tokenAddError == nil {
 			c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
-			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name, "role": loggedInUser.Role.Name, "org": loggedInUser.Organization.Name})
+			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name, "role": loggedInUser.Role.Name})
 			c.Abort()
 			return
 		}
@@ -74,36 +74,24 @@ func (ctrl UserController) Login(c *gin.Context) {
 
 func (ctrl UserController) Register(c *gin.Context) {
 	var registerForm mappers.RegisterForm
-	var roleModel models.RoleModel
-	var organization models.OrganizationModel
-	var userModel models.UserModel
 
 	if c.ShouldBindJSON(&registerForm) != nil {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
 		c.Abort()
 		return
 	}
-	organization.Name = registerForm.FullName
-	organization.Email = registerForm.Email
-	organization.Address = registerForm.Address
-	organization.Contact = registerForm.Contact
-	organization.ID = uuid.NewV4().String()
-	addedOrganization, addOrgError := org.Add(organization)
-	if addOrgError != nil {
-		logger.Error(" Add org failed for email "+organization.Email+" and name "+organization.Name, addOrgError.Error)
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": addOrgError.Error()})
-		c.Abort()
-		return
-	}
-
-	//add admin role
+	userModel.Name = registerForm.FullName
+	userModel.Email = registerForm.Email
+	userModel.Address = registerForm.Address
+	userModel.Contact = registerForm.Contact
+	userModel.ID = uuid.NewV4().String()
+	userModel.OrgId = uuid.NewV4().String()
+	userModel.RoleName = "admin"
 	roleModel.Name = "admin"
-	roleModel.OrgId = addedOrganization.ID
+	roleModel.OrgId = userModel.OrgId
 	roleModel.ID = uuid.NewV4().String()
 	_, roleAddErr := role.Add(roleModel)
 	if roleAddErr != nil {
-		org.DeleteById(addedOrganization.ID)
-
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error occured"})
 		c.Abort()
 		return
@@ -111,7 +99,6 @@ func (ctrl UserController) Register(c *gin.Context) {
 
 	//create admin user
 	userModel.RoleId = roleModel.ID
-	userModel.OrgId = addedOrganization.ID
 	userModel.UserName = registerForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(registerForm.UserName)
 	userModel.Active = true
@@ -122,27 +109,19 @@ func (ctrl UserController) Register(c *gin.Context) {
 		//delete created admin role
 		role.DeleteById(roleModel.ID)
 		//delete created organization
-		org.DeleteById(addedOrganization.ID)
-
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error occured"})
 		c.Abort()
 		return
 	}
 
-	userModel.Name = registerForm.FullName
-	userModel.Email = registerForm.Email
 	userModel.Password = hashedPassword
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
 	userModel.ID = uuid.NewV4().String()
 	adminUser, adminUserAddErr := user.Register(userModel)
 
 	if adminUserAddErr != nil {
-
 		//delete created admin role
 		role.DeleteById(roleModel.ID)
-		//delete created organization
-		org.DeleteById(addedOrganization.ID)
-
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error occured"})
 		c.Abort()
 		return
@@ -157,9 +136,6 @@ func (ctrl UserController) Register(c *gin.Context) {
 		user.DeleteById(adminUser.ID)
 		//delete created admin role
 		role.DeleteById(adminUser.RoleId)
-		//delete created organization
-		org.DeleteById(addedOrganization.ID)
-
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error occured"})
 		c.Abort()
 		return
@@ -175,9 +151,6 @@ func (ctrl UserController) Register(c *gin.Context) {
 		role.DeleteById(adminUser.RoleId)
 		//delete table role
 		role.DeleteById(tableRole.ID)
-		//delete organization
-		org.DeleteById(addedOrganization.ID)
-
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error occured"})
 		c.Abort()
 		return
@@ -195,8 +168,6 @@ func (ctrl UserController) Register(c *gin.Context) {
 		role.DeleteById(tableRole.ID)
 		//delete manager role
 		role.DeleteById(managerRole.ID)
-		//delete organization
-		org.DeleteById(addedOrganization.ID)
 
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error occured"})
 		c.Abort()

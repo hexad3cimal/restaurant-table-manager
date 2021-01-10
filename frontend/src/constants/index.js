@@ -33,6 +33,7 @@ export const ActionTypes = keyMirror({
   BRANCHES_GET_SUCCESS: undefined,
   BRANCHES_GET_FAILURE: undefined,
   BRANCH_GET_TOP_PRODUCTS: undefined,
+  BRANCH_SET_IN_STATE: undefined,
   BRANCH_GET_TOP_PRODUCTS_SUCCESS: undefined,
   BRANCH_GET_TOP_PRODUCTS_FAILURE: undefined,
   TABLE_ADD_INITIATE: undefined,
