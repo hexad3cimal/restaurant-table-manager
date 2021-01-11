@@ -160,7 +160,7 @@ func (u User) GetUsersByBranchIdAndRoleId(branchId string, roleId string) (users
 	return users, nil
 }
 func (u User) DeleteById(userId string) (user UserModel, err error) {
-	err = config.GetDB().Where("ID=?", userId).Where("active=?", true).Delete(&user).Error
+	err = config.GetDB().Model(&UserModel{}).Where("ID=?", userId).Where("active=?", true).Update("active", false).Error
 	if err != nil {
 		return UserModel{}, err
 	}
@@ -169,7 +169,7 @@ func (u User) DeleteById(userId string) (user UserModel, err error) {
 }
 
 func (u User) DeleteByBranchId(branchId string) (user UserModel, err error) {
-	err = config.GetDB().Where("branch_id=?", branchId).Where("active=?", true).Delete(&user).Error
+	err = config.GetDB().Model(&UserModel{}).Where("branch_id=?", branchId).Where("active=?", true).Update("active", false).Error
 	if err != nil {
 		return UserModel{}, err
 	}
