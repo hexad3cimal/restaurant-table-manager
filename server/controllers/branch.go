@@ -17,7 +17,7 @@ type BranchController struct{}
 func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 	var branchForm mappers.BranchForm
 	if c.ShouldBindJSON(&branchForm) != nil {
-		logger.Error("invalid branch form ")
+		logger.Error("invalid branch form ", c.ShouldBindJSON(&branchForm))
 
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid request"})
 		c.Abort()
@@ -28,7 +28,13 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
+	if branchForm.Edit {
+		userModel, _ = user.GetUserById(branchForm.Id)
+	} else {
+		userModel.ID = uuid.NewV4().String()
+		userModel.ForgotPasswordCode = uuid.NewV4().String()
+		userModel.BranchId = uuid.NewV4().String()
+	}
 	userModel.Address = branchForm.Address
 	userModel.Contact = branchForm.Contact
 	userModel.Name = branchForm.Name
@@ -101,7 +107,7 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 		userModel.Email = branchForm.Email
 		userModel.Password = branchUserModel.Password
 		userModel.ForgotPasswordCode = uuid.NewV4().String()
-		userModel.BranchId = branchUserModel.ID
+		userModel.BranchId = branchUserModel.BranchId
 		userModel.ID = uuid.NewV4().String()
 		_, kitchenUserError := user.Register(userModel)
 		if kitchenUserError != nil {
@@ -113,6 +119,20 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
+}
+
+func (ctrl BranchController) Delete(c *gin.Context) {
+	branchId, gotBranchId := c.GetQuery("id")
+
+	if gotBranchId == true {
+		_, _ = user.DeleteByBranchId(branchId)
+		c.JSON(http.StatusAccepted, gin.H{"message": "success"})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	c.Abort()
+	return
 }
 
 func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {

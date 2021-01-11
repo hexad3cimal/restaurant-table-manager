@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -51,6 +51,8 @@ const LoginView = () => {
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
+  }
+  useEffect(()=>{
     if (user.isAuthenticated) {
       if(user.user.role === 'table'){
         navigate('/table', { replace: true });
@@ -62,11 +64,12 @@ const LoginView = () => {
       }
       navigate('/app/dashboard', { replace: true });
     }
-  }
+  },[user.isAuthenticated])
+ 
   return (
     <Page className={classes.root} title="Login">
       <Box className={classes.box}>
-        <Container className={classes.box} flexDirection="row">
+        <Container className={classes.box}>
         <Grid item md={12} xs={false} className={classes.homeBox}>
         </Grid>
         <Grid className={classes.loginBox} item md={12} xs={12}>

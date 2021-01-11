@@ -70,6 +70,36 @@ export function* getById({ id }) {
 }
 
 /**
+ * delete branch by id
+ */
+export function* deleteById({ payload }) {
+  try {
+    yield request(`${window.restAppConfig.api}branch?id=${payload.branchId}`, {
+      method: 'DELETE',
+    });
+
+    yield put({
+      type: ActionTypes.BRANCH_DELETE_SUCCESS,
+    });
+    put({
+      type: ActionTypes.SHOW_ALERT,
+      payload: 'Deleted branch successfully',
+    })
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.DELETE_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: 'Error while gettting branch details, please retry',
+      }),
+    ]);
+  }
+}
+/**
  * Get branches
  */
 export function* getBranches() {
@@ -133,6 +163,7 @@ export default function* root() {
   yield all([
     takeLatest(ActionTypes.BRANCH_ADD, add),
     takeLatest(ActionTypes.BRANCH_GET, getById),
+    takeLatest(ActionTypes.BRANCH_DELETE, deleteById),
     takeLatest(ActionTypes.BRANCHES_GET, getBranches),
     takeLatest(ActionTypes.BRANCH_GET_TOP_PRODUCTS, getTopProducts),
   ]);

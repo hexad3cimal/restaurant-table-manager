@@ -7,6 +7,7 @@ import (
 
 	"time"
 
+	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,7 +39,7 @@ type User struct {
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
-	config.GetDB().Where("user_name=?", form.UserName).Preload("Role").First(&user)
+	config.GetDB().Where("user_name=?", form.UserName).Where("active=?", true).Preload("Role").First(&user)
 
 	bytePassword := []byte(form.Password)
 	byteHashedPassword := []byte(user.Password)
@@ -58,7 +59,7 @@ func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
 func (u User) EmailTaken(email string) (status bool, err error) {
 	var user UserModel
-	if !config.GetDB().Where("email=?", email).First(&user).RecordNotFound() {
+	if !config.GetDB().Where("email=?", email).Where("active=?", true).First(&user).RecordNotFound() {
 
 		return false, errors.New("email already taken")
 	}
@@ -76,7 +77,7 @@ func (u User) Register(user UserModel) (addedUser UserModel, err error) {
 }
 
 func (u User) GetUserById(userId string) (user UserModel, err error) {
-	err = config.GetDB().Where("ID=?", userId).First(&user).Error
+	err = config.GetDB().Where("ID=?", userId).Where("active=?", true).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}
@@ -85,7 +86,7 @@ func (u User) GetUserById(userId string) (user UserModel, err error) {
 }
 
 func (u User) GetUserByUsername(userName string) (user UserModel, err error) {
-	err = config.GetDB().Where("user_name_lower_case=?", userName).First(&user).Error
+	err = config.GetDB().Where("user_name_lower_case=?", userName).Where("active=?", true).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}
@@ -94,7 +95,7 @@ func (u User) GetUserByUsername(userName string) (user UserModel, err error) {
 }
 
 func (u User) GetUserByEmail(email string) (user UserModel, err error) {
-	err = config.GetDB().Where("email=?", email).First(&user).Error
+	err = config.GetDB().Where("email=?", email).Where("active=?", true).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}
@@ -103,7 +104,7 @@ func (u User) GetUserByEmail(email string) (user UserModel, err error) {
 }
 
 func (u User) GetUserByLoginCode(code string) (user UserModel, err error) {
-	err = config.GetDB().Where("login_code=?", code).First(&user).Error
+	err = config.GetDB().Where("login_code=?", code).Where("active=?", true).First(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}
@@ -112,7 +113,10 @@ func (u User) GetUserByLoginCode(code string) (user UserModel, err error) {
 }
 
 func (u User) GetUsersByBranchId(branchId string) (users []UserModel, err error) {
-	err = config.GetDB().Where("branch_id=?", branchId).Find(&users).Error
+	err = config.GetDB().Where("branch_id=?", branchId).Where("active=?", true).Find(&users).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return []UserModel{}, nil
+	}
 	if err != nil {
 		return []UserModel{}, err
 	}
@@ -121,7 +125,10 @@ func (u User) GetUsersByBranchId(branchId string) (users []UserModel, err error)
 }
 
 func (u User) GetUsersByOrgId(orgId string, roleName string) (users []UserModel, err error) {
-	err = config.GetDB().Where("org_id=?", orgId).Where("role_name=?", roleName).Find(&users).Error
+	err = config.GetDB().Where("org_id=?", orgId).Where("role_name=?", roleName).Where("active=?", true).Find(&users).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return []UserModel{}, nil
+	}
 	if err != nil {
 		return []UserModel{}, err
 	}
@@ -130,7 +137,10 @@ func (u User) GetUsersByOrgId(orgId string, roleName string) (users []UserModel,
 }
 
 func (u User) GetUsersByOrgIdAndRoleId(orgId string, roleId string) (users []UserModel, err error) {
-	err = config.GetDB().Where("org_id=?", orgId).Where("role_id=?", roleId).Find(&users).Error
+	err = config.GetDB().Where("org_id=?", orgId).Where("role_id=?", roleId).Where("active=?", true).Find(&users).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return []UserModel{}, nil
+	}
 	if err != nil {
 		return []UserModel{}, err
 	}
@@ -139,7 +149,10 @@ func (u User) GetUsersByOrgIdAndRoleId(orgId string, roleId string) (users []Use
 }
 
 func (u User) GetUsersByBranchIdAndRoleId(branchId string, roleId string) (users []UserModel, err error) {
-	err = config.GetDB().Where("branch_id=?", branchId).Where("role_id=?", roleId).Find(&users).Error
+	err = config.GetDB().Where("branch_id=?", branchId).Where("role_id=?", roleId).Where("active=?", true).Find(&users).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return []UserModel{}, nil
+	}
 	if err != nil {
 		return []UserModel{}, err
 	}
@@ -147,7 +160,16 @@ func (u User) GetUsersByBranchIdAndRoleId(branchId string, roleId string) (users
 	return users, nil
 }
 func (u User) DeleteById(userId string) (user UserModel, err error) {
-	err = config.GetDB().Where("ID=?", userId).Delete(&user).Error
+	err = config.GetDB().Where("ID=?", userId).Where("active=?", true).Delete(&user).Error
+	if err != nil {
+		return UserModel{}, err
+	}
+
+	return user, nil
+}
+
+func (u User) DeleteByBranchId(branchId string) (user UserModel, err error) {
+	err = config.GetDB().Where("branch_id=?", branchId).Where("active=?", true).Delete(&user).Error
 	if err != nil {
 		return UserModel{}, err
 	}

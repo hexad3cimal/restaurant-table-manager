@@ -1,7 +1,7 @@
 import { handleActions } from '../modules/helpers';
 
 import { STATUS, ActionTypes } from '../constants/index';
-import { set } from '../modules/cacheManager';
+import { remove, set } from '../modules/cacheManager';
 
 export const userState = {
   isAuthenticated: false,
@@ -29,11 +29,10 @@ export default {
         set('user', payload);
       },
       [ActionTypes.USER_LOGOUT]: draft => {
-        draft.status = STATUS.RUNNING;
-      },
-      [ActionTypes.USER_LOGOUT_SUCCESS]: draft => {
+        draft.status = STATUS.READY;
+        draft.user = null;
         draft.isAuthenticated = false;
-        draft.status = STATUS.IDLE;
+        remove('user')
       },
       [ActionTypes.USER_REGISTER]: draft => {
         draft.status = STATUS.RUNNING;

@@ -1,7 +1,7 @@
 package mappers
 
 type BranchForm struct {
-	Id         string `json:"id" `
+	Id         string `json:"id"`
 	Name       string `json:"name" binding:"required,max=100"`
 	UserName   string `json:"newUserName" binding:"required,max=100"`
 	BranchId   string `json:"branchId"`
@@ -11,7 +11,7 @@ type BranchForm struct {
 	Password   string `json:"newPassword"`
 	Contact    string `json:"contact"`
 	OrgId      string `json:"orgId"`
-	Edit       bool   `json:"edit" binding:"required"`
+	Edit       bool   `json:"edit"`
 }
 
 type GetBranchForm struct {

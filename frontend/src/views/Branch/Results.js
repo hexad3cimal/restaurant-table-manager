@@ -20,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
 import { useDispatch } from "react-redux";
-import { initiateBranchAdd, setBranch } from "../../actions";
+import { deleteBranch, getBranches, hideAlert, initiateBranchAdd, setBranch } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -43,6 +43,12 @@ const Results = ({ branches }) => {
     dispatch(setBranch(branch))
     dispatch(initiateBranchAdd(true))
   };
+  const onDelete = (branch) => {
+    dispatch(deleteBranch(branch))
+    setTimeout(()=>{dispatch(hideAlert())},100)
+    dispatch(getBranches())
+  };
+
 
   return (
     <Card className={classes.root}>
@@ -98,6 +104,13 @@ const Results = ({ branches }) => {
                         onClick={() => onEdit(branch)}
                       >
                         Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => onDelete(branch)}
+                        style={{margin:'1rem'}}
+                      >
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>

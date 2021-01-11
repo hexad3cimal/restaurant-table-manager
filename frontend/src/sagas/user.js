@@ -17,16 +17,10 @@ export function* login({ payload }) {
       method: 'POST',
       payload,
     });
-
-    // handleRefreshToken(`${window.restAppConfig.api}token/refresh`);
     
     yield put({
       type: ActionTypes.USER_LOGIN_SUCCESS,
       payload: user,
-    });
-    yield put({
-      type: ActionTypes.SHOW_ALERT,
-      payload: 'Successfully logged in',
     });
   } catch (err) {
     /* istanbul ignore next */

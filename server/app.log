@@ -3518,3 +3518,27 @@
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T21:18:02+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T22:16:44+05:30"}
 {"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-10T22:19:58+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for iftar","time":"2021-01-11T10:18:03+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T10:18:42+05:30"}
+{"function":"Login","level":"error","line":"36","msg":" In active user Iftar-main","time":"2021-01-11T10:18:50+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for Iftar-main","time":"2021-01-11T10:18:56+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for Iftar-main","time":"2021-01-11T10:20:13+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for Iftar-main","time":"2021-01-11T10:20:40+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for Iftar","time":"2021-01-11T10:23:31+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for Iftar","time":"2021-01-11T10:23:39+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for Iftar","time":"2021-01-11T10:24:13+05:30"}
+{"function":"AddOrEdit","level":"error","line":"20","msg":"invalid branch form ","time":"2021-01-11T10:28:06+05:30"}
+{"function":"AddOrEdit","level":"error","line":"20","msg":"invalid branch form ","time":"2021-01-11T10:30:17+05:30"}
+{"function":"AddOrEdit","level":"error","line":"20","msg":"invalid branch form EOF","time":"2021-01-11T10:31:16+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T10:36:23+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for iftar-main-kitchen","time":"2021-01-11T10:36:34+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T10:41:25+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T10:42:27+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T10:42:53+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T12:16:08+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T12:24:11+05:30"}
+{"function":"Login","level":"error","line":"30","msg":" login failed for iftar","time":"2021-01-11T12:31:21+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T16:17:38+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T16:18:23+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T16:29:29+05:30"}
+{"function":"readPump","level":"error","line":"174","msg":"error: %vEOF","time":"2021-01-11T16:33:42+05:30"}

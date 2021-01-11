@@ -22,7 +22,7 @@ const AddBranch = () => {
   const branchState = useSelector((state) => state.branch) || {};
 
   const formErrors = useRef({});
-  const formValues = useRef({});
+  const formValues = useRef({newPassword:''});
 
   const [branch,setBranch] = useState({
     id:'',
@@ -79,7 +79,7 @@ const AddBranch = () => {
       },
     },
     passwordConfirm: {
-      required: branch.id ? false: true,
+      required: formValues.current.newPassword.length>0 ? false: true,
       compareWith: "newPassword",
       errorMessages: {
         required: "Please confirm the password",
