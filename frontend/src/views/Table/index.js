@@ -1,16 +1,22 @@
-import React, { useEffect } from 'react';
-import { Box, Container, makeStyles } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from "react";
+import {
+  Box,
+  Button,
+  Container,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
 
-import Page from '../../components/Page';
-import TableList from './TableList';
-import { getTables, hideAlert } from '../../actions';
-import AddTable from './AddTable';
-import Toast from '../../modules/toast';
-const useStyles = makeStyles(theme => ({
+import Page from "../../components/Page";
+import TableList from "./TableList";
+import { getTables, hideAlert, initiateTableAdd } from "../../actions";
+import AddTable from "./AddTable";
+import Toast from "../../modules/toast";
+const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
-    minHeight: '100%',
+    minHeight: "100%",
     paddingBottom: theme.spacing(3),
     paddingTop: theme.spacing(3),
   },
@@ -19,9 +25,9 @@ const useStyles = makeStyles(theme => ({
 const TableView = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const appState = useSelector(state => state.app);
-  const tableState = useSelector(state => state.table);
-
+  const appState = useSelector((state) => state.app);
+  const tableState = useSelector((state) => state.table);
+  const tables = (tableState && tableState.tables) || [];
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
@@ -41,7 +47,20 @@ const TableView = () => {
           </Box>
         ) : (
           <Box mt={3}>
-            <TableList />
+            {tables.length ? (
+              <TableList tables={tables} />
+            ) : (
+              <Typography style={{ margin: "1rem" }} variant="h4">
+                No tables added yet please
+                <Button
+                  onClick={() => dispatch(initiateTableAdd(true))}
+                  color="primary"
+                  variant="contained"
+                >
+                  Add Table
+                </Button>
+              </Typography>
+            )}
           </Box>
         )}
       </Container>

@@ -62,7 +62,7 @@ export function request(url, options = {}){
     const contentType = response.headers.get('content-type');
 
     if (response.status > 299) {
-      if([401,403].includes(response.status)){window.location.href ="/login"; return}
+      if([401,403].includes(response.status)){ localStorage.removeItem('persist:rrsb');window.location.href ="/login";return}
       error.status = response.status;
 
       if (contentType && contentType.includes('application/json')) {
@@ -76,8 +76,6 @@ export function request(url, options = {}){
       if (contentType && contentType.includes('application/json')) {
         return response.json();
       }
-      // if (url.includes('/refresh')) handleRefreshToken(`${window.restAppConfig.api}token/refresh`);
-
       return response.text();
     }
   });

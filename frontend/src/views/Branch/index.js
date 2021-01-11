@@ -23,6 +23,8 @@ const Branch = () => {
   const appState = useSelector((state) => state.app);
   const branchState = useSelector((state) => state.branch);
   const branches = (branchState && branchState.branches) || [];
+  const userState = useSelector(state => state.user) || {}
+
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
@@ -43,11 +45,12 @@ const Branch = () => {
         ) : (
           <Box mt={3}>
             <Toolbar />
-            {branches.length > 0 ? (
+            {branches.length && userState.user.role==='admin' ? (
               <Results branches={branchState && branchState.branches} />
-            ) : <Typography  style={{margin:'1rem'}} variant="h4">No branches added yet please <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
+            ) : <div></div>}
+            {!branches.length && userState.user.role==='admin' ? (<Typography  style={{margin:'1rem'}} variant="h4">No branches added yet please <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
             Add branch
-          </Button></Typography>}
+          </Button></Typography>): <div></div>}
           </Box>
         )}
       </Container>

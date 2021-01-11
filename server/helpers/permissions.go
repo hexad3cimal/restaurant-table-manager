@@ -13,12 +13,17 @@ var logger = config.InitLogger()
 var token = new(models.Token)
 var tokenModel models.TokenModel
 
-func IsAdmin(userId string, orgId string) (isAdmin bool) {
-	userObject, getUserError := user.GetUserById(userId)
-	if getUserError != nil || userObject.OrgId != orgId {
+func IsAdmin(accessUUID string) (isAdmin bool) {
+	tokenModel, getTokenError := token.GetTokenById(accessUUID)
+	if getTokenError != nil {
+
 		return false
 	}
-	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, orgId)
+	userObject, getUserError := user.GetUserById(tokenModel.UserId)
+	if getUserError != nil || userObject.OrgId != tokenModel.OrgId {
+		return false
+	}
+	fetchedRole, err := role.GetRoleByIdAndOrg(userObject.RoleId, tokenModel.OrgId)
 
 	if err != nil {
 		return false

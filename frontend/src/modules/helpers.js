@@ -7,21 +7,12 @@ import produce from 'immer';
 import { request } from './client';
 
 
-export const isFormValid = (errors, touched) => {
+export const isFormValid = (errors) => {
   let bool = true;
-  if(!Object.keys(touched).length)return false
   for (let key in errors) {
     if (Boolean(errors[key])) {
       bool = false;
       break;
-    }
-  }
-  if (bool) {
-    for (let key in touched) {
-      if (!Boolean(touched[key])) {
-        bool = false;
-        break;
-      }
     }
   }
   return bool;

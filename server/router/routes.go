@@ -46,7 +46,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 func isAdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		isAdmin := helpers.IsAdmin(c.GetHeader("user_id"), c.GetHeader("org_id"))
+		isAdmin := helpers.IsAdmin(c.GetHeader("access_uuid"))
 		if isAdmin == true {
 			c.Next()
 			return
@@ -87,8 +87,8 @@ func InitRouter() {
 
 		//branch related routes
 		branch := new(controllers.BranchController)
-		v1.POST("/branch", AuthMiddleware(), branch.AddOrEdit)
-		v1.DELETE("/branch", AuthMiddleware(), branch.Delete)
+		v1.POST("/branch", AuthMiddleware(), isAdminMiddleware(), branch.AddOrEdit)
+		v1.DELETE("/branch", AuthMiddleware(), isAdminMiddleware(), branch.Delete)
 		v1.GET("/branches", AuthMiddleware(), branch.GetBranches)
 		v1.GET("/branch/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 
@@ -104,8 +104,7 @@ func InitRouter() {
 		v1.GET("/orders", AuthMiddleware(), order.GetOrders)
 
 		kitchen := new(controllers.KitchenController)
-		v1.POST("/kitchen", AuthMiddleware(), kitchen.Add)
-		// v1.POST("/table/branch", AuthMiddleware(), table.GetTablesOfBranch)
+		v1.POST("/kitchen", AuthMiddleware(), isAdminMiddleware(), kitchen.Add)
 		v1.GET("/kitchens", AuthMiddleware(), kitchen.GetKitchens)
 	}
 

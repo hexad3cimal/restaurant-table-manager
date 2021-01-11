@@ -11,13 +11,9 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import {
-  AlertCircle as AlertCircleIcon,
   BarChart as BarChartIcon,
-  Lock as LockIcon,
-  Settings as SettingsIcon,
   ShoppingBag as ShoppingBagIcon,
   User as UserIcon,
-  UserPlus as UserPlusIcon,
   Users as UsersIcon,
 } from 'react-feather';
 import NavItem from './NavItem';
@@ -29,47 +25,32 @@ const items = [
     href: '/app/dashboard',
     icon: BarChartIcon,
     title: 'Dashboard',
+    roles:['admin','manager']
   },
   {
     href: '/app/branch',
     icon: UsersIcon,
     title: 'Branch',
+    roles:['admin']
   },
   {
     href: '/app/table',
     icon: ShoppingBagIcon,
     title: 'Table',
+    roles:['admin','manager']
   },
   {
     href: '/app/product',
     icon: UserIcon,
     title: 'Product',
+    roles:['admin','manager']
   },
   {
     href: '/app/kitchen',
     icon: UserIcon,
     title: 'Kitchen',
-  },
-  {
-    href: '/app/settings',
-    icon: SettingsIcon,
-    title: 'Settings',
-  },
-  {
-    href: '/login',
-    icon: LockIcon,
-    title: 'Login',
-  },
-  {
-    href: '/register',
-    icon: UserPlusIcon,
-    title: 'Register',
-  },
-  {
-    href: '/404',
-    icon: AlertCircleIcon,
-    title: 'Error',
-  },
+    roles:['admin','manager']
+  }
 ];
 
 const useStyles = makeStyles(() => ({
@@ -93,7 +74,6 @@ const NavBar = ({ onMobileClose, openMobile }) => {
   const location = useLocation();
 
   const user = useSelector( state => state.user)
-  console.log(user.user)
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();
@@ -111,9 +91,10 @@ const NavBar = ({ onMobileClose, openMobile }) => {
       <Divider />
       <Box p={2}>
         <List>
-          {items.map(item => (
-            <NavItem href={item.href} key={item.title} title={item.title} icon={item.icon} />
-          ))}
+          {items.map(item => {
+            if(item.roles.includes(user.user.role))
+            return <NavItem href={item.href} key={item.title} title={item.title} icon={item.icon} />
+          })}
         </List>
       </Box>
     </Box>

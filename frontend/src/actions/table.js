@@ -11,7 +11,7 @@ export const {
   tablesGetBranch: getTablesOfBranch,
   editTable,
 } = createActions({
-  [ActionTypes.TABLE_ADD_INITIATE]: () => ({}),
+  [ActionTypes.TABLE_ADD_INITIATE]: payload => payload,
   [ActionTypes.TABLE_ADD]: payload => payload,
   [ActionTypes.TABLE_GET]: payload => payload,
   [ActionTypes.SET_SELECTED_TABLE]: payload => payload,

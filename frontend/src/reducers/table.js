@@ -15,8 +15,8 @@ export const tableState = {
 export default {
   table: handleActions(
     {
-      [ActionTypes.TABLE_ADD_INITIATE]: draft => {
-        draft.add = true;
+      [ActionTypes.TABLE_ADD_INITIATE]: (draft, { payload }) => {
+        draft.add = payload;
       },
       [ActionTypes.TABLE_ADD]: draft => {
         draft.status = STATUS.RUNNING;

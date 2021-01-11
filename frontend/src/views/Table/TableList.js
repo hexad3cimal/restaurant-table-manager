@@ -6,7 +6,7 @@ import { Box, Container, Grid, makeStyles,
   TextField,
   InputAdornment,
   SvgIcon, } from '@material-ui/core';
-  import {  useDispatch, useSelector } from 'react-redux';
+  import {  useDispatch } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Search as SearchIcon } from 'react-feather';
 import Page from '../../components/Page';
@@ -25,17 +25,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TableList = () => {
+const TableList = ({tables}) => {
   const classes = useStyles();
-  const tableState = useSelector(state => state.table);
-  const tables = (tableState && tableState.tables) || [];
+
   const dispatch = useDispatch();
 
   return (
-    <Page className={classes.root} title="Products">
+    <Page className={classes.root} title="Tables">
       <Container maxWidth={false}>
       <Box display="flex" justifyContent="flex-end">
-        <Button onClick={() => dispatch(initiateTableAdd())} color="primary" variant="contained">
+        <Button onClick={() => dispatch(initiateTableAdd(true))} color="primary" variant="contained">
           Add Table
         </Button>
       </Box>
