@@ -28,7 +28,13 @@ export default {
         draft.user = payload;
         set('user', payload);
       },
-      [ActionTypes.USER_LOGOUT]: draft => {
+      [ActionTypes.USER_LOGOUT_SUCCESS]: draft => {
+        draft.status = STATUS.READY;
+        draft.user = null;
+        draft.isAuthenticated = false;
+        remove('user')
+      },
+      [ActionTypes.USER_LOGOUT_FAILURE]: draft => {
         draft.status = STATUS.READY;
         draft.user = null;
         draft.isAuthenticated = false;

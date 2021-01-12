@@ -3,10 +3,10 @@
  * @desc User
  */
 
-import { all, delay, put, takeLatest } from 'redux-saga/effects';
+import { all, put, takeLatest } from "redux-saga/effects";
 
-import { ActionTypes } from '../constants/index';
-import { request } from '../modules/client';
+import { ActionTypes } from "../constants/index";
+import { request } from "../modules/client";
 
 /**
  * Login
@@ -14,10 +14,10 @@ import { request } from '../modules/client';
 export function* login({ payload }) {
   try {
     const user = yield request(`${window.restAppConfig.api}user/login`, {
-      method: 'POST',
+      method: "POST",
       payload,
     });
-    
+
     yield put({
       type: ActionTypes.USER_LOGIN_SUCCESS,
       payload: user,
@@ -31,9 +31,31 @@ export function* login({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Login failed,please retry',
+        payload: "Login failed,please retry",
       }),
     ]);
+  }
+}
+
+/**
+ * Login
+ */
+export function* logout() {
+  try {
+    const user = yield request(`${window.restAppConfig.api}user/logout`, {
+      method: "GET",
+    });
+
+    yield put({
+      type: ActionTypes.USER_LOGOUT_SUCCESS,
+      payload: user,
+    });
+  } catch (err) {
+    /* istanbul ignore next */
+    yield put({
+      type: ActionTypes.USER_LOGOUT_FAILURE,
+      payload: err,
+    });
   }
 }
 
@@ -43,7 +65,7 @@ export function* login({ payload }) {
 export function* register({ payload }) {
   try {
     yield request(`${window.restAppConfig.api}user/register`, {
-      method: 'POST',
+      method: "POST",
       payload,
     });
 
@@ -53,7 +75,7 @@ export function* register({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Successfully registered',
+        payload: "Successfully registered",
       }),
     ]);
   } catch (err) {
@@ -65,30 +87,12 @@ export function* register({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while registering, please retry',
+        payload: "Error while registering, please retry",
       }),
     ]);
   }
 }
 
-/**
- * Logout
- */
-export function* logout() {
-  try {
-    yield delay(200);
-
-    yield put({
-      type: ActionTypes.USER_LOGOUT_SUCCESS,
-    });
-  } catch (err) {
-    /* istanbul ignore next */
-    yield put({
-      type: ActionTypes.USER_LOGOUT_FAILURE,
-      payload: err,
-    });
-  }
-}
 
 /**
  * User Sagas

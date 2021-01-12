@@ -33,7 +33,7 @@ func (u Token) Add(token TokenModel) (addedToken TokenModel, err error) {
 }
 
 func (u Token) GetTokenById(tokenId string) (token TokenModel, err error) {
-	err = config.GetDB().Where("ID=?", tokenId).First(&token).Error
+	err = config.GetDB().Where("ID=?", tokenId).Where("valid=?", true).First(&token).Error
 	if err != nil {
 		return TokenModel{}, err
 	}
@@ -41,8 +41,8 @@ func (u Token) GetTokenById(tokenId string) (token TokenModel, err error) {
 	return token, nil
 }
 
-func (u Token) DeleteById(tokenId string) (token TokenModel, err error) {
-	err = config.GetDB().Where("ID=?", tokenId).Delete(&token).Error
+func (u Token) DeleteByAccessToken(tokenId string) (token TokenModel, err error) {
+	err = config.GetDB().Model(&TokenModel{}).Where("access_token=?", tokenId).Update("valid", false).Error
 	if err != nil {
 		return TokenModel{}, err
 	}

@@ -16,6 +16,17 @@ import (
 
 type UserController struct{}
 
+func (ctrl UserController) Logout(c *gin.Context) {
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	token.DeleteByAccessToken(tokenModel.AccessToken)
+	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
+}
+
 func (ctrl UserController) Login(c *gin.Context) {
 	var loginForm mappers.LoginForm
 
@@ -50,6 +61,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 		tokenModel.AccessToken = tokenDetails.AccessToken
 		tokenModel.RefreshToken = tokenDetails.RefreshToken
 		tokenModel.ID = tokenDetails.AccessUUID
+		tokenModel.Valid = true
 
 		//Add token to db with required details
 		_, tokenAddError := token.Add(tokenModel)

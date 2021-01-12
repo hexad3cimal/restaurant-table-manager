@@ -54,11 +54,6 @@ func (m Auth) CreateToken() (*TokenDetails, error) {
 
 //ExtractToken ...
 func (m Auth) ExtractToken(r *http.Request, refreshToken bool) string {
-	// bearToken := r.Header.Get("Authorization")
-	// strArr := strings.Split(bearToken, " ")
-	// if len(strArr) == 2 {
-	// 	return strArr[1]
-	// }
 	var token *http.Cookie
 	var err error
 
@@ -66,7 +61,6 @@ func (m Auth) ExtractToken(r *http.Request, refreshToken bool) string {
 		token, err = r.Cookie("refresh-token")
 	} else {
 		token, err = r.Cookie("token")
-
 	}
 
 	if err != nil {

@@ -78,7 +78,7 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	token.DeleteById(tokenModel.ID)
+	token.DeleteByAccessToken(tokenModel.AccessToken)
 
 	_, verifyRefreshTokenErr := auth.VerifyToken(c.Request, true)
 	if verifyRefreshTokenErr != nil {

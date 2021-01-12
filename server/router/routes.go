@@ -75,6 +75,7 @@ func InitRouter() {
 		v1.GET("/token/_", auth.IstokenValid)
 		v1.GET("/user/validate", user.Validate)
 		v1.GET("/user/auth/validate", AuthMiddleware(), user.Validate)
+		v1.GET("/user/logout", AuthMiddleware(), user.Logout)
 
 		//table related routes
 		table := new(controllers.TableController)
