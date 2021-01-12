@@ -17,7 +17,7 @@ import {
 } from "@material-ui/core";
 
 import { Formik } from "formik";
-import { isFormValid, remoteValidate } from "../../modules/helpers";
+import { remoteValidate } from "../../modules/helpers";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -66,7 +66,7 @@ const AddTable = ({ className, edit }) => {
     newUserName: {
       required: true,
       remoteValidate: true,
-      url: table.id ? `${window.restAppConfig.api}user/validate?username&edit=${table.id}` : `${window.restAppConfig.api}user/validate?username`,
+      url:`${window.restAppConfig.api}user/validate?username`,
       errorMessages: {
         required: "Username is Required",
         remoteValidate: "Username already Taken",
@@ -113,8 +113,12 @@ const AddTable = ({ className, edit }) => {
             formValues.current[value] !== values[value] ||
             formErrors.current[value]
           ) {
+            let url = `${errorRules[value].url}=${values[value]}`
+            if(table.id){
+              url = `${url}&id=${table.id}`
+            }
             const result = await remoteValidate(
-              `${errorRules[value].url}=${values[value]}`
+              url
             );
             if (!result)
               errors[value] =
@@ -134,12 +138,14 @@ const AddTable = ({ className, edit }) => {
     }
 
     formErrors.current = errors;
-    formValues.current = values;
+    formValues.current = {...formValues.current,values};
     return errors;
   };
 
 
   return (
+    <Card>
+    <CardContent >
     <Formik
       enableReinitialize
       initialValues={{
@@ -154,7 +160,7 @@ const AddTable = ({ className, edit }) => {
      validate={validate}
       onSubmit={(values, formik) => {
         values.branchName = branches.reduce(function (branchNameArray, branch) {
-          if (branch.id === values.branchId) {
+          if (branch.branchId === values.branchId) {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
@@ -264,7 +270,7 @@ const AddTable = ({ className, edit }) => {
                   >
                     <option value=""></option>
                     {branches.map((branch) => (
-                      <option key={branch.id} value={branch.id}>
+                      <option key={branch.branchId} value={branch.branchId}>
                         {branch.name}
                       </option>
                     ))}
@@ -277,7 +283,7 @@ const AddTable = ({ className, edit }) => {
             <Button color="secondary"  onClick={()=> {back()}} type="button" variant="contained">
                 Go back
               </Button>
-              <Button color="primary" type="submit" disabled={isSubmitting || !isFormValid(errors,touched)} variant="contained">
+              <Button color="primary" type="submit" disabled={isSubmitting } variant="contained">
                 {table.id ? 'Update Table': 'Add'}
               </Button>
             </Box>
@@ -285,11 +291,13 @@ const AddTable = ({ className, edit }) => {
         </form>
       )}
     </Formik>
+    </CardContent>
+    </Card>
   );
 };
 
 AddTable.propTypes = {
-  className: PropTypes.string,
+  table: PropTypes.object,
 };
 
 export default AddTable;

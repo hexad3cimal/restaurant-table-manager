@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Container, Grid, makeStyles,
   Button,
   Card,
@@ -28,8 +28,15 @@ const useStyles = makeStyles(theme => ({
 const TableList = ({tables}) => {
   const classes = useStyles();
 
+  const [filteredTables, setTables]= useState([])
   const dispatch = useDispatch();
 
+  useEffect(()=>{setTables(tables)},[tables])
+  const onSearch = (value)=>{
+    setTables(tables.filter(table=>{
+      return table.name.toLowerCase().includes(value)
+    }))
+  }
   return (
     <Page className={classes.root} title="Tables">
       <Container maxWidth={false}>
@@ -55,6 +62,7 @@ const TableList = ({tables}) => {
                 }}
                 placeholder="Search Table"
                 variant="outlined"
+                onChange={(event)=>{onSearch(event.target.value.toLowerCase())}}
               />
             </Box>
           </CardContent>
@@ -63,7 +71,7 @@ const TableList = ({tables}) => {
         <Box mt={3}>
         <PerfectScrollbar>
           <Grid container spacing={3}>
-            {tables.map(table => (
+            {filteredTables.map(table => (
               <Grid item key={table.id} lg={4} md={6} xs={12}>
                 <TableCard className={classes.tableCard} table={table} />
               </Grid>

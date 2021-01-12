@@ -130,30 +130,31 @@ export function* getKitchens() {
 }
 
 /**
- * Get all the kitchens for org
+ * delete kitchen by id
  */
-export function* getKitchensForOrg() {
+export function* deleteById({ payload }) {
   try {
-    const kitchens = yield request(`${window.restAppConfig.api}kitchen/org`, {
-      method: 'GET',
+    yield request(`${window.restAppConfig.api}kitchen?id=${payload.id}`, {
+      method: 'DELETE',
     });
 
-    yield all([
-      put({
-        type: ActionTypes.KITCHENS_GET_ORG_SUCCESS,
-        payload: kitchens && kitchens.data,
-      }),
-    ]);
+    yield put({
+      type: ActionTypes.KITCHEN_DELETE_SUCCESS,
+    });
+    put({
+      type: ActionTypes.SHOW_ALERT,
+      payload: 'Deleted kitchen successfully',
+    })
   } catch (err) {
     /* istanbul ignore next */
     yield all([
       put({
-        type: ActionTypes.KITCHENS_GET_ORG_FAILURE,
+        type: ActionTypes.KITCHEN_DELETE_FAILURE,
         payload: err,
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting kitchens, please retry',
+        payload: 'Error while gettting branch details, please retry',
       }),
     ]);
   }
@@ -167,6 +168,6 @@ export default function* root() {
     takeLatest(ActionTypes.KITCHEN_ADD, addKitchen),
     takeLatest(ActionTypes.KITCHEN_GET, getKitchenById),
     takeLatest(ActionTypes.KITCHENS_GET, getKitchens),
-    takeLatest(ActionTypes.KITCHENS_GET_BRANCH, getKitchensForOrg),
+    takeLatest(ActionTypes.KITCHENS_GET, deleteById),
   ]);
 }

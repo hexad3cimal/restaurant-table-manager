@@ -30,6 +30,7 @@ func (ctl AuthController) IstokenValid(c *gin.Context) {
 			tokenModel.AccessToken = tokenDetails.AccessToken
 			tokenModel.RefreshToken = tokenDetails.RefreshToken
 			tokenModel.ID = tokenDetails.AccessUUID
+			tokenModel.Valid = true
 			_, tokenAddError := token.Add(tokenModel)
 			if tokenAddError == nil {
 				c.Request.Header.Set("access_uuid", tokenModel.ID)
@@ -102,6 +103,7 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 	tokenModel.AccessToken = tokenDetails.AccessToken
 	tokenModel.RefreshToken = tokenDetails.RefreshToken
 	tokenModel.ID = tokenDetails.AccessUUID
+	tokenModel.Valid = true
 	_, tokenAddError := token.Add(tokenModel)
 	if tokenAddError == nil {
 

@@ -1,9 +1,9 @@
-import React  from 'react';
-import { Box, Container, Grid, makeStyles } from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+import React, { useEffect, useState }  from 'react';
+import { Box, Card, CardContent, Container, Grid, InputAdornment, makeStyles, SvgIcon, TextField } from '@material-ui/core';
 import Page from '../../components/Page';
-import TableCard from './KitchenCard';
 import { useSelector } from 'react-redux';
+import KitchenCard from './KitchenCard';
+import { Search as SearchIcon } from 'react-feather';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,20 +21,50 @@ const KitchenList = () => {
   const classes = useStyles();
   const KitchenState = useSelector(state => state.kitchen);
   const kitchens = (KitchenState && KitchenState.kitchens) || [];
+
+  const [filteredKitchens, setKitchens]= useState([])
+
+  useEffect(()=>{setKitchens(kitchens)},[kitchens])
+  const onSearch = (value)=>{
+    setKitchens(kitchens.filter(kitchen=>{
+      return kitchen.name.toLowerCase().includes(value)
+    }))
+  }
+
   return (
-    <Page className={classes.root} title="Products">
+    <Page className={classes.root} title="Kitchens">
       <Container maxWidth={false}>
+      <Box mt={3}>
+        <Card>
+          <CardContent>
+            <Box maxWidth={500}>
+              <TextField
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SvgIcon fontSize="small" color="action">
+                        <SearchIcon />
+                      </SvgIcon>
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder="Search with kitchen name"
+                variant="outlined"
+                onChange={(event)=>{onSearch(event.target.value.toLowerCase())}}
+              />
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
         <Box mt={3}>
           <Grid container spacing={3}>
-            {kitchens.map(kitchen => (
+            {filteredKitchens.map(kitchen => (
               <Grid item key={kitchen.id} lg={4} md={6} xs={12}>
-                <TableCard className={classes.tableCard} table={kitchen} />
+                <KitchenCard className={classes.tableCard} kitchen={kitchen} />
               </Grid>
             ))}
           </Grid>
-        </Box>
-        <Box mt={3} display="flex" justifyContent="center">
-          <Pagination color="primary" count={3} size="small" />
         </Box>
       </Container>
     </Page>

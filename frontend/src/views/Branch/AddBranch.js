@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { addBranch, hideAlert, initiateBranchAdd, setBranch as setBranchInState } from '../../actions';
 import { Formik } from 'formik';
-import { isFormValid, remoteValidate } from '../../modules/helpers';
+import { remoteValidate } from '../../modules/helpers';
 import Toast from '../../modules/toast';
 
 const AddBranch = () => {
@@ -63,7 +63,7 @@ const AddBranch = () => {
     newUserName: {
       required: true,
       remoteValidate: true,
-      url: branch.id ? `${window.restAppConfig.api}user/validate?username&edit=${branch.id}` : `${window.restAppConfig.api}user/validate?username`,
+      url: `${window.restAppConfig.api}user/validate?username`,
       errorMessages: {
         required: "Username is Required",
         remoteValidate: "Username already Taken",
@@ -109,9 +109,14 @@ const AddBranch = () => {
             formValues.current[value] !== values[value] ||
             formErrors.current[value]
           ) {
-            const result = await remoteValidate(
-              `${errorRules[value].url}=${values[value]}`
-            );
+            
+              let url = `${errorRules[value].url}=${values[value]}`
+              if(branch.id){
+                url = `${url}&id=${branch.id}`
+              }
+              const result = await remoteValidate(
+                url
+              );
             if (!result)
               errors[value] =
                 errorRules[value]["errorMessages"]["remoteValidate"];
@@ -130,7 +135,7 @@ const AddBranch = () => {
     }
 
     formErrors.current = errors;
-    formValues.current = values;
+    formValues.current = {...formValues.current,values};
     return errors;
   };
 
@@ -268,7 +273,7 @@ const AddBranch = () => {
             <Button color="secondary"  onClick={()=> {back()}} type="button" variant="contained">
                 Go back
               </Button>
-              <Button color="primary" type="submit"  disabled={isSubmitting || !isFormValid(errors, touched)} variant="contained">
+              <Button color="primary" type="submit"  disabled={isSubmitting} variant="contained">
                 {branch.id ? 'Update Branch' : 'Add Branch'}
               </Button>
             </Box>

@@ -15,6 +15,8 @@ import (
 type TableController struct{}
 
 func (ctrl TableController) AddOrEdit(c *gin.Context) {
+	logger.Info("iniside edit")
+
 	var tableForm mappers.TableForm
 	var userGetError error
 	if c.ShouldBindJSON(&tableForm) != nil {
@@ -44,8 +46,9 @@ func (ctrl TableController) AddOrEdit(c *gin.Context) {
 			c.Abort()
 			return
 		}
-
 		userModel.RoleId = roleModel.ID
+		userModel.RoleName = roleModel.Name
+
 		userModel.OrgId = tokenModel.OrgId
 		userModel.ID = uuid.NewV4().String()
 		userModel.LoginCode = uuid.NewV4().String()
@@ -62,7 +65,6 @@ func (ctrl TableController) AddOrEdit(c *gin.Context) {
 
 	userModel.BranchId = tableForm.BranchId
 	userModel.BranchName = tableForm.BranchName
-	userModel.LoginCode = tableForm.LoginCode
 	if tableForm.Password != "" {
 		bytePassword := []byte(tableForm.Password)
 		hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
@@ -77,9 +79,10 @@ func (ctrl TableController) AddOrEdit(c *gin.Context) {
 	userModel.Name = tableForm.TableName
 	userModel.UserName = tableForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
+
 	_, userError := user.Register(userModel)
 	if userError != nil {
-		table.DeleteById(tableModel.ID)
+		user.DeleteById(userModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -87,51 +90,6 @@ func (ctrl TableController) AddOrEdit(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 
 }
-
-func (ctrl TableController) GetTablesOfOrg(c *gin.Context) {
-	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
-	if getTokenError != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
-	tables, err := table.GetTablesOfOrg(tokenModel.OrgId)
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})
-	} else {
-		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
-	}
-
-}
-
-// func (ctrl TableController) GetTables(c *gin.Context) {
-
-// 	roleName, roleNameGetError := helpers.GetRoleName(c.GetHeader("role_id"), tokenModel.OrgId)
-// 	if roleNameGetError != nil {
-// 		logger.Error("Get rolename failed for " + c.GetHeader("role_id") + " " + tokenModel.OrgId + " " + roleNameGetError.Error())
-// 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-// 		return
-// 	}
-
-// 	var tables []models.TableModel
-// 	var err error
-// 	if roleName == "admin" {
-// 		tables, err = table.GetTablesOfOrg(tokenModel.OrgId)
-
-// 	}
-// 	if roleName == "branch" || roleName == "kitchen" {
-// 		tables, err = table.GetTablesOfBranch(tokenModel.OrgId)
-// 	}
-
-// 	if err == nil {
-// 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tables})
-// 		c.Abort()
-// 		return
-// 	} else {
-// 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "error"})
-// 	}
-
-// }
 
 func (ctrl TableController) GetTables(c *gin.Context) {
 
@@ -213,4 +171,18 @@ func (ctrl TableController) GetTable(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+}
+
+func (ctrl TableController) Delete(c *gin.Context) {
+	tableId, gotTableId := c.GetQuery("id")
+
+	if gotTableId == true {
+		_, _ = user.DeleteById(tableId)
+		c.JSON(http.StatusAccepted, gin.H{"message": "success"})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	c.Abort()
+	return
 }

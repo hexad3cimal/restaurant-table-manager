@@ -19,7 +19,6 @@ func main() {
 	db := config.GetDB()
 	db.AutoMigrate(&models.UserModel{})
 	db.AutoMigrate(&models.RoleModel{})
-	db.AutoMigrate(&models.TableModel{})
 	db.AutoMigrate(&models.ProductModel{})
 	db.AutoMigrate(&models.OrderModel{})
 	db.AutoMigrate(&models.TokenModel{})

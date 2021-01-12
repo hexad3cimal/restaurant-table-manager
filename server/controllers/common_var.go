@@ -12,9 +12,6 @@ var userModel models.UserModel
 var role = new(models.Role)
 var roleModel models.RoleModel
 
-var table = new(models.Table)
-var tableModel models.TableModel
-
 var logger = config.InitLogger()
 
 var auth = new(authutils.Auth)

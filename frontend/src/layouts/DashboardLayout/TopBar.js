@@ -36,7 +36,7 @@ const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
     dispatch(logOut());
     dispatch(showAlert("Logged out successfully"));
     setTimeout(()=>{dispatch(hideAlert())},100);
-    navigate("/login",{replace:true});
+    navigate("login",{replace:true});
   };
   return (
     <AppBar className={clsx(classes.root, className)} elevation={0} {...rest}>

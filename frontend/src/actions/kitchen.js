@@ -6,14 +6,19 @@ export const {
   kitchenAddInitiate: initiateKitchenAdd,
   kitchenAdd: addKitchen,
   kitchenGet: getKitchenById,
-  setSelectedKitchen: selectedKitchen,
   kitchensGet: getKitchens,
   kitchensGetBranch: getKitchensOfBranch,
+  kitchenDelete: deleteKitchen,
+  kitchenEdit: editKitchen,
+  kitchenSetInState: setKitchenInState
 } = createActions({
-  [ActionTypes.KITCHEN_ADD_INITIATE]: () => ({}),
+  [ActionTypes.KITCHEN_ADD_INITIATE]: payload => payload,
   [ActionTypes.KITCHEN_ADD]: payload => payload,
   [ActionTypes.KITCHEN_GET]: payload => payload,
-  [ActionTypes.SET_SELECTED_KITCHEN]: payload => payload,
+  [ActionTypes.KITCHEN_SET_IN_STATE]: payload => payload,
   [ActionTypes.KITCHENS_GET]: () => ({}),
   [ActionTypes.KITCHENS_GET_BRANCH]: () => ({}),
+  [ActionTypes.KITCHEN_DELETE]: payload => payload,
+  [ActionTypes.KITCHEN_EDIT]: payload => payload,
+  [ActionTypes.KITCHEN_SET_IN_STATE]: payload => payload,
 });

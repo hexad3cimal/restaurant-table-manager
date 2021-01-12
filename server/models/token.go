@@ -24,7 +24,7 @@ type Token struct {
 
 func (u Token) Add(token TokenModel) (addedToken TokenModel, err error) {
 
-	err = config.GetDB().Save(&token).Error
+	err = config.GetDB().Create(&token).Error
 	if err != nil {
 		return TokenModel{}, err
 	}

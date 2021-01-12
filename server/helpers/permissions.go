@@ -55,7 +55,6 @@ func AdminOrManagerOfTheOrgAndBranch(userId string, orgId string, branchId strin
 		return true
 
 	}
-	logger.Info(fetchedRole.Name, userObject.OrgId, orgId, userObject.BranchId, branchId)
 	if fetchedRole.Name == "manager" && userObject.OrgId == orgId && userObject.BranchId == branchId {
 		return true
 

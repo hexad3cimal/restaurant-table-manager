@@ -15,8 +15,11 @@ export const kitchenState = {
 export default {
   kitchen: handleActions(
     {
-      [ActionTypes.KITCHEN_ADD_INITIATE]: draft => {
-        draft.add = true;
+      [ActionTypes.KITCHEN_ADD_INITIATE]: (draft, { payload }) => {
+        draft.add = payload;
+      },
+      [ActionTypes.KITCHEN_SET_IN_STATE]: (draft, { payload }) => {
+        draft.selectedKitchen = payload;
       },
       [ActionTypes.KITCHEN_ADD]: draft => {
         draft.status = STATUS.RUNNING;

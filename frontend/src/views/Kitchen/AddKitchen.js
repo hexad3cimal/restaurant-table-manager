@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { getBranches, addKitchen } from '../../actions';
+import React, { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import { getBranches, addKitchen, initiateKitchenAdd, setKitchenInState } from "../../actions";
 
 import {
   Box,
@@ -13,73 +12,138 @@ import {
   Divider,
   Grid,
   TextField,
-  makeStyles,
-} from '@material-ui/core';
+} from "@material-ui/core";
 
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-import { request } from '../../modules/client';
+import { Formik } from "formik";
+import { remoteValidate } from "../../modules/helpers";
 
-const useStyles = makeStyles(() => ({
-  root: {},
-}));
-
-const AddKitchen = ({ className, ...rest }) => {
-  const classes = useStyles();
+const AddKitchen = () => {
   const dispatch = useDispatch();
-  const branchState = useSelector(state => state.branch);
+  const branchState = useSelector((state) => state.branch);
+  const kitchenState = useSelector((state) => state.kitchen);
 
   const branches = (branchState && branchState.branches) || [];
+  const user = useSelector((state) => state.user) || {};
 
-  const [branchName, setBranchName] = useState("");
+  const formErrors = useRef({});
+  const formValues = useRef({ newPassword: "" });
 
-  useEffect(() => {
-    if(branches.length ===1)setBranchName(branches[0].name)
-  }, [branches]);
+  const [kitchen, setKitchen] = useState({
+    id: "",
+    name: "",
+    userName: "",
+    branchId: "",
+    branchName: "",
+    edit: false,
+  });
+
+  const passwordRegex = new RegExp(
+    "^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{5,})"
+  );
+  const errorRules = {
+    newUserName: {
+      required: true,
+      remoteValidate: true,
+      url: `${window.restAppConfig.api}user/validate?username`,
+      errorMessages: {
+        required: "Username is Required",
+        remoteValidate: "Username already Taken",
+      },
+    },
+    newPassword: {
+      required: kitchen.id ? false: true,
+      regex: passwordRegex,
+      errorMessages: {
+        required: "Password is Required",
+        regex:
+          "Password should contain at least 1 numeric,special character and be of atleast 5 characters",
+      },
+    },
+    passwordConfirm: {
+      required: formValues.current.newPassword.length ? false: true,
+      compareWith: "newPassword",
+      errorMessages: {
+        required: "Please confirm the password",
+        compareWith: "Password doesn't match",
+      },
+    },
+    name: {
+      required: true,
+      errorMessages: { required: "Full name is Required" },
+    },
+  };
+
+  const back = ()=>{
+    dispatch(initiateKitchenAdd(false))
+    dispatch(setKitchenInState({}))
+  }
+  
+  const validate = async (values) => {
+    const errors = {};
+    for (let value in values) {
+      if(errorRules[value] && errorRules[value].required){
+        if (!values[value]) {
+          errors[value] = errorRules[value]["errorMessages"]["required"];
+        }
+        if (errorRules[value].remoteValidate) {
+          if (
+            formValues.current[value] !== values[value] ||
+            formErrors.current[value]
+          ) {
+            
+              let url = `${errorRules[value].url}=${values[value]}`
+              if(kitchen.id){
+                url = `${url}&id=${kitchen.id}`
+              }
+              const result = await remoteValidate(
+                url
+              );
+            if (!result)
+              errors[value] =
+                errorRules[value]["errorMessages"]["remoteValidate"];
+          }
+        }
+        if (errorRules[value].regex) {
+          if (!errorRules[value].regex.test(values[value]))
+            errors[value] = errorRules[value]["errorMessages"]["regex"];
+        }
+        if (errorRules[value].compareWith) {
+          if (values[value] !== values[errorRules[value]["compareWith"]])
+            errors[value] = errorRules[value]["errorMessages"]["compareWith"];
+        }
+      }
+   
+    }
+
+    formErrors.current = errors;
+    formValues.current = {...formValues.current,values};
+    return errors;
+  };
 
   useEffect(() => {
     dispatch(getBranches());
   }, []);
+
+  useEffect(() => {
+    const selectedKitchen = kitchenState.selectedKitchen;
+    if (selectedKitchen) {
+      setKitchen({ ...selectedKitchen, newUserName: selectedKitchen.userName });
+    }
+  }, [branchState.selectedBranch]);
   return (
     <Formik
-    enableReinitialize
+      enableReinitialize
       initialValues={{
-        name: branchName && `${branchName}-`+'',
-        userName: branchName && `${branchName}-`+'',
-        branchId: branchName && branches[0].id,
-        branchName: branchName && branchName || '',
-        password: ''
+        ...kitchen,
+        newPassword: kitchen.password,
+        newUserName: kitchen.userName
+          ? kitchen.userName
+          : user.user.name.split(" ").join("" + "-"),
       }}
-      validationSchema={Yup.object().shape({
-        userName: Yup.string()
-        .test('checkUsername', 'username already taken', function(username) {
-          return new Promise((resolve, reject) => {
-            request(`${window.restAppConfig.api}/user/validate?username=${username}`)
-              .then(response => {
-                if (response.data === true) resolve(true);
-                else {
-                  resolve(false);
-                }
-              })
-              .catch(error => {
-                resolve(false);
-              });
-          });
-        })
-        .required('username is required'),
-        name: Yup.string()
-          .max(255)
-          .required('Tablename  is required'),
-        password: Yup.string()
-          .max(255)
-          .required('Password is required'),
-        branchId: Yup.string()
-          .max(255)
-          .required('Branch is required'),
-      })}
-      onSubmit={values => {
-        values.branchName = branches.reduce(function(branchNameArray, branch) {
-          if (branch.id === values.branchId) {
+    validate={validate}
+      onSubmit={(values) => {
+        values.branchName = branches.reduce(function (branchNameArray, branch) {
+          if (branch.branchId === values.branchId) {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
@@ -87,14 +151,16 @@ const AddKitchen = ({ className, ...rest }) => {
         dispatch(addKitchen(values));
       }}
     >
-      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-        <form
-          onSubmit={handleSubmit}
-          autoComplete="off"
-          noValidate
-          className={clsx(classes.root, className)}
-          {...rest}
-        >
+      {({
+        errors,
+        handleBlur,
+        handleChange,
+        handleSubmit,
+        isSubmitting,
+        touched,
+        values,
+      }) => (
+        <form onSubmit={handleSubmit} autoComplete="off" noValidate>
           <Card>
             <CardHeader subheader="Add new Kitchen" title="Add Kitchen" />
             <Divider />
@@ -116,34 +182,48 @@ const AddKitchen = ({ className, ...rest }) => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.userName && errors.userName)}
+                    error={Boolean(touched.newUserName && errors.newUserName)}
                     fullWidth
-                    helperText={touched.userName && errors.userName}
+                    helperText={touched.newUserName && errors.newUserName}
                     label="Username"
                     margin="normal"
-                    name="userName"
+                    name="newUserName"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.userName}
+                    value={values.newUserName}
                     variant="outlined"
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.password && errors.password)}
+                    error={Boolean(touched.newPassword && errors.newPassword)}
                     fullWidth
-                    helperText={touched.password && errors.password}
+                    helperText={touched.newPassword && errors.newPassword}
                     label="Password"
                     margin="normal"
-                    name="password"
+                    name="newPassword"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.password}
+                    value={values.newPassword}
                     variant="outlined"
                     type="password"
                   />
                 </Grid>
-
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    error={Boolean(touched.passwordConfirm && errors.passwordConfirm)}
+                    fullWidth
+                    helperText={touched.passwordConfirm && errors.passwordConfirm}
+                    label="Password"
+                    margin="normal"
+                    name="passwordConfirm"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.passwordConfirm}
+                    variant="outlined"
+                    type="password"
+                  />
+                </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
@@ -158,10 +238,9 @@ const AddKitchen = ({ className, ...rest }) => {
                     value={values.branchId}
                     variant="outlined"
                   >
-                      <option key="" value="">
-                      </option>
-                    {branches.map(branch => (
-                      <option key={branch.id} value={branch.id}>
+                    <option key="" value=""></option>
+                    {branches.map((branch) => (
+                      <option key={branch.branchId} value={branch.branchId}>
                         {branch.name}
                       </option>
                     ))}
@@ -170,9 +249,12 @@ const AddKitchen = ({ className, ...rest }) => {
               </Grid>
             </CardContent>
             <Divider />
-            <Box display="flex" justifyContent="flex-end" p={2}>
-              <Button color="primary" type="submit" variant="contained">
-                Save details
+            <Box display="flex" justifyContent="space-between" p={2}>
+            <Button color="secondary"  onClick={()=> {back()}} type="button" variant="contained">
+                Go back
+              </Button>
+              <Button color="primary" type="submit"  disabled={isSubmitting} variant="contained">
+                {kitchen.id ? 'Update Branch' : 'Add Branch'}
               </Button>
             </Box>
           </Card>

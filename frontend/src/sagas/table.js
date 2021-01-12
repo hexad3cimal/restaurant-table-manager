@@ -42,7 +42,7 @@ export function* addTable({ payload }) {
 }
 
 /**
- * Generate code
+ * Edit code
  */
 export function* editTable({ payload }) {
   try {
@@ -166,34 +166,36 @@ export function* getTables() {
 }
 
 /**
- * Get all the tables for org
+ * delete table by id
  */
-export function* getTablesForOrg() {
+export function* deleteById({ payload }) {
   try {
-    const tables = yield request(`${window.restAppConfig.api}table/org`, {
-      method: 'GET',
+    yield request(`${window.restAppConfig.api}table?id=${payload.branchId}`, {
+      method: 'DELETE',
     });
 
-    yield all([
-      put({
-        type: ActionTypes.TABLES_GET_ORG_SUCCESS,
-        payload: tables && tables.data,
-      }),
-    ]);
+    yield put({
+      type: ActionTypes.TABLE_DELETE_SUCCESS,
+    });
+    put({
+      type: ActionTypes.SHOW_ALERT,
+      payload: 'Deleted table successfully',
+    })
   } catch (err) {
     /* istanbul ignore next */
     yield all([
       put({
-        type: ActionTypes.TABLES_GET_ORG_FAILURE,
+        type: ActionTypes.TABLE_DELETE_FAILURE,
         payload: err,
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting tables, please retry',
+        payload: 'Error while gettting branch details, please retry',
       }),
     ]);
   }
 }
+
 
 /**
  * Table Sagas
@@ -204,6 +206,6 @@ export default function* root() {
     takeLatest(ActionTypes.EDIT_TABLE, editTable),
     takeLatest(ActionTypes.TABLE_GET, getTableById),
     takeLatest(ActionTypes.TABLES_GET, getTables),
-    takeLatest(ActionTypes.TABLES_GET_BRANCH, getTablesForOrg),
+    takeLatest(ActionTypes.TABLE_DELETE, deleteById),
   ]);
 }

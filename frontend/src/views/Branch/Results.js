@@ -10,7 +10,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
   makeStyles,
   CardContent,
   TextField,
@@ -80,6 +79,7 @@ const Results = ({ branches }) => {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
+                <TableCell>Username</TableCell>
                 <TableCell>Address</TableCell>
                 <TableCell>Phone</TableCell>
                 <TableCell>Action</TableCell>
@@ -90,12 +90,10 @@ const Results = ({ branches }) => {
                 branches.slice(0, limit).map((branch) => (
                   <TableRow hover key={branch.id}>
                     <TableCell>
-                      <Box alignItems="center" display="flex">
-                        <Typography color="textPrimary" variant="body1">
                           {branch.name}
-                        </Typography>
-                      </Box>
                     </TableCell>
+                    <TableCell>{branch.userName}</TableCell>
+
                     <TableCell>{branch.address}</TableCell>
                     <TableCell>{branch.contact}</TableCell>
                     <TableCell>

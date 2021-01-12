@@ -28,12 +28,32 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	if branchForm.Edit {
-		userModel, _ = user.GetUserById(branchForm.Id)
-	} else {
+	if !branchForm.Edit {
 		userModel.ID = uuid.NewV4().String()
 		userModel.ForgotPasswordCode = uuid.NewV4().String()
 		userModel.BranchId = uuid.NewV4().String()
+		//get branch role for current organisation
+		roleModel, roleGetError := role.GetRoleByNameAndOrgId("manager", tokenModel.OrgId)
+		if roleGetError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+
+		//add new user with branch role
+		userModel.RoleId = roleModel.ID
+		userModel.RoleName = roleModel.Name
+
+		userModel.Active = true
+		userModel.Locked = false
+	} else {
+		var getUserError error
+		userModel, getUserError = user.GetUserById(branchForm.Id)
+		if getUserError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
 	}
 	userModel.Address = branchForm.Address
 	userModel.Contact = branchForm.Contact
@@ -45,26 +65,7 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 		return
 	}
 	userModel.OrgId = tokenModel.OrgId
-	if branchForm.Edit {
-		userModel.ID = branchForm.Id
-		userModel.BranchId = branchForm.BranchId
-	} else {
-		userModel.ID = uuid.NewV4().String()
-		userModel.ForgotPasswordCode = uuid.NewV4().String()
-		userModel.BranchId = uuid.NewV4().String()
-	}
 
-	//get branch role for current organisation
-	roleModel, roleGetError := role.GetRoleByNameAndOrgId("manager", tokenModel.OrgId)
-	if roleGetError != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
-
-	//add new user with branch role
-	userModel.RoleId = roleModel.ID
-	userModel.RoleName = roleModel.Name
 	if branchForm.Password != "" {
 		bytePassword := []byte(branchForm.Password)
 		hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
@@ -122,6 +123,17 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 }
 
 func (ctrl BranchController) Delete(c *gin.Context) {
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	branchId, gotBranchId := c.GetQuery("id")
 
 	if gotBranchId == true {
@@ -142,7 +154,7 @@ func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	branches, err := user.GetUsersByOrgId(tokenModel.OrgId, "manager")
+	branches, err := user.GetUsersByOrgIdAndRoleName(tokenModel.OrgId, "manager")
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": branches})
 	} else {
@@ -169,7 +181,7 @@ func (ctrl BranchController) GetBranches(c *gin.Context) {
 	var branches []models.UserModel
 	var error error
 	if userRoleName == "admin" {
-		branches, error = user.GetUsersByOrgId(tokenModel.OrgId, "manager")
+		branches, error = user.GetUsersByOrgIdAndRoleName(tokenModel.OrgId, "manager")
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

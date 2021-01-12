@@ -124,7 +124,7 @@ func (u User) GetUsersByBranchId(branchId string) (users []UserModel, err error)
 	return users, nil
 }
 
-func (u User) GetUsersByOrgId(orgId string, roleName string) (users []UserModel, err error) {
+func (u User) GetUsersByOrgIdAndRoleName(orgId string, roleName string) (users []UserModel, err error) {
 	err = config.GetDB().Where("org_id=?", orgId).Where("role_name=?", roleName).Where("active=?", true).Find(&users).Error
 	if gorm.IsRecordNotFoundError(err) {
 		return []UserModel{}, nil
@@ -150,6 +150,17 @@ func (u User) GetUsersByOrgIdAndRoleId(orgId string, roleId string) (users []Use
 
 func (u User) GetUsersByBranchIdAndRoleId(branchId string, roleId string) (users []UserModel, err error) {
 	err = config.GetDB().Where("branch_id=?", branchId).Where("role_id=?", roleId).Where("active=?", true).Find(&users).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return []UserModel{}, nil
+	}
+	if err != nil {
+		return []UserModel{}, err
+	}
+
+	return users, nil
+}
+func (u User) GetUsersByBranchIdAndRoleName(branchId string, roleName string) (users []UserModel, err error) {
+	err = config.GetDB().Where("branch_id=?", branchId).Where("role_name=?", roleName).Where("active=?", true).Find(&users).Error
 	if gorm.IsRecordNotFoundError(err) {
 		return []UserModel{}, nil
 	}

@@ -58,7 +58,8 @@ func isAdminMiddleware() gin.HandlerFunc {
 }
 
 func InitRouter() {
-	router := gin.Default()
+
+	router := gin.New()
 	router.Use(CORS())
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
@@ -79,12 +80,11 @@ func InitRouter() {
 
 		//table related routes
 		table := new(controllers.TableController)
-		v1.POST("/table", AuthMiddleware(), table.AddOrEdit)
-		v1.GET("/table/org", AuthMiddleware(), isAdminMiddleware(), table.GetTablesOfOrg)
-		// v1.POST("/table/branch", AuthMiddleware(), table.GetTablesOfBranch)
+		v1.POST("/table", AuthMiddleware(), isAdminMiddleware(), table.AddOrEdit)
 		v1.GET("/tables", AuthMiddleware(), table.GetTables)
 		v1.GET("/table", AuthMiddleware(), table.GetTable)
-		v1.PUT("/table", AuthMiddleware(), user.Update)
+		v1.PUT("/table", AuthMiddleware(), isAdminMiddleware(), user.Update)
+		v1.DELETE("/table", AuthMiddleware(), isAdminMiddleware(), table.Delete)
 
 		//branch related routes
 		branch := new(controllers.BranchController)
@@ -105,8 +105,9 @@ func InitRouter() {
 		v1.GET("/orders", AuthMiddleware(), order.GetOrders)
 
 		kitchen := new(controllers.KitchenController)
-		v1.POST("/kitchen", AuthMiddleware(), isAdminMiddleware(), kitchen.Add)
-		v1.GET("/kitchens", AuthMiddleware(), kitchen.GetKitchens)
+		v1.POST("/kitchen", AuthMiddleware(), isAdminMiddleware(), kitchen.AddOrEdit)
+		v1.DELETE("/kitchen", AuthMiddleware(), isAdminMiddleware(), kitchen.Delete)
+		v1.GET("/kitchens", AuthMiddleware(), isAdminMiddleware(), kitchen.GetKitchens)
 	}
 
 	//for react

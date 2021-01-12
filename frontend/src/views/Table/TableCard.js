@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import {
@@ -11,8 +11,8 @@ import {
   makeStyles,
   Button,
 } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
-import { selectedTable ,editTable} from '../../actions/';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectedTable ,editTable, deleteTable} from '../../actions/';
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { Bounce } from "react-awesome-reveal";
@@ -34,18 +34,22 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TableCard = ({ className, table, ...rest }) => {
+const TableCard = ({table}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [edit, setEdit] = useState(false)
+  const tableState = useSelector((state) => state.table);
+  const selectedTableFromState = (tableState && tableState.selectedTable) || {};
+
   const onClick = (table) =>{
     dispatch(selectedTable(table))
     navigate("/app/table-details", { replace: true })
   }
   const onEdit = (table) =>{
     dispatch(selectedTable(table))
-    setEdit(true)
+  }
+  const onDelete = (table) =>{
+    dispatch(deleteTable(table))
   }
   const generateNewCode = (table) =>{
     const tableClone = Object.assign({}, table); 
@@ -55,15 +59,13 @@ const TableCard = ({ className, table, ...rest }) => {
 
   return (
     <Bounce>
-      {!edit ? 
+      {!selectedTableFromState.id ? 
     <Card
-      className={clsx(classes.root, className, table.occupied ? classes.occupied : null)}
-      {...rest}
+      className={clsx(classes.root, table.occupied ? classes.occupied : null)}
+      
     >
       <CardContent >
-        {/* <Box display="flex" justifyContent="center" mb={3}>
-          <Avatar alt="Product" src={product.media} variant="square" />
-        </Box> */}
+    
         <Typography align="center" color="textPrimary" gutterBottom variant="h4">
           {table.name}
         </Typography>
@@ -94,6 +96,9 @@ const TableCard = ({ className, table, ...rest }) => {
         </Button>
         <Button onClick={() => {generateNewCode(table)}} color="primary" variant="contained">
           Generate new code
+        </Button>
+        <Button onClick={() => {onDelete(table)}} color="secondary" variant="contained">
+          Delete
         </Button>
         </Grid>
       </Box>
