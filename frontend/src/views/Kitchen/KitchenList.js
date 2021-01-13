@@ -1,9 +1,10 @@
 import React, { useEffect, useState }  from 'react';
-import { Box, Card, CardContent, Container, Grid, InputAdornment, makeStyles, SvgIcon, TextField } from '@material-ui/core';
+import { Box, Button, Card, CardContent, Container, Grid, InputAdornment, makeStyles, SvgIcon, TextField, Typography } from '@material-ui/core';
 import Page from '../../components/Page';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import KitchenCard from './KitchenCard';
 import { Search as SearchIcon } from 'react-feather';
+import { initiateKitchenAdd } from '../../actions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -18,6 +19,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const KitchenList = () => {
+  const dispatch = useDispatch();
+
   const classes = useStyles();
   const KitchenState = useSelector(state => state.kitchen);
   const kitchens = (KitchenState && KitchenState.kitchens) || [];
@@ -33,7 +36,10 @@ const KitchenList = () => {
 
   return (
     <Page className={classes.root} title="Kitchens">
-      <Container maxWidth={false}>
+        {
+          kitchens.length ? 
+          <Container maxWidth={false}>
+
       <Box mt={3}>
         <Card>
           <CardContent>
@@ -66,7 +72,21 @@ const KitchenList = () => {
             ))}
           </Grid>
         </Box>
-      </Container>
+        </Container>
+
+         : (
+              <Typography style={{ margin: "1rem" }} variant="h4">
+                No kitchens added yet please
+                <Button
+                  onClick={() => dispatch(initiateKitchenAdd(true))}
+                  color="primary"
+                  variant="contained"
+                >
+                  Add Kitchen
+                </Button>
+              </Typography>
+            )
+         }
     </Page>
   );
 };

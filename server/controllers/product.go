@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 	"github.com/twinj/uuid"
 )
 
@@ -38,13 +37,18 @@ func (ctrl ProductController) Add(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	imageName, imageUploadError := helpers.SaveFile(c.Request, config.GetConfig().Uploads.Base+config.GetConfig().Uploads.Products)
-	if imageUploadError != nil {
-		logger.Error("image upload failed" + imageUploadError.Error())
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
+	if productForm.Image.Filename != "" {
+		imageName, imageUploadError := helpers.SaveFile(c.Request, config.GetConfig().Uploads.Base+config.GetConfig().Uploads.Products)
+		if imageUploadError != nil {
+			logger.Error("image upload failed" + imageUploadError.Error())
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		productModel.Image = config.GetConfig().Uploads.Products + imageName
+
 	}
+
 	productModel.ID = uuid.NewV4().String()
 	productModel.Name = productForm.ProductName
 	productModel.CreatedAt = time.Now()
@@ -56,16 +60,41 @@ func (ctrl ProductController) Add(c *gin.Context) {
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
 	tags := strings.Split(productForm.Tags, ",")
+	var addedTags []string
+	var tagArray []models.TagModel
+	var tagError error
+	for _, tagName := range tags {
+		tagM, _ := tag.GetByNameAndBranchId(strings.ToLower(tagName), productForm.BranchId)
+		if tagM.ID == "" {
+			tagModel.ID = uuid.NewV4().String()
+			tagModel.Name = tagName
+			tagModel.NameLower = strings.ToLower(tagName)
+			tagModel.OrgId = tokenModel.OrgId
+			tagModel.BranchId = productForm.BranchId
+			tagModel.Active = true
+			tagModel, tagError = tag.Add(tagModel)
+			addedTags = append(addedTags, tagName)
+			tagArray = append(tagArray, tagModel)
 
-	logger.Info("tags", tags)
-	productModel.Tags = pq.StringArray(tags)
-	logger.Info("Tags", productModel.Tags)
+		} else {
+			tagArray = append(tagArray, tagM)
+		}
+
+	}
+	if tagError != nil {
+		for _, tagName := range addedTags {
+			_, _ = tag.DeleteByName(tagName)
+		}
+		logger.Error("tag addition failed for product", productModel)
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 
 	productModel.Discount = productForm.Discount
 	productModel.Highlight = productForm.Highlight
 	productModel.Description = productForm.Description
-	productModel.Image = config.GetConfig().Uploads.Products + imageName
-
+	productModel.Tags = tagArray
 	_, err := product.Add(productModel)
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})

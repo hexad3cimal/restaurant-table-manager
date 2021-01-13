@@ -12,6 +12,7 @@ type TagModel struct {
 	ProductId string    `db:"product_id" json:"product_id"`
 	Active    bool      `db:"active" json:"-" sql:"DEFAULT:true"`
 	Name      string    `db:"name" json:"name"`
+	NameLower string    `db:"name_lower" json:"name_lower"`
 	UpdatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }
@@ -39,6 +40,17 @@ func (tag Tag) DeleteById(id string) (returnModel TagModel, err error) {
 	return returnModel, err
 }
 
+func (tag Tag) DeleteByName(name string) (returnModel TagModel, err error) {
+
+	err = config.GetDB().Where("name=?", name).Delete(&returnModel).Error
+
+	if err != nil {
+		return TagModel{}, err
+	}
+
+	return returnModel, err
+}
+
 func (tag Tag) Get(id string) (tagModel TagModel, err error) {
 
 	err = config.GetDB().Where("id=?", id).First(&tagModel).Error
@@ -52,10 +64,32 @@ func (tag Tag) Get(id string) (tagModel TagModel, err error) {
 
 func (tag Tag) GetByNameAndOrgId(tagName string, orgId string) (tagModel TagModel, err error) {
 
-	err = config.GetDB().Where("name=?", tagName).Where("org_id=?", orgId).First(&tagModel).Error
+	err = config.GetDB().Where("name_lower=?", tagName).Where("org_id=?", orgId).First(&tagModel).Error
 	if err != nil {
 
 		return TagModel{}, err
+	}
+
+	return tagModel, err
+}
+
+func (tag Tag) GetByNameAndBranchId(tagName string, branchId string) (tagModel TagModel, err error) {
+
+	err = config.GetDB().Where("name_lower=?", tagName).Where("branch_id=?", branchId).First(&tagModel).Error
+	if err != nil {
+
+		return TagModel{}, err
+	}
+
+	return tagModel, err
+}
+
+func (tag Tag) GetSimilarByNameAndBranchId(tagName string, branchId string) (tagModel []TagModel, err error) {
+
+	err = config.GetDB().Where("name_lower LIKE ?", "%"+tagName+"%").Where("branch_id=?", branchId).First(&tagModel).Error
+	if err != nil {
+
+		return []TagModel{}, err
 	}
 
 	return tagModel, err

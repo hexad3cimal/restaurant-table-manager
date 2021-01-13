@@ -168,6 +168,6 @@ export default function* root() {
     takeLatest(ActionTypes.KITCHEN_ADD, addKitchen),
     takeLatest(ActionTypes.KITCHEN_GET, getKitchenById),
     takeLatest(ActionTypes.KITCHENS_GET, getKitchens),
-    takeLatest(ActionTypes.KITCHENS_GET, deleteById),
+    takeLatest(ActionTypes.KITCHEN_DELETE, deleteById),
   ]);
 }

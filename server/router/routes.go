@@ -64,7 +64,7 @@ func InitRouter() {
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	router.Use(static.Serve("/", static.LocalFile("../ui/build", true)))
+	router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
 
 	v1 := router.Group("/v1/api")
 	{
@@ -94,10 +94,12 @@ func InitRouter() {
 		v1.GET("/branch/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 
 		product := new(controllers.ProductController)
+		tag := new(controllers.TagController)
 		v1.POST("/product", AuthMiddleware(), product.Add)
 		v1.GET("/products", AuthMiddleware(), product.GetProducts)
 		v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 		v1.GET("/product/top", AuthMiddleware(), product.GetTopProducts)
+		v1.GET("/tag", AuthMiddleware(), tag.GetTags)
 
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)

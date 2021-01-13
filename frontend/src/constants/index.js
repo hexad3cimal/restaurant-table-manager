@@ -104,6 +104,9 @@ export const ActionTypes = keyMirror({
   ORDER_GET_BY_TABLE_ID: undefined,
   ORDER_GET_BY_TABLE_ID_SUCCESS: undefined,
   ORDER_GET_BY_TABLE_ID_FAILURE: undefined,
+  TAG_GET_SIMILAR: undefined,
+  TAG_GET_SIMILAR_SUCCESS: undefined,
+  TAG_GET_SIMILAR_FAILURE: undefined,
 });
 
 /**

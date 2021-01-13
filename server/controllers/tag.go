@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	"table-booking/helpers"
+	"strings"
 	"table-booking/mappers"
 	"table-booking/models"
 
@@ -60,38 +60,29 @@ func (ctrl TagController) GetTagsOfOrg(c *gin.Context) {
 
 }
 
-func (ctrl TagController) GetTypes(c *gin.Context) {
-	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
-	if getTokenError != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
+func (ctrl TagController) GetTags(c *gin.Context) {
 
-	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
+	branchId, gotBranchId := c.GetQuery("branchId")
+	tagNames, gotTagName := c.GetQuery("tagName")
 
-	if getRoleError != nil {
+	if !gotBranchId || !gotTagName {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
 	var tags []models.TagModel
 	var error error
-	if userRoleName == "admin" {
-		tags, error = tag.GetByOrgId(tokenModel.OrgId)
-		if error != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
+	tagsString := strings.Split(tagNames, ",")
+	for _, tagName := range tagsString {
+		newTags, _ := tag.GetSimilarByNameAndBranchId(strings.ToLower(tagName), branchId)
+		for _, selectedTag := range newTags {
+			tags = append(tags, selectedTag)
 		}
 	}
-	if userRoleName == "manager" {
-		tags, error = tag.GetByBranchId(tokenModel.BranchId)
-		if error != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
+	if error != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": tags})

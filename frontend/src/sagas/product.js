@@ -25,6 +25,9 @@ export function* add({payload}) {
       type: ActionTypes.PRODUCT_ADD_SUCCESS,
     }),
     yield put({
+      type: ActionTypes.PRODUCTS_GET,
+    }),
+    yield put({
       type: ActionTypes.SHOW_ALERT,
       payload: `Added ${payload.name} successfully!`,
     }),
@@ -81,15 +84,14 @@ export function* getProducts() {
       method: 'GET',
     });
 
-    yield all([
+    yield 
       put({
         type: ActionTypes.PRODUCTS_GET_SUCCESS,
         payload: products && products.data,
-      }),
-    ]);
+      })
+   
   } catch (err) {
     /* istanbul ignore next */
-    console.log("error",err)
     yield all([
       put({
         type: ActionTypes.PRODUCTS_GET_FAILURE,

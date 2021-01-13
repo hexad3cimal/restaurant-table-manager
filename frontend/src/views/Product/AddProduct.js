@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import clsx from "clsx";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { getBranches, addProduct } from "../../actions";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import {
   Box,
@@ -13,27 +12,29 @@ import {
   Divider,
   Grid,
   TextField,
-  makeStyles,
   Checkbox,
   FormControlLabel,
+  Chip,
 } from "@material-ui/core";
 
 import * as Yup from "yup";
 import { Formik } from "formik";
-import { isFormValid } from "../../modules/helpers";
+import { getBranches, addProduct, 
+  getSimilarTags
+ } from "../../actions";
 
-const useStyles = makeStyles(() => ({
-  root: {},
-}));
-
-const AddProduct = ({ className, ...rest }) => {
-  const classes = useStyles();
+const AddProduct = () => {
   const dispatch = useDispatch();
   const branchState = useSelector((state) => state.branch);
   const kitchenState = useSelector((state) => state.kitchen);
+  const tagState = useSelector((state) => state.tag);
   const [image, setImage] = useState(null);
+  const [tag, setTag] = useState([]);
+  const [similarTags, setSimilarTags] = useState([]);
+
   const branches = (branchState && branchState.branches) || [];
   const kitchens = (kitchenState && kitchenState.kitchens) || [];
+  const similarTagsFromState = (tagState && tagState.similar) || [];
   const fileEl = React.useRef(null);
   const onButtonClick = () => {
     fileEl.current.click();
@@ -43,8 +44,14 @@ const AddProduct = ({ className, ...rest }) => {
     setImage(e.target.files[0]);
   };
   useEffect(() => {
+    setSimilarTags(similarTagsFromState.map( tag => {return tag.name}))
+  }, [similarTagsFromState]);
+  useEffect(() => {
     dispatch(getBranches());
   }, []);
+  const getTagSuggestions = (branchId, tagName) => {
+    dispatch(getSimilarTags({ branchId, tagName }));
+  };
   return (
     <Formik
       initialValues={{
@@ -91,18 +98,13 @@ const AddProduct = ({ className, ...rest }) => {
         price: Yup.number().required("Price is required"),
       })}
       onSubmit={(values) => {
-        if (branches && branches.length === 1) {
-          values.branchId = branches && branches[0].id;
-        }
         values.branchName = branches.reduce(function (branchNameArray, branch) {
           if (branch.id === values.branchId) {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
         }, [])[0];
-        if (kitchens && kitchens.length === 1) {
-          values.kitchenId = kitchens && kitchens[0].id;
-        }
+  
         values.kitchenName = kitchens.reduce(function (
           kitchenNameArray,
           kitchen
@@ -115,6 +117,7 @@ const AddProduct = ({ className, ...rest }) => {
         [])[0];
 
         values.file = image;
+        values.tags = tag;
         const form = new FormData();
         for (let value in values) {
           form.append(value, values[value]);
@@ -130,13 +133,7 @@ const AddProduct = ({ className, ...rest }) => {
         touched,
         values,
       }) => (
-        <form
-          onSubmit={handleSubmit}
-          autoComplete="off"
-          noValidate
-          className={clsx(classes.root, className)}
-          {...rest}
-        >
+        <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader subheader="Add new product" title="Add product" />
             <Divider />
@@ -197,7 +194,6 @@ const AddProduct = ({ className, ...rest }) => {
                     select
                     SelectProps={{ native: true }}
                     value={values.branchId}
-                    disabled={branches && branches.length === 1}
                     variant="outlined"
                   >
                     <option key="" value=""></option>
@@ -220,7 +216,6 @@ const AddProduct = ({ className, ...rest }) => {
                     select
                     SelectProps={{ native: true }}
                     value={values.kitchenId}
-                    disabled={kitchens && kitchens.length === 1}
                     variant="outlined"
                   >
                     <option key="" value=""></option>
@@ -263,17 +258,20 @@ const AddProduct = ({ className, ...rest }) => {
                 <Grid item md={2} xs={3}>
                   <input
                     accept="image/*"
-                    className={classes.input}
-                    multiple
                     type="file"
                     ref={fileEl}
                     onChange={fileChange}
-                    style={{display:"none"}}
+                    style={{ display: "none" }}
                   />
-                    <Button variant={image? 'contained' : 'outlined'} color="primary" onClick={() => onButtonClick()}>{image? image.name : 'Upload Pic'}</Button>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-
+                  <Button
+                    variant={image ? "contained" : "outlined"}
+                    color="primary"
+                    onClick={() => onButtonClick()}
+                  >
+                    {image ? image.name : "Upload Pic"}
+                  </Button>
+                </Grid>
+                <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.description && errors.description)}
                     fullWidth
@@ -289,17 +287,34 @@ const AddProduct = ({ className, ...rest }) => {
                 </Grid>
               </Grid>
               <Grid item md={6} xs={12}>
-                <TextField
-                  error={Boolean(touched.tags && errors.tags)}
-                  fullWidth
-                  helperText={touched.tags && errors.tags}
-                  label="Tags"
-                  margin="normal"
-                  name="tags"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.tags}
-                  variant="outlined"
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  value={tag}
+                  onChange={(event, newValue) => {
+                    setTag(newValue)
+                  }}
+                  options={similarTags}
+                  getOptionLabel={(option) => option}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => {
+                      return (
+                        <Chip label={option} {...getTagProps({ index })} />
+                      );
+                    })
+                  }
+                  onInputChange={(event, newInput) => {
+                    getTagSuggestions(values.branchId,newInput)
+                  }}
+                  style={{ width: 500 }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Tags"
+                      variant="outlined"
+                      placeholder="Tags"
+                    />
+                  )}
                 />
               </Grid>
             </CardContent>
@@ -308,7 +323,6 @@ const AddProduct = ({ className, ...rest }) => {
               <Button
                 color="primary"
                 type="submit"
-                disabled={!isFormValid(errors, touched)}
                 variant="contained"
               >
                 Add

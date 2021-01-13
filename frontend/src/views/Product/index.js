@@ -20,10 +20,7 @@ const Products = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const productState = useSelector(state => state.product);
-
-  if (productState && productState.new) {
-    dispatch(getProducts());
-  }
+  
   useEffect(() => {
     dispatch(getProducts());
   }, []);

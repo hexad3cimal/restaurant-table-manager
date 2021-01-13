@@ -5,6 +5,7 @@ import table from './table';
 import product from './product';
 import order from './order';
 import kitchen from './kitchen'
+import tag from './tag'
 export default {
   ...user,
   ...app,
@@ -12,5 +13,6 @@ export default {
   ...table,
   ...product,
   ...order,
-  ...kitchen
+  ...kitchen,
+  ...tag
 };

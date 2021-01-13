@@ -23,6 +23,7 @@ func main() {
 	db.AutoMigrate(&models.OrderModel{})
 	db.AutoMigrate(&models.TokenModel{})
 	db.AutoMigrate(&models.OrderItemModel{})
+	db.AutoMigrate(&models.TagModel{})
 
 	//add foreign keys
 	db.Model(&models.UserModel{}).AddForeignKey("role_id", "role_models(id)", "RESTRICT", "RESTRICT")

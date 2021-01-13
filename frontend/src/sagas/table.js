@@ -3,10 +3,10 @@
  * @desc Table
  */
 
-import { all, put, takeLatest } from 'redux-saga/effects';
+import { all, put, takeLatest } from "redux-saga/effects";
 
-import { ActionTypes } from '../constants/index';
-import { request } from '../modules/client';
+import { ActionTypes } from "../constants/index";
+import { request } from "../modules/client";
 
 /**
  * Add new table
@@ -14,7 +14,7 @@ import { request } from '../modules/client';
 export function* addTable({ payload }) {
   try {
     yield request(`${window.restAppConfig.api}table`, {
-      method: 'POST',
+      method: "POST",
       payload,
     });
     yield all([
@@ -35,7 +35,7 @@ export function* addTable({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Could not add table,please retry',
+        payload: "Could not add table,please retry",
       }),
     ]);
   }
@@ -47,7 +47,7 @@ export function* addTable({ payload }) {
 export function* editTable({ payload }) {
   try {
     yield request(`${window.restAppConfig.api}table`, {
-      method: 'PUT',
+      method: "PUT",
       payload,
     });
     yield all([
@@ -68,7 +68,7 @@ export function* editTable({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Could not add table,please retry',
+        payload: "Could not add table,please retry",
       }),
     ]);
   }
@@ -79,11 +79,11 @@ export function* editTable({ payload }) {
  */
 export function* getTableById({ payload }) {
   try {
-
-    const url = payload.code ? `${window.restAppConfig.api}table?loginCode=${payload.code}` :
-    `${window.restAppConfig.api}table?id=${payload.id}`
+    const url = payload.code
+      ? `${window.restAppConfig.api}table?loginCode=${payload.code}`
+      : `${window.restAppConfig.api}table?id=${payload.id}`;
     const table = yield request(url, {
-      method: 'GET',
+      method: "GET",
     });
 
     yield put({
@@ -99,7 +99,7 @@ export function* getTableById({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting table details, please retry',
+        payload: "Error while gettting table details, please retry",
       }),
     ]);
   }
@@ -110,9 +110,12 @@ export function* getTableById({ payload }) {
  */
 export function* getTablesForBranch({ payload }) {
   try {
-    const tables = yield request(`${window.restAppConfig.api}table/branch?branch=${payload.id}`, {
-      method: 'GET',
-    });
+    const tables = yield request(
+      `${window.restAppConfig.api}table/branch?branch=${payload.id}`,
+      {
+        method: "GET",
+      }
+    );
 
     yield all([
       put({
@@ -129,19 +132,19 @@ export function* getTablesForBranch({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting tables, please retry',
+        payload: "Error while gettting tables, please retry",
       }),
     ]);
   }
 }
 
 /**
- * Get all the tables 
+ * Get all the tables
  */
 export function* getTables() {
   try {
     const tables = yield request(`${window.restAppConfig.api}tables`, {
-      method: 'GET',
+      method: "GET",
     });
 
     yield all([
@@ -159,7 +162,7 @@ export function* getTables() {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting tables, please retry',
+        payload: "Error while gettting tables, please retry",
       }),
     ]);
   }
@@ -170,17 +173,21 @@ export function* getTables() {
  */
 export function* deleteById({ payload }) {
   try {
-    yield request(`${window.restAppConfig.api}table?id=${payload.branchId}`, {
-      method: 'DELETE',
+    yield request(`${window.restAppConfig.api}table?id=${payload.id}`, {
+      method: "DELETE",
     });
-
-    yield put({
-      type: ActionTypes.TABLE_DELETE_SUCCESS,
-    });
-    put({
-      type: ActionTypes.SHOW_ALERT,
-      payload: 'Deleted table successfully',
-    })
+    yield all([
+      put({
+        type: ActionTypes.TABLE_DELETE_SUCCESS,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: "Deleted table successfully",
+      }),
+      put({
+        type: ActionTypes.TABLES_GET,
+      }),
+    ]);
   } catch (err) {
     /* istanbul ignore next */
     yield all([
@@ -190,12 +197,11 @@ export function* deleteById({ payload }) {
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: 'Error while gettting branch details, please retry',
+        payload: "Error while gettting branch details, please retry",
       }),
     ]);
   }
 }
-
 
 /**
  * Table Sagas
