@@ -95,11 +95,12 @@ func InitRouter() {
 
 		product := new(controllers.ProductController)
 		tag := new(controllers.TagController)
-		v1.POST("/product", AuthMiddleware(), product.Add)
+		v1.POST("/product", AuthMiddleware(), isAdminMiddleware(), product.Add)
+		v1.DELETE("/product", AuthMiddleware(), isAdminMiddleware(), product.Delete)
 		v1.GET("/products", AuthMiddleware(), product.GetProducts)
-		v1.GET("/product/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 		v1.GET("/product/top", AuthMiddleware(), product.GetTopProducts)
 		v1.GET("/tag", AuthMiddleware(), tag.GetTags)
+		v1.GET("/product/validate", product.ValidateProduct)
 
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)

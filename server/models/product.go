@@ -13,6 +13,7 @@ type ProductModel struct {
 	KitchenId   string          `db:"kitchen_id" json:"kitchenId"`
 	KitchenName string          `db:"kitchen_name" json:"kitchenName"`
 	Name        string          `db:"name" json:"name"`
+	NameLower   string          `db:"name_lower" json:"name_lower"`
 	Quantity    int             `db:"quantity" json:"quantity"`
 	Price       string          `db:"price" json:"price"`
 	Discount    int             `db:"discount" json:"discount"`
@@ -22,7 +23,7 @@ type ProductModel struct {
 	Active      bool            `db:"active" json:"active" sql:"DEFAULT:true"`
 	UpdatedAt   time.Time       `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt   time.Time       `db:"created_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	Tags        []TagModel      `gorm:"many2many:product_tags;"`
+	Tags        []TagModel      `gorm:"many2many:product_tags;" json:"tags"`
 	Catergories []CategoryModel `gorm:"many2many:product_catergories;"`
 }
 
@@ -40,8 +41,7 @@ func (product Product) Add(productModel ProductModel) (returnModel ProductModel,
 
 func (product Product) GetMostOrderedProductsOfBranch(branchId string) (returnModel []ProductModel, err error) {
 
-	//err = config.GetDB().Limit(10).Table("product_models").Select("product_models.*,count(product_models.id) as productCount").Joins("join order_models on product_models.id = order_models.product_id").Where("product_models.branch_id = ?", branchId).Group("product_models.id").Find(&returnModel).Error
-	err = config.GetDB().Raw("SELECT product_models.*,count(product_models.id) as productCount 	FROM product_models join order_item_models on product_models.id = order_item_models.product_id WHERE product_models.branch_id = ? GROUP BY product_models.id ORDER BY productCount desc LIMIT 10", branchId).Find(&returnModel).Error
+	err = config.GetDB().Raw("SELECT product_models.*,count(product_models.id) as productCount 	FROM product_models join order_item_models on product_models.id = order_item_models.product_id WHERE product_models.branch_id = ? AND product_models.active = true GROUP BY product_models.id ORDER BY productCount desc LIMIT 10", branchId).Find(&returnModel).Error
 	if err != nil {
 
 		return []ProductModel{}, err
@@ -50,7 +50,7 @@ func (product Product) GetMostOrderedProductsOfBranch(branchId string) (returnMo
 }
 func (product Product) GetRecentlyOrderedProductsOfBranch(branchId string) (returnModel []ProductModel, err error) {
 
-	err = config.GetDB().Limit(10).Table("product_models").Joins("join order_models on product_models.id =  order_models.product_id").Where("product_models.branch_id = ?", branchId).Where("order_models.created_at BETWEEN ? AND ?", time.Now(), time.Now().AddDate(0, 0, -1)).Order("order_models.created_at").Find(&returnModel).Error
+	err = config.GetDB().Limit(10).Table("product_models").Joins("join order_models on product_models.id =  order_models.product_id").Where("product_models.branch_id = ?", branchId).Where("product_models.active = ?", true).Where("order_models.created_at BETWEEN ? AND ?", time.Now(), time.Now().AddDate(0, 0, -1)).Order("order_models.created_at").Find(&returnModel).Error
 	if err != nil {
 
 		return []ProductModel{}, err
@@ -60,7 +60,18 @@ func (product Product) GetRecentlyOrderedProductsOfBranch(branchId string) (retu
 
 func (product Product) GetById(id string) (productModel ProductModel, err error) {
 
-	err = config.GetDB().Where("id=?", id).First(&productModel).Error
+	err = config.GetDB().Where("id=?", id).Where("active=?", true).First(&productModel).Error
+	if err != nil {
+
+		return ProductModel{}, err
+	}
+
+	return productModel, err
+}
+
+func (product Product) GetByName(name string) (productModel ProductModel, err error) {
+
+	err = config.GetDB().Where("name_lower=?", name).Where("active=?", true).First(&productModel).Error
 	if err != nil {
 
 		return ProductModel{}, err
@@ -71,7 +82,7 @@ func (product Product) GetById(id string) (productModel ProductModel, err error)
 
 func (product Product) GetProductForOrg(ID string, orgId string) (productModel ProductModel, err error) {
 
-	err = config.GetDB().Where("ID=?", ID).Where("orgId=?", orgId).First(&productModel).Error
+	err = config.GetDB().Where("ID=?", ID).Where("orgId=?", orgId).Where("active=?", true).First(&productModel).Error
 	if err != nil {
 
 		return ProductModel{}, err
@@ -82,7 +93,7 @@ func (product Product) GetProductForOrg(ID string, orgId string) (productModel P
 
 func (product Product) GetProductsOfBranch(branchId string) (productModels []ProductModel, err error) {
 
-	err = config.GetDB().Where("branch_id=?", branchId).Find(&productModels).Error
+	err = config.GetDB().Preload("Tags").Where("branch_id=?", branchId).Where("active=?", true).Find(&productModels).Error
 	if err != nil {
 
 		return []ProductModel{}, err
@@ -93,11 +104,20 @@ func (product Product) GetProductsOfBranch(branchId string) (productModels []Pro
 
 func (product Product) GetProductsOfOrg(orgId string) (productModels []ProductModel, err error) {
 
-	err = config.GetDB().Where("org_id=?", orgId).Find(&productModels).Error
+	err = config.GetDB().Preload("Tags").Where("org_id=?", orgId).Where("active=?", true).Find(&productModels).Error
 	if err != nil {
 
 		return []ProductModel{}, err
 	}
 
 	return productModels, err
+}
+
+func (product Product) DeleteById(id string) (productModel ProductModel, err error) {
+	err = config.GetDB().Model(&ProductModel{}).Where("id=?", id).Where("active=?", true).Update("active", false).Error
+	if err != nil {
+		return ProductModel{}, err
+	}
+
+	return productModel, nil
 }

@@ -14,8 +14,11 @@ export const productState = {
 export default {
   product: handleActions(
     {
-      [ActionTypes.PRODUCT_ADD_INITIATE]: draft => {
-        draft.add = true;
+      [ActionTypes.PRODUCT_ADD_INITIATE]: (draft, { payload }) => {
+        draft.add = payload;
+      },
+      [ActionTypes.PRODUCT_SET_IN_STATE]: (draft, { payload }) => {
+        draft.selectedProduct = payload;
       },
       [ActionTypes.PRODUCT_ADD]: draft => {
         draft.status = STATUS.RUNNING;

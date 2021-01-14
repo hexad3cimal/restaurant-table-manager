@@ -71,6 +71,10 @@ const AddKitchen = () => {
       required: true,
       errorMessages: { required: "Full name is Required" },
     },
+    branchId: {
+      required: true,
+      errorMessages: { required: "Please select a branch" },
+    },
   };
 
   const back = ()=>{
@@ -138,7 +142,7 @@ const AddKitchen = () => {
         newPassword: kitchen.password,
         newUserName: kitchen.userName
           ? kitchen.userName
-          : user.user.name.split(" ").join("" + "-"),
+          : user.user.name.split(" ").join("" + "-kitchen-"),
       }}
     validate={validate}
       onSubmit={(values) => {

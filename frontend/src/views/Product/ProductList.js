@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import PerfectScrollbar from "react-perfect-scrollbar";
 import {
   Box,
   Card,
@@ -14,108 +13,202 @@ import {
   Typography,
   makeStyles,
   Avatar,
-} from '@material-ui/core';
+  CardContent,
+  TextField,
+  InputAdornment,
+  SvgIcon,
+  Container,
+  Button,
+} from "@material-ui/core";
+import { Search as SearchIcon } from "react-feather";
+import { useDispatch, useSelector } from "react-redux";
+import Page from "../../components/Page";
+import {
+  hideAlert,
+  initiateProductAdd,
+  setProductInState,
+  deleteProduct,
+} from "../../actions";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {},
   avatar: {
     marginRight: theme.spacing(2),
   },
 }));
 
-const ProductList = ({ className, products, ...rest }) => {
+const ProductList = () => {
   const classes = useStyles();
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const dispatch = useDispatch();
 
-  const [tableRows, setTableRows] = useState([])
-  const handleLimitChange = event => {
+  const [tableRows, setTableRows] = useState([]);
+  const handleLimitChange = (event) => {
     setLimit(event.target.value);
   };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
-    setTableRows(products.slice(newPage*limit,((newPage*limit)+limit) > products.length ? products.length :  (newPage*limit)+limit))
+    setTableRows(
+      filteredProducts.slice(
+        newPage * limit,
+        newPage * limit + limit > filteredProducts.length
+          ? filteredProducts.length
+          : newPage * limit + limit
+      )
+    );
   };
 
-  useEffect(()=>{
-    setTableRows(products.slice(0,limit))
-  },[limit])
+  const productState = useSelector((state) => state.product);
+  const products = (productState && productState.products) || [];
 
+  const [filteredProducts, setProducts] = useState([]);
+
+  useEffect(() => {
+    setProducts(products);
+    setTableRows(products);
+  }, [products]);
+  const onSearch = (value) => {
+    setProducts(
+      products.filter((product) => {
+        return product.name.toLowerCase().includes(value);
+      })
+    );
+  };
+  const onEdit = (product) => {
+    dispatch(setProductInState(product));
+    dispatch(initiateProductAdd(true));
+  };
+  const onDelete = (branch) => {
+    dispatch(deleteProduct(branch));
+    setTimeout(() => {
+      dispatch(hideAlert());
+    }, 100);
+  };
+
+  useEffect(() => {
+    setTableRows(filteredProducts.slice(0, limit));
+  }, [limit]);
+
+  useEffect(() => {
+    setTableRows(filteredProducts.slice(0, limit));
+  }, [filteredProducts]);
   return (
-    <Card className={clsx(classes.root, className)} {...rest}>
-      <PerfectScrollbar>
-        <Box >
-          <Table>
-            <TableHead>
-              <TableRow>
-                {/* <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedCustomerIds.length === customers.length}
-                    color="primary"
-                    indeterminate={
-                      selectedCustomerIds.length > 0 &&
-                      selectedCustomerIds.length < customers.length
-                    }
-                    onChange={handleSelectAll}
-                  />
-                </TableCell> */}
-                <TableCell>Name</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Tags</TableCell>
-
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tableRows.map(product => (
-                <TableRow
-                  hover
-                  key={product.id}
-                  // selected={selectedCustomerIds.indexOf(customer.id) !== -1}
-                >
-                  {/* <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCustomerIds.indexOf(customer.id) !== -1}
-                      onChange={event => handleSelectOne(event, customer.id)}
-                      value="true"
-                    />
-                  </TableCell> */}
-                  <TableCell>
-                    <Box alignItems="center" display="flex">
-                      <Avatar className={classes.avatar} src={product.image}>
-                      </Avatar>
-                      <Typography color="textPrimary" variant="body1">
-                        {product.name}
-                      </Typography>
+    <Page className={classes.root} title="Products">
+      {products.length ? (
+        <Container maxWidth={false}>
+          <Box mt={3}>
+            <Card className={classes.root}>
+              <Box mt={3}>
+                <Card>
+                  <CardContent>
+                    <Box maxWidth={500}>
+                      <TextField
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SvgIcon fontSize="small" color="action">
+                                <SearchIcon />
+                              </SvgIcon>
+                            </InputAdornment>
+                          ),
+                        }}
+                        placeholder="Search with product name"
+                        variant="outlined"
+                        onChange={(event) => {
+                          onSearch(event.target.value.toLowerCase());
+                        }}
+                      />
                     </Box>
-                  </TableCell>
-                  <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.description}</TableCell>
-                  <TableCell>{product.tags}</TableCell>
-
-                  {/* <TableCell>{moment(customer.createdAt).format('DD/MM/YYYY')}</TableCell> */}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
-      </PerfectScrollbar>
-      <TablePagination
-        component="div"
-        count={products.length}
-        onChangePage={(event, newPage) => handlePageChange(event, newPage)}
-        onChangeRowsPerPage={handleLimitChange}
-        page={page}
-        rowsPerPage={limit}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
-    </Card>
+                  </CardContent>
+                </Card>
+              </Box>
+              <PerfectScrollbar>
+                <Box>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Price</TableCell>
+                        <TableCell>Description</TableCell>
+                        <TableCell>Tags</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tableRows.map((product) => (
+                        <TableRow hover key={product.id}>
+                          <TableCell>
+                            <Box alignItems="center" display="flex">
+                              <Avatar
+                                className={classes.avatar}
+                                src={product.image}
+                              ></Avatar>
+                              <Typography color="textPrimary" variant="body1">
+                                {product.name}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell>{product.price}</TableCell>
+                          <TableCell>{product.description}</TableCell>
+                          <TableCell>
+                            {product.tags &&
+                              product.tags.map((tag) => tag.name).join(",")}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              onClick={() => onEdit(product)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="contained"
+                              onClick={() => onDelete(product)}
+                              style={{ margin: "1rem" }}
+                            >
+                              Delete
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </PerfectScrollbar>
+              <TablePagination
+                component="div"
+                count={products.length}
+                onChangePage={(event, newPage) =>
+                  handlePageChange(event, newPage)
+                }
+                onChangeRowsPerPage={handleLimitChange}
+                page={page}
+                rowsPerPage={limit}
+                rowsPerPageOptions={[5, 10, 25]}
+              />
+            </Card>
+          </Box>
+        </Container>
+      ) : (
+        <Typography style={{ margin: "1rem" }} variant="h4">
+          No products added yet please
+          <Button
+            onClick={() => dispatch(initiateProductAdd(true))}
+            color="primary"
+            variant="contained"
+          >
+            Add Products
+          </Button>
+        </Typography>
+      )}
+    </Page>
   );
 };
 
 ProductList.propTypes = {
-  className: PropTypes.string,
   products: PropTypes.array.isRequired,
 };
 

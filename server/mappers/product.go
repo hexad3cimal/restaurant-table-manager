@@ -3,14 +3,14 @@ package mappers
 import "mime/multipart"
 
 type ProductForm struct {
-	ProductName string                `form:"productName" binding:"required"`
+	ProductName string                `form:"name" binding:"required"`
 	OrgId       string                `form:"orgId"`
 	Highlight   bool                  `form:"highlight"`
 	BranchId    string                `form:"branchId" binding:"required"`
 	BranchName  string                `form:"branchName" binding:"required"`
 	KitchenId   string                `form:"kitchenId" binding:"required"`
 	KitchenName string                `form:"kitchenName" binding:"required"`
-	Description string                `form:"description" binding:"required"`
+	Description string                `form:"description"`
 	Tags        string                `form:"tags"`
 	Image       *multipart.FileHeader `form:"file"  binding:"omitempty"`
 	Price       string                `form:"price" binding:"required"`

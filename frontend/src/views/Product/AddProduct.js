@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -12,21 +11,26 @@ import {
   Divider,
   Grid,
   TextField,
-  Checkbox,
-  FormControlLabel,
   Chip,
 } from "@material-ui/core";
 
-import * as Yup from "yup";
 import { Formik } from "formik";
-import { getBranches, addProduct, 
-  getSimilarTags
- } from "../../actions";
+import {
+  getBranches,
+  addProduct,
+  getSimilarTags,
+  getKitchens,
+  initiateProductAdd,
+  setProductInState,
+} from "../../actions";
+import { remoteValidate } from "../../modules/helpers";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
   const branchState = useSelector((state) => state.branch);
   const kitchenState = useSelector((state) => state.kitchen);
+  const productState = useSelector((state) => state.product);
+
   const tagState = useSelector((state) => state.tag);
   const [image, setImage] = useState(null);
   const [tag, setTag] = useState([]);
@@ -36,6 +40,97 @@ const AddProduct = () => {
   const kitchens = (kitchenState && kitchenState.kitchens) || [];
   const similarTagsFromState = (tagState && tagState.similar) || [];
   const fileEl = React.useRef(null);
+  const formErrors = useRef({});
+  const formValues = useRef({});
+
+  const [product, setProduct] = useState({
+    id: "",
+    name: "",
+    branchId: "",
+    kitchenId: "",
+    price: "",
+    description: "",
+    discount: 0,
+    file: null,
+    quantity: 0,
+    tags: "",
+    edit: false,
+  });
+
+  useEffect(() => {
+    if (productState.selectedProduct) {
+      const productClone = Object.assign({},productState.selectedProduct)
+      productClone.tags = productClone.tags && productClone.tags.map((tag) => tag.name)|| ""
+      setTag(productClone.tags)
+      setProduct(productClone);
+    }
+  }, [productState.selectedProduct]);
+
+  const errorRules = {
+    name: {
+      required: true,
+      remoteValidate: true,
+      url: `${window.restAppConfig.api}product/validate?productName`,
+      errorMessages: {
+        required: "Product name is Required",
+        remoteValidate: "Another product with same name exists",
+      },
+    },
+    branchId: {
+      required: true,
+      errorMessages: {
+        required: "Please select a branch",
+      },
+    },
+    kitchenId: {
+      required: true,
+      errorMessages: {
+        required: "Please select a kitchen",
+      },
+    },
+    price: {
+      required: true,
+      errorMessages: {
+        required: "Price is required",
+      },
+    },
+  };
+
+  const back = () => {
+    dispatch(initiateProductAdd(false));
+    dispatch(setProductInState({}));
+  };
+
+  const validate = async (values) => {
+    const errors = {};
+    for (let value in values) {
+      if (errorRules[value] && errorRules[value].required) {
+        if (!values[value]) {
+          errors[value] = errorRules[value]["errorMessages"]["required"];
+        }
+        if (errorRules[value].remoteValidate) {
+          if (
+            formValues.current[value] !== values[value] ||
+            formErrors.current[value]
+          ) {
+            let url = `${errorRules[value].url}=${values[value]}`;
+            if (product.id) {
+              url = `${url}&id=${product.id}`;
+            }
+            const result = await remoteValidate(url);
+            if (!result)
+              errors[value] =
+                errorRules[value]["errorMessages"]["remoteValidate"];
+          }
+        }
+      }
+    }
+
+    formErrors.current = errors;
+    formValues.current = { ...formValues.current, values };
+    return errors;
+  };
+
   const onButtonClick = () => {
     fileEl.current.click();
   };
@@ -44,9 +139,14 @@ const AddProduct = () => {
     setImage(e.target.files[0]);
   };
   useEffect(() => {
-    setSimilarTags(similarTagsFromState.map( tag => {return tag.name}))
+    setSimilarTags(
+      similarTagsFromState.map((tag) => {
+        return tag.name;
+      })
+    );
   }, [similarTagsFromState]);
   useEffect(() => {
+    dispatch(getKitchens());
     dispatch(getBranches());
   }, []);
   const getTagSuggestions = (branchId, tagName) => {
@@ -54,57 +154,18 @@ const AddProduct = () => {
   };
   return (
     <Formik
-      initialValues={{
-        productName: "",
-        branchId: "",
-        kitchenId: "",
-        price: "",
-        description: "",
-        discount: 0,
-        file: null,
-        highlight: false,
-        quantity: 0,
-        tags: "",
-      }}
-      validationSchema={Yup.object().shape({
-        productName: Yup.string()
-          .max(255)
-          .required("Product name  is required"),
-
-        branchId: Yup.string().test(
-          "branchIdtest",
-          "Please select a branch",
-          function (value) {
-            if (branches && branches.length === 1) {
-              return true;
-            } else {
-              if (value && value.length > 10) return true;
-            }
-            return false;
-          }
-        ),
-        kitchenId: Yup.string().test(
-          "kitchenIdtest",
-          "Please select a kitchen",
-          function (value) {
-            if (kitchens && kitchens.length === 1) {
-              return true;
-            } else {
-              if (value && value.length > 10) return true;
-            }
-            return false;
-          }
-        ),
-        price: Yup.number().required("Price is required"),
-      })}
-      onSubmit={(values) => {
+      enableReinitialize
+      initialValues={product}
+      validate={validate}
+      onSubmit={(values, formik) => {
+        formik.setSubmitting(false);
         values.branchName = branches.reduce(function (branchNameArray, branch) {
           if (branch.id === values.branchId) {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
         }, [])[0];
-  
+
         values.kitchenName = kitchens.reduce(function (
           kitchenNameArray,
           kitchen
@@ -130,6 +191,7 @@ const AddProduct = () => {
         handleBlur,
         handleChange,
         handleSubmit,
+        isSubmitting,
         touched,
         values,
       }) => (
@@ -141,19 +203,19 @@ const AddProduct = () => {
               <Grid container spacing={3}>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.productName && errors.productName)}
+                    error={Boolean(touched.name && errors.name)}
                     fullWidth
-                    helperText={touched.productName && errors.productName}
+                    helperText={touched.name && errors.name}
                     label="Product Name"
                     margin="normal"
-                    name="productName"
+                    name="name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.productName}
+                    value={values.name}
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={3} xs={12}>
+                <Grid item md={2} xs={4}>
                   <TextField
                     error={Boolean(touched.price && errors.price)}
                     fullWidth
@@ -167,7 +229,7 @@ const AddProduct = () => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={3} xs={12}>
+                <Grid item md={2} xs={4}>
                   <TextField
                     error={Boolean(touched.discount && errors.discount)}
                     fullWidth
@@ -182,15 +244,32 @@ const AddProduct = () => {
                     type="number"
                   />
                 </Grid>
+                
+                <Grid item md={2} xs={4}>
+                  <TextField
+                    error={Boolean(touched.quantity && errors.quantity)}
+                    fullWidth
+                    helperText={touched.quantity && errors.quantity}
+                    label="Quantity"
+                    margin="normal"
+                    name="quantity"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.quantity}
+                    variant="outlined"
+                    type="number"
+                  />
+                </Grid>
+              
                 <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     label="Select Branch"
                     name="branchId"
+                    margin="normal"
                     error={Boolean(touched.branchId && errors.branchId)}
                     helperText={touched.branchId && errors.branchId}
                     onChange={handleChange}
-                    required
                     select
                     SelectProps={{ native: true }}
                     value={values.branchId}
@@ -209,10 +288,10 @@ const AddProduct = () => {
                     fullWidth
                     label="Select Kitchen"
                     name="kitchenId"
+                    margin="normal"
                     error={Boolean(touched.kitchenId && errors.kitchenId)}
                     helperText={touched.kitchenId && errors.kitchenId}
                     onChange={handleChange}
-                    required
                     select
                     SelectProps={{ native: true }}
                     value={values.kitchenId}
@@ -226,52 +305,7 @@ const AddProduct = () => {
                     ))}
                   </TextField>
                 </Grid>
-
-                <Grid item md={2} xs={3}>
-                  <TextField
-                    error={Boolean(touched.quantity && errors.quantity)}
-                    fullWidth
-                    helperText={touched.quantity && errors.quantity}
-                    label="Quantity"
-                    margin="normal"
-                    name="quantity"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.quantity}
-                    variant="outlined"
-                    type="number"
-                  />
-                </Grid>
-                <Grid item md={2} xs={3}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values.highlight}
-                        name="highlight"
-                        onChange={handleChange}
-                      />
-                    }
-                    label="Highlight"
-                  />
-                </Grid>
-
-                <Grid item md={2} xs={3}>
-                  <input
-                    accept="image/*"
-                    type="file"
-                    ref={fileEl}
-                    onChange={fileChange}
-                    style={{ display: "none" }}
-                  />
-                  <Button
-                    variant={image ? "contained" : "outlined"}
-                    color="primary"
-                    onClick={() => onButtonClick()}
-                  >
-                    {image ? image.name : "Upload Pic"}
-                  </Button>
-                </Grid>
-                <Grid item md={6} xs={12}>
+              <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.description && errors.description)}
                     fullWidth
@@ -285,14 +319,14 @@ const AddProduct = () => {
                     variant="outlined"
                   />
                 </Grid>
-              </Grid>
               <Grid item md={6} xs={12}>
                 <Autocomplete
                   multiple
                   freeSolo
                   value={tag}
+                  margin="normal"
                   onChange={(event, newValue) => {
-                    setTag(newValue)
+                    setTag(newValue);
                   }}
                   options={similarTags}
                   getOptionLabel={(option) => option}
@@ -304,9 +338,8 @@ const AddProduct = () => {
                     })
                   }
                   onInputChange={(event, newInput) => {
-                    getTagSuggestions(values.branchId,newInput)
+                    getTagSuggestions(values.branchId, newInput);
                   }}
-                  style={{ width: 500 }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -317,15 +350,46 @@ const AddProduct = () => {
                   )}
                 />
               </Grid>
+              <Grid item md={2} xs={6}>
+                  <input
+                    accept="image/*"
+                    type="file"
+                    ref={fileEl}
+                    onChange={fileChange}
+                    style={{ display: "none" }}
+                  />
+                  <Button
+                    variant={image ? "contained" : "outlined"}
+                    color="primary"
+                    margin="normal"
+
+                    onClick={() => onButtonClick()}
+                  >
+                    {image ? image.name : "Upload Pic"}
+                  </Button>
+                </Grid>
+                </Grid>
+
             </CardContent>
             <Divider />
-            <Box display="flex" justifyContent="flex-end" p={2}>
+            <Box display="flex" justifyContent="space-between" p={2}>
+              <Button
+                color="secondary"
+                onClick={() => {
+                  back();
+                }}
+                type="button"
+                variant="contained"
+              >
+                Go back
+              </Button>
               <Button
                 color="primary"
                 type="submit"
+                disabled={isSubmitting}
                 variant="contained"
               >
-                Add
+                {product.id ? "Update Product" : "Add Product"}
               </Button>
             </Box>
           </Card>
@@ -335,8 +399,5 @@ const AddProduct = () => {
   );
 };
 
-AddProduct.propTypes = {
-  className: PropTypes.string,
-};
 
 export default AddProduct;

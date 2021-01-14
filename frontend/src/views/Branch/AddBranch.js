@@ -153,7 +153,6 @@ const AddBranch = () => {
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
         <form
           onSubmit={handleSubmit}
-          autoComplete="off"
         >
           <Card>
             <CardHeader title={branch.id? "Edit branch" : "Add new branch"}/>

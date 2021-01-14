@@ -255,10 +255,10 @@ func (ctrl UserController) Validate(c *gin.Context) {
 				return
 			}
 		}
-		id, gotEdit := c.GetQuery("edit")
+		id, gotEdit := c.GetQuery("id")
 		if gotEdit {
-			userModel, _ := user.GetUserById(id)
-			if userModel.UserName == username {
+			userObject, _ := user.GetUserById(id)
+			if userObject.UserNameLowerCase == strings.ToLower(username) {
 				c.JSON(http.StatusOK, gin.H{"data": true})
 				c.Abort()
 				return

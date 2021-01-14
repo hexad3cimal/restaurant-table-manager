@@ -84,8 +84,7 @@ export function* getProducts() {
       method: 'GET',
     });
 
-    yield 
-      put({
+    yield put({
         type: ActionTypes.PRODUCTS_GET_SUCCESS,
         payload: products && products.data,
       })
@@ -106,12 +105,49 @@ export function* getProducts() {
 }
 
 /**
- * Branch Sagas
+ * delete product by id
+ */
+export function* deleteById({ payload }) {
+  try {
+    yield request(`${window.restAppConfig.api}product?id=${payload.id}`, {
+      method: 'DELETE',
+    });
+
+   yield all([
+    put({
+      type: ActionTypes.PRODUCT_DELETE_SUCCESS,
+    }),
+    put({
+      type: ActionTypes.SHOW_ALERT,
+      payload: 'Deleted product successfully',
+    })
+    ,
+    put({
+      type: ActionTypes.PRODUCTS_GET,
+    })
+  ])
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.DELETE_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: 'Error while gettting branch details, please retry',
+      }),
+    ]);
+  }
+}
+/**
+ * Product Sagas
  */
 export default function* root() {
   yield all([
     takeLatest(ActionTypes.PRODUCT_ADD, add),
     takeLatest(ActionTypes.PRODUCT_GET, getById),
     takeLatest(ActionTypes.PRODUCTS_GET, getProducts),
+    takeLatest(ActionTypes.PRODUCT_DELETE, deleteById),
   ]);
 }

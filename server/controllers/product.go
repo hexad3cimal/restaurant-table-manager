@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 	"table-booking/config"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/twinj/uuid"
 )
 
@@ -231,4 +233,58 @@ func (ctrl ProductController) GetTopProducts(c *gin.Context) {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
 
+}
+
+func (ctrl ProductController) ValidateProduct(c *gin.Context) {
+	productName, gotproductName := c.GetQuery("productName")
+
+	if gotproductName == true {
+		_, getProductError := product.GetByName(strings.ToLower(productName))
+		if getProductError != nil {
+			if errors.Is(getProductError, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusOK, gin.H{"data": true})
+				c.Abort()
+				return
+			}
+		}
+		id, gotEdit := c.GetQuery("edit")
+		if gotEdit {
+			productObject, _ := product.GetById(id)
+			if productObject.NameLower == strings.ToLower(productName) {
+				c.JSON(http.StatusOK, gin.H{"data": true})
+				c.Abort()
+				return
+			}
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": false})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": false})
+}
+
+func (ctrl ProductController) Delete(c *gin.Context) {
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	productId, gotProductId := c.GetQuery("id")
+
+	if gotProductId {
+		_, _ = product.DeleteById(productId)
+		c.JSON(http.StatusAccepted, gin.H{"message": "success"})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	c.Abort()
+	return
 }

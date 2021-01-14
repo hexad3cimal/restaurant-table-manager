@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core";
 import NavBar from "./NavBar";
 import TopBar from "./TopBar";
 import { socketConnection } from "../../modules/socket";
+import Toast from "../../modules/toast";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,7 @@ const DashboardLayout = () => {
   const connection = socketConnection();
   useEffect(() => {
     connection.onmessage = (message) => {
-      alert(JSON.stringify(message));
+      Toast({ 'message': message });
     };
   }, [connection]);
   return (

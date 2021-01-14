@@ -51,7 +51,7 @@ const AddTable = ({ className, edit }) => {
 
   useEffect(()=>{
     if(!branchState.selectedBranch){
-      setTable({...table ,userName:user.user.name.split(" ").join("")+"-"})
+      setTable({...table ,userName:user.user.name.split(" ").join("")+"-table-"})
     }
   },[user])
 
@@ -92,6 +92,10 @@ const AddTable = ({ className, edit }) => {
     name: {
       required: true,
       errorMessages: { required: "Full name is Required" },
+    },
+    branchId: {
+      required: true,
+      errorMessages: { required: "Please select a branch" },
     },
   };
 
@@ -258,6 +262,7 @@ const AddTable = ({ className, edit }) => {
                     fullWidth
                     label="Select Branch"
                     name="branchId"
+                    margin="normal"
                     error={Boolean(touched.branchId && errors.branchId)}
                     helperText={touched.branchId && errors.branchId}
                     onChange={handleChange}
