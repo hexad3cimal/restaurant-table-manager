@@ -64,7 +64,7 @@ func InitRouter() {
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
+	router.Use(static.Serve("/", static.LocalFile("../frontend/public", true)))
 
 	v1 := router.Group("/v1/api")
 	{
@@ -95,7 +95,7 @@ func InitRouter() {
 
 		product := new(controllers.ProductController)
 		tag := new(controllers.TagController)
-		v1.POST("/product", AuthMiddleware(), isAdminMiddleware(), product.Add)
+		v1.POST("/product", AuthMiddleware(), isAdminMiddleware(), product.AddOrEdit)
 		v1.DELETE("/product", AuthMiddleware(), isAdminMiddleware(), product.Delete)
 		v1.GET("/products", AuthMiddleware(), product.GetProducts)
 		v1.GET("/product/top", AuthMiddleware(), product.GetTopProducts)
@@ -113,13 +113,12 @@ func InitRouter() {
 		v1.GET("/kitchens", AuthMiddleware(), isAdminMiddleware(), kitchen.GetKitchens)
 	}
 
-	//for react
-	router.NoRoute(func(c *gin.Context) {
-		c.File("../ui/build/index.html")
-	})
 	socket := new(controllers.SocketController)
 
 	router.Any("/events", AuthMiddleware(), socket.Handle)
 	router.Run(":" + config.GetConfig().Port)
-
+	//for react
+	router.NoRoute(func(c *gin.Context) {
+		c.File("../frontend/build/index.html")
+	})
 }

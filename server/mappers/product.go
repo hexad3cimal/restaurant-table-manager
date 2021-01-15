@@ -3,6 +3,7 @@ package mappers
 import "mime/multipart"
 
 type ProductForm struct {
+	Id          string                `form:"id"`
 	ProductName string                `form:"name" binding:"required"`
 	OrgId       string                `form:"orgId"`
 	Highlight   bool                  `form:"highlight"`
@@ -16,4 +17,5 @@ type ProductForm struct {
 	Price       string                `form:"price" binding:"required"`
 	Quantity    int                   `form:"quantity"`
 	Discount    int                   `form:"discount"`
+	Edit        bool                  `form:"edit"`
 }

@@ -18,13 +18,16 @@ func SaveFile(r *http.Request, folder string) (string, error) {
 	defer file.Close()
 
 	fileName := strconv.FormatInt(time.Now().Unix(), 10) + handler.Filename
-	f, err := os.OpenFile(folder+fileName, os.O_WRONLY|os.O_CREATE, 0666)
+	if _, err := os.Stat(folder); os.IsNotExist(err) {
+		os.Mkdir(folder, 0700)
+	}
+	createdFile, err := os.OpenFile(folder+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 
 	if err != nil {
 		return "", err
 	}
 
-	io.Copy(f, file)
+	io.Copy(createdFile, file)
 
 	return fileName, nil
 }

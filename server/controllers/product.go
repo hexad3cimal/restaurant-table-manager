@@ -17,11 +17,12 @@ import (
 
 type ProductController struct{}
 
-func (ctrl ProductController) Add(c *gin.Context) {
+func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	var productForm mappers.ProductForm
+	var productError error
 
 	if c.ShouldBind(&productForm) != nil {
-		logger.Error("inavlid product form ", c.ShouldBind(&productForm).Error())
+		logger.Error("invalid product form ", c.ShouldBind(&productForm).Error())
 
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
 		c.Abort()
@@ -51,9 +52,26 @@ func (ctrl ProductController) Add(c *gin.Context) {
 
 	}
 
-	productModel.ID = uuid.NewV4().String()
+	if productForm.Edit {
+		productModel, productError = product.GetById(productForm.Id)
+		for _, productTag := range productModel.Tags {
+			_, deleteTagError := tag.DeleteById(productTag.ID)
+			if deleteTagError != nil {
+				logger.Error("Delete tag failed for tag " + productTag.ID)
+			}
+		}
+		if productError != nil {
+			logger.Error("invalid product id " + productForm.Id)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+	} else {
+		productModel.ID = uuid.NewV4().String()
+		productModel.CreatedAt = time.Now()
+		productModel.Active = true
+	}
 	productModel.Name = productForm.ProductName
-	productModel.CreatedAt = time.Now()
 	productModel.OrgId = tokenModel.OrgId
 	productModel.BranchId = productForm.BranchId
 	productModel.BranchName = productForm.BranchName
