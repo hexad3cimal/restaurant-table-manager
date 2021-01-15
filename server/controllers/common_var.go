@@ -25,9 +25,6 @@ var order = new(models.Order)
 var token = new(models.Token)
 var tokenModel models.TokenModel
 
-var typeService = new(models.FoodType)
-var typeModel models.FoodTypeModel
-
 var category = new(models.Category)
 var categoryModel models.CategoryModel
 
@@ -36,3 +33,9 @@ var tagModel models.TagModel
 
 var orderItem = new(models.OrderItem)
 var orderItemModel models.OrderItemModel
+
+var customisation = new(models.Customisation)
+var customisationModel models.CustomisationModel
+
+var customisations = new(models.Customisations)
+var customisationItemModel models.CustomisationsModel

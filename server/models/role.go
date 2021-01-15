@@ -18,7 +18,7 @@ type Role struct{}
 
 func (role Role) Add(roleModel RoleModel) (returnModel RoleModel, err error) {
 
-	err = config.GetDB().Save(&roleModel).Error
+	err = config.GetDB().Create(&roleModel).Error
 	if err != nil {
 		return RoleModel{}, err
 	}
@@ -28,7 +28,7 @@ func (role Role) Add(roleModel RoleModel) (returnModel RoleModel, err error) {
 
 func (role Role) DeleteById(id string) (returnModel RoleModel, err error) {
 
-	err = config.GetDB().Where("id=?", id).Delete(&returnModel).Error
+	err = config.GetDB().Where("id=?", id).Delete(&returnModel).Where("active=?", true).Error
 
 	if err != nil {
 		return RoleModel{}, err
@@ -39,7 +39,7 @@ func (role Role) DeleteById(id string) (returnModel RoleModel, err error) {
 
 func (role Role) Get(id string) (roleModel RoleModel, err error) {
 
-	err = config.GetDB().Where("id=?", id).First(&roleModel).Error
+	err = config.GetDB().Where("id=?", id).First(&roleModel).Where("active=?", true).Error
 	if err != nil {
 
 		return RoleModel{}, err
@@ -50,7 +50,7 @@ func (role Role) Get(id string) (roleModel RoleModel, err error) {
 
 func (role Role) GetRoleByNameAndOrgId(roleName string, orgId string) (roleModel RoleModel, err error) {
 
-	err = config.GetDB().Where("name=?", roleName).Where("org_id=?", orgId).First(&roleModel).Error
+	err = config.GetDB().Where("name=?", roleName).Where("org_id=?", orgId).First(&roleModel).Where("active=?", true).Error
 	if err != nil {
 
 		return RoleModel{}, err
@@ -61,7 +61,7 @@ func (role Role) GetRoleByNameAndOrgId(roleName string, orgId string) (roleModel
 
 func (role Role) GetRoleByIdAndOrg(roleId string, orgId string) (roleModel RoleModel, err error) {
 
-	err = config.GetDB().Where("id=?", roleId).Where("org_id=?", orgId).First(&roleModel).Error
+	err = config.GetDB().Where("id=?", roleId).Where("org_id=?", orgId).First(&roleModel).Where("active=?", true).Error
 	if err != nil {
 
 		return RoleModel{}, err

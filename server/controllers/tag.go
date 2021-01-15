@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strings"
+	"table-booking/helpers"
 	"table-booking/mappers"
 	"table-booking/models"
 
@@ -44,15 +45,28 @@ func (ctrl TagController) Add(c *gin.Context) {
 	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 }
 
-func (ctrl TagController) GetTagsOfOrg(c *gin.Context) {
+func (ctrl TagController) GetTags(c *gin.Context) {
+	var tags []models.TagModel
+	var error error
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
-	tags, err := tag.GetByOrgId(tokenModel.OrgId)
-	if err == nil {
+	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
+
+	if getRoleError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	if userRoleName == "admin" {
+		tags, error = tag.GetByOrgId(tokenModel.OrgId)
+	} else {
+		tags, error = tag.GetByBranchId(tokenModel.OrgId)
+	}
+	if error == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": tags})
 	} else {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -60,7 +74,7 @@ func (ctrl TagController) GetTagsOfOrg(c *gin.Context) {
 
 }
 
-func (ctrl TagController) GetTags(c *gin.Context) {
+func (ctrl TagController) GetSimilarTags(c *gin.Context) {
 
 	branchId, gotBranchId := c.GetQuery("branchId")
 	tagNames, gotTagName := c.GetQuery("tagName")

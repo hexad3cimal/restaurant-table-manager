@@ -42,23 +42,7 @@ func (ctrl CategoryController) Add(c *gin.Context) {
 	c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 }
 
-func (ctrl CategoryController) GetTypesOfOrg(c *gin.Context) {
-	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
-	if getTokenError != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
-	categories, err := category.GetByOrgId(tokenModel.OrgId)
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": categories})
-	} else {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-	}
-
-}
-
-func (ctrl CategoryController) GetTypes(c *gin.Context) {
+func (ctrl CategoryController) GetCategories(c *gin.Context) {
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -76,7 +60,13 @@ func (ctrl CategoryController) GetTypes(c *gin.Context) {
 	var categories []models.CategoryModel
 	var error error
 	if userRoleName == "admin" {
-		categories, error = category.GetByOrgId(tokenModel.OrgId)
+		branchId, gotBranchId := c.GetQuery("branchId")
+
+		if gotBranchId != true {
+			c.JSON(http.StatusOK, gin.H{"message": "success", "data": categories})
+
+		}
+		categories, error = category.GetByBranchId(branchId)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
@@ -84,7 +74,7 @@ func (ctrl CategoryController) GetTypes(c *gin.Context) {
 		}
 	}
 	if userRoleName == "manager" {
-		categories, error = category.GetByBranchId(tokenModel.OrgId)
+		categories, error = category.GetByBranchId(tokenModel.BranchId)
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()

@@ -20,6 +20,7 @@ type ProductController struct{}
 func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	var productForm mappers.ProductForm
 	var productError error
+	var addedCustomisations []string
 
 	if c.ShouldBind(&productForm) != nil {
 		logger.Error("invalid product form ", c.ShouldBind(&productForm).Error())
@@ -79,6 +80,43 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	productModel.KitchenName = productForm.KitchenName
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
+	productModel.CategoryId = productForm.Category
+	if productForm.Customisation.Name != "" {
+		customisationModel.ID = uuid.NewV4().String()
+		customisationModel.Name = productForm.Customisation.Name
+		customisationModel.Description = productForm.Customisation.Description
+		customisationModel.CreatedAt = time.Now()
+		customisationModel.Active = true
+		_, productError = customisation.Add(customisationModel)
+		if productError != nil {
+			logger.Error("couldnot add customisation for product "+productForm.Id, productError.Error())
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		for _, customisationItem := range productForm.Customisations {
+			customisationItemModel.ID = uuid.NewV4().String()
+			customisationItemModel.Name = customisationItem.Name
+			customisationItemModel.Description = customisationItem.Description
+			customisationItemModel.Price = customisationItem.Price
+			customisationItemModel.CreatedAt = time.Now()
+			customisationItemModel.Active = true
+			customisationItemModel.CustomisationId = customisationModel.ID
+			_, productError = customisations.Add(customisationItemModel)
+			addedCustomisations = append(addedCustomisations, customisationItemModel.ID)
+
+			if productError != nil {
+				for _, customisationId := range addedCustomisations {
+					customisation.DeleteById(customisationModel.ID)
+					customisations.DeleteById(customisationId)
+				}
+				logger.Error("couldnot add customisation item for product "+productForm.Id, productError.Error())
+				c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+				c.Abort()
+				return
+			}
+		}
+	}
 	tags := strings.Split(productForm.Tags, ",")
 	var addedTags []string
 	var tagArray []models.TagModel
@@ -160,7 +198,8 @@ func (ctrl ProductController) GetProductsOfBranch(c *gin.Context) {
 }
 
 func (ctrl ProductController) GetProducts(c *gin.Context) {
-
+	var products []models.ProductModel
+	var error error
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -174,8 +213,7 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	var products []models.ProductModel
-	var error error
+
 	if userRoleName == "admin" {
 		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
 
@@ -186,13 +224,7 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 		}
 	} else {
 
-		currentUser, getCurrentUserError := user.GetUserById(tokenModel.UserId)
-		if getCurrentUserError != nil {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-		products, error = product.GetProductsOfBranch(currentUser.BranchId)
+		products, error = product.GetProductsOfBranch(tokenModel.BranchId)
 
 		if error != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
