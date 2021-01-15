@@ -15,6 +15,12 @@ import (
 type BranchController struct{}
 
 func (ctrl BranchController) AddOrEdit(c *gin.Context) {
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 	var branchForm mappers.BranchForm
 	if c.ShouldBindJSON(&branchForm) != nil {
 		logger.Error("invalid branch form ", c.ShouldBindJSON(&branchForm))
@@ -58,12 +64,7 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 	userModel.Address = branchForm.Address
 	userModel.Contact = branchForm.Contact
 	userModel.Name = branchForm.Name
-	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
-	if getTokenError != nil {
-		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-		c.Abort()
-		return
-	}
+
 	userModel.OrgId = tokenModel.OrgId
 
 	if branchForm.Password != "" {
@@ -100,6 +101,23 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 			return
 		}
 
+		categoryModel.ID = uuid.NewV4().String()
+		categoryModel.BranchId = branchUserModel.BranchId
+		categoryModel.OrgId = tokenModel.OrgId
+		categoryModel.Active = true
+		categoryModel.Name = "Veg"
+		_, addCategoryError := category.Add(categoryModel)
+
+		categoryModel.ID = uuid.NewV4().String()
+		categoryModel.Name = "Non Veg"
+		_, addCategoryError = category.Add(categoryModel)
+		if addCategoryError != nil {
+			user.DeleteById(userModel.ID)
+			category.DeleteByBranchId(branchUserModel.BranchId)
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
 		userModel.Name = branchForm.Name
 		userModel.UserName = branchForm.UserName + "-kitchen"
 		userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)

@@ -25,7 +25,6 @@ func main() {
 	db.AutoMigrate(&models.OrderItemModel{})
 	db.AutoMigrate(&models.TagModel{})
 	db.AutoMigrate(&models.CategoryModel{})
-	db.AutoMigrate(&models.CustomisationModel{})
 	db.AutoMigrate(&models.CustomisationsModel{})
 
 	//add foreign keys

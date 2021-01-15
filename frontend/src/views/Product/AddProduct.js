@@ -24,24 +24,31 @@ import {
   setProductInState,
 } from "../../actions";
 import { remoteValidate } from "../../modules/helpers";
+import CustomisationList from "./CustomisationList";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
   const branchState = useSelector((state) => state.branch);
   const kitchenState = useSelector((state) => state.kitchen);
   const productState = useSelector((state) => state.product);
-
-  const tagState = useSelector((state) => state.tag);
+  const [addCustomisation, setAddCustomisation] = useState(false);
+  const [customisations, setCustomisations] = useState([]);
   const [image, setImage] = useState(null);
   const [tag, setTag] = useState([]);
   const [similarTags, setSimilarTags] = useState([]);
+  const formErrors = useRef({});
+  const formValues = useRef({});
+  const fileEl = React.useRef(null);
+  const [customisationItem, setCustomisationItem] = useState({
+    title: "",
+    itemDescription: "",
+    itemPrice: "",
+  });
 
   const branches = (branchState && branchState.branches) || [];
   const kitchens = (kitchenState && kitchenState.kitchens) || [];
+  const tagState = useSelector((state) => state.tag);
   const similarTagsFromState = (tagState && tagState.similar) || [];
-  const fileEl = React.useRef(null);
-  const formErrors = useRef({});
-  const formValues = useRef({});
 
   const [product, setProduct] = useState({
     id: "",
@@ -54,14 +61,39 @@ const AddProduct = () => {
     file: null,
     quantity: 0,
     tags: "",
+    customisations: [],
     edit: false,
   });
+  const customisationAdd = () => {
+    setCustomisations([...customisations, customisationItem]);
+    setCustomisationItem({
+      title: "",
+      itemDescription: "",
+      itemPrice: "",
+    });
+  };
+  const onCustomisationItemChange = (event) => {
+    const { name, value } = event.target;
+    setCustomisationItem({ ...customisationItem, [name]: value });
+  };
 
+  const customisationEdit = (customisation) => {
+    setCustomisationItem(customisation)
+    setCustomisations(customisations.filter(item=> {
+      return customisation.title !== item.title}))
+
+  }
+
+  const customisationDelete = (customisation) => {
+    setCustomisations(customisations.filter(item=> (customisation.title !== item.title)))
+   
+  }
   useEffect(() => {
     if (productState.selectedProduct) {
-      const productClone = Object.assign({},productState.selectedProduct)
-      productClone.tags = productClone.tags && productClone.tags.map((tag) => tag.name)|| ""
-      setTag(productClone.tags)
+      const productClone = Object.assign({}, productState.selectedProduct);
+      productClone.tags =
+        (productClone.tags && productClone.tags.map((tag) => tag.name)) || "";
+      setTag(productClone.tags);
       setProduct(productClone);
     }
   }, [productState.selectedProduct]);
@@ -160,7 +192,7 @@ const AddProduct = () => {
       onSubmit={(values, formik) => {
         formik.setSubmitting(false);
         values.branchName = branches.reduce(function (branchNameArray, branch) {
-          if (branch.id === values.branchId) {
+          if (branch.branchId === values.branchId) {
             branchNameArray.push(branch.name);
           }
           return branchNameArray;
@@ -179,6 +211,7 @@ const AddProduct = () => {
 
         values.file = image;
         values.tags = tag;
+        values.customisations = JSON.stringify(customisations)
         const form = new FormData();
         for (let value in values) {
           form.append(value, values[value]);
@@ -244,7 +277,7 @@ const AddProduct = () => {
                     type="number"
                   />
                 </Grid>
-                
+
                 <Grid item md={2} xs={4}>
                   <TextField
                     error={Boolean(touched.quantity && errors.quantity)}
@@ -260,7 +293,7 @@ const AddProduct = () => {
                     type="number"
                   />
                 </Grid>
-              
+
                 <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
@@ -277,7 +310,7 @@ const AddProduct = () => {
                   >
                     <option key="" value=""></option>
                     {branches.map((branch) => (
-                      <option key={branch.id} value={branch.id}>
+                      <option key={branch.branchId} value={branch.branchId}>
                         {branch.name}
                       </option>
                     ))}
@@ -305,7 +338,7 @@ const AddProduct = () => {
                     ))}
                   </TextField>
                 </Grid>
-              <Grid item md={6} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     error={Boolean(touched.description && errors.description)}
                     fullWidth
@@ -319,38 +352,38 @@ const AddProduct = () => {
                     variant="outlined"
                   />
                 </Grid>
-              <Grid item md={6} xs={12}>
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  value={tag}
-                  margin="normal"
-                  onChange={(event, newValue) => {
-                    setTag(newValue);
-                  }}
-                  options={similarTags}
-                  getOptionLabel={(option) => option}
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => {
-                      return (
-                        <Chip label={option} {...getTagProps({ index })} />
-                      );
-                    })
-                  }
-                  onInputChange={(event, newInput) => {
-                    getTagSuggestions(values.branchId, newInput);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Tags"
-                      variant="outlined"
-                      placeholder="Tags"
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item md={2} xs={6}>
+                <Grid item md={6} xs={12}>
+                  <Autocomplete
+                    multiple
+                    freeSolo
+                    value={tag}
+                    margin="normal"
+                    onChange={(event, newValue) => {
+                      setTag(newValue);
+                    }}
+                    options={similarTags}
+                    getOptionLabel={(option) => option}
+                    renderTags={(tagValue, getTagProps) =>
+                      tagValue.map((option, index) => {
+                        return (
+                          <Chip label={option} {...getTagProps({ index })} />
+                        );
+                      })
+                    }
+                    onInputChange={(event, newInput) => {
+                      getTagSuggestions(values.branchId, newInput);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Tags"
+                        variant="outlined"
+                        placeholder="Tags"
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item md={2} xs={2}>
                   <input
                     accept="image/*"
                     type="file"
@@ -362,14 +395,102 @@ const AddProduct = () => {
                     variant={image ? "contained" : "outlined"}
                     color="primary"
                     margin="normal"
-
                     onClick={() => onButtonClick()}
                   >
                     {image ? image.name : "Upload Pic"}
                   </Button>
                 </Grid>
-                </Grid>
+                {addCustomisation ? (
+                  <Grid
+                    container
+                    alignItems="flex-end"
+                    spacing={2}
+                    item
+                    md={10}
+                    xs={10}
+                  >
+                    <Grid container md={12} spacing={2} xs={12}>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          error={Boolean(
+                            touched.customisation && errors.customisation
+                          )}
+                          fullWidth
+                          label="Item title"
+                          margin="normal"
+                          name="title"
+                          onBlur={handleBlur}
+                          onChange={(event) => {
+                            onCustomisationItemChange(event);
+                          }}
+                          value={customisationItem.title}
+                          variant="outlined"
+                        />{" "}
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          error={Boolean(
+                            touched.customisation && errors.customisation
+                          )}
+                          fullWidth
+                          label="Item price"
+                          margin="normal"
+                          name="itemPrice"
+                          onBlur={handleBlur}
+                          onChange={(event) => {
+                            onCustomisationItemChange(event);
+                          }}
+                          value={customisationItem.itemPrice}
+                          variant="outlined"
+                        />{" "}
+                      </Grid>
+                      <Grid item md={12} xs={12}>
+                        <TextField
+                          fullWidth
+                          helperText={
+                            touched.customisation && errors.customisation
+                          }
+                          label="Item description"
+                          margin="normal"
+                          name="itemDescription"
+                          onBlur={handleBlur}
+                          onChange={(event) => {
+                            onCustomisationItemChange(event);
+                          }}
+                          value={customisationItem.itemDescription}
+                          variant="outlined"
+                        />{" "}
+                      </Grid>
+                    </Grid>
 
+                    <Button
+                      variant={"contained"}
+                      color="primary"
+                      margin="normal"
+                      onClick={() => {
+                        customisationAdd();
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+                ) : (
+                  <Box pt={2}>
+                    <Button
+                      variant={"contained"}
+                      color="primary"
+                      margin="normal"
+                      size="small"
+                      onClick={() => setAddCustomisation(!addCustomisation)}
+                    >
+                      Add Customisation
+                    </Button>
+                  </Box>
+                )}
+                <Grid item md={12} xs={12}>
+                  <CustomisationList onEdit={customisationEdit} onDelete={customisationDelete} list={customisations} />
+                </Grid>
+              </Grid>
             </CardContent>
             <Divider />
             <Box display="flex" justifyContent="space-between" p={2}>
@@ -398,6 +519,5 @@ const AddProduct = () => {
     </Formik>
   );
 };
-
 
 export default AddProduct;

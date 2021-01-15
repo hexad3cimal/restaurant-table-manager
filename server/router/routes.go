@@ -80,29 +80,32 @@ func InitRouter() {
 
 		//table related routes
 		table := new(controllers.TableController)
-		v1.POST("/table", AuthMiddleware(), isAdminMiddleware(), table.AddOrEdit)
+		v1.POST("/table", AuthMiddleware(), table.AddOrEdit)
 		v1.GET("/tables", AuthMiddleware(), table.GetTables)
 		v1.GET("/table", AuthMiddleware(), table.GetTable)
-		v1.PUT("/table", AuthMiddleware(), isAdminMiddleware(), user.Update)
-		v1.DELETE("/table", AuthMiddleware(), isAdminMiddleware(), table.Delete)
+		v1.PUT("/table", AuthMiddleware(), user.Update)
+		v1.DELETE("/table", AuthMiddleware(), table.Delete)
 
 		//branch related routes
 		branch := new(controllers.BranchController)
-		v1.POST("/branch", AuthMiddleware(), isAdminMiddleware(), branch.AddOrEdit)
-		v1.DELETE("/branch", AuthMiddleware(), isAdminMiddleware(), branch.Delete)
+		v1.POST("/branch", AuthMiddleware(), branch.AddOrEdit)
+		v1.DELETE("/branch", AuthMiddleware(), branch.Delete)
 		v1.GET("/branches", AuthMiddleware(), branch.GetBranches)
 		v1.GET("/branch/org", AuthMiddleware(), isAdminMiddleware(), branch.GetBranchesOfOrg)
 
 		product := new(controllers.ProductController)
-		v1.POST("/product", AuthMiddleware(), isAdminMiddleware(), product.AddOrEdit)
-		v1.DELETE("/product", AuthMiddleware(), isAdminMiddleware(), product.Delete)
+		v1.POST("/product", AuthMiddleware(), product.AddOrEdit)
+		v1.DELETE("/product", AuthMiddleware(), product.Delete)
 		v1.GET("/products", AuthMiddleware(), product.GetProducts)
 		v1.GET("/product/top", AuthMiddleware(), product.GetTopProducts)
-		v1.GET("/product/validate", AuthMiddleware(), isAdminMiddleware(), product.ValidateProduct)
+		v1.GET("/product/validate", AuthMiddleware(), product.ValidateProduct)
 
 		tag := new(controllers.TagController)
 		v1.GET("/tag", AuthMiddleware(), tag.GetSimilarTags)
 		v1.GET("/tags", AuthMiddleware(), tag.GetTags)
+
+		catergory := new(controllers.CategoryController)
+		v1.GET("/catergory", AuthMiddleware(), catergory.GetCategories)
 
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)
@@ -110,9 +113,9 @@ func InitRouter() {
 		v1.GET("/orders", AuthMiddleware(), order.GetOrders)
 
 		kitchen := new(controllers.KitchenController)
-		v1.POST("/kitchen", AuthMiddleware(), isAdminMiddleware(), kitchen.AddOrEdit)
-		v1.DELETE("/kitchen", AuthMiddleware(), isAdminMiddleware(), kitchen.Delete)
-		v1.GET("/kitchens", AuthMiddleware(), isAdminMiddleware(), kitchen.GetKitchens)
+		v1.POST("/kitchen", AuthMiddleware(), kitchen.AddOrEdit)
+		v1.DELETE("/kitchen", AuthMiddleware(), kitchen.Delete)
+		v1.GET("/kitchens", AuthMiddleware(), kitchen.GetKitchens)
 	}
 
 	socket := new(controllers.SocketController)

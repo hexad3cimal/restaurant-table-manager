@@ -6,28 +6,27 @@ import (
 )
 
 type ProductModel struct {
-	ID              string             `db:"id, primarykey" json:"id"`
-	OrgId           string             `db:"org_id" json:"orgId"`
-	BranchId        string             `db:"branch_id" json:"branchId"`
-	BranchName      string             `db:"branch_name" json:"branchName"`
-	KitchenId       string             `db:"kitchen_id" json:"kitchenId"`
-	KitchenName     string             `db:"kitchen_name" json:"kitchenName"`
-	CategoryId      string             `db:"category_id" json:"categoryId"`
-	CustomisationId string             `db:"customisation_id" json:"customisationId"`
-	Name            string             `db:"name" json:"name"`
-	NameLower       string             `db:"name_lower" json:"name_lower"`
-	Quantity        int                `db:"quantity" json:"quantity"`
-	Price           string             `db:"price" json:"price"`
-	Discount        int                `db:"discount" json:"discount"`
-	Description     string             `db:"description" json:"description"`
-	Image           string             `db:"image" json:"image"`
-	Highlight       bool               `db:"highlight" json:"highlight"`
-	Active          bool               `db:"active" json:"active" sql:"DEFAULT:true"`
-	UpdatedAt       time.Time          `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	CreatedAt       time.Time          `db:"created_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	Tags            []TagModel         `gorm:"many2many:product_tags;" json:"tags"`
-	Catergory       CategoryModel      ` json:"catergory"`
-	Customisation   CustomisationModel ` json:"customisation"`
+	ID             string                `db:"id, primarykey" json:"id"`
+	OrgId          string                `db:"org_id" json:"orgId"`
+	BranchId       string                `db:"branch_id" json:"branchId"`
+	BranchName     string                `db:"branch_name" json:"branchName"`
+	KitchenId      string                `db:"kitchen_id" json:"kitchenId"`
+	KitchenName    string                `db:"kitchen_name" json:"kitchenName"`
+	CategoryId     string                `db:"category_id" json:"categoryId"`
+	Name           string                `db:"name" json:"name"`
+	NameLower      string                `db:"name_lower" json:"name_lower"`
+	Quantity       int                   `db:"quantity" json:"quantity"`
+	Price          string                `db:"price" json:"price"`
+	Discount       int                   `db:"discount" json:"discount"`
+	Description    string                `db:"description" json:"description"`
+	Image          string                `db:"image" json:"image"`
+	Highlight      bool                  `db:"highlight" json:"highlight"`
+	Active         bool                  `db:"active" json:"active" sql:"DEFAULT:true"`
+	UpdatedAt      time.Time             `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	CreatedAt      time.Time             `db:"created_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	Tags           []TagModel            `gorm:"many2many:product_tags;" json:"tags"`
+	Catergory      CategoryModel         ` json:"catergory"`
+	Customisations []CustomisationsModel ` json:"customisation"`
 }
 
 type Product struct{}

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
@@ -20,7 +21,6 @@ type ProductController struct{}
 func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	var productForm mappers.ProductForm
 	var productError error
-	var addedCustomisations []string
 
 	if c.ShouldBind(&productForm) != nil {
 		logger.Error("invalid product form ", c.ShouldBind(&productForm).Error())
@@ -81,36 +81,26 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
 	productModel.CategoryId = productForm.Category
-	if productForm.Customisation.Name != "" {
-		customisationModel.ID = uuid.NewV4().String()
-		customisationModel.Name = productForm.Customisation.Name
-		customisationModel.Description = productForm.Customisation.Description
-		customisationModel.CreatedAt = time.Now()
-		customisationModel.Active = true
-		_, productError = customisation.Add(customisationModel)
-		if productError != nil {
-			logger.Error("couldnot add customisation for product "+productForm.Id, productError.Error())
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-		for _, customisationItem := range productForm.Customisations {
-			customisationItemModel.ID = uuid.NewV4().String()
-			customisationItemModel.Name = customisationItem.Name
-			customisationItemModel.Description = customisationItem.Description
-			customisationItemModel.Price = customisationItem.Price
-			customisationItemModel.CreatedAt = time.Now()
-			customisationItemModel.Active = true
-			customisationItemModel.CustomisationId = customisationModel.ID
-			_, productError = customisations.Add(customisationItemModel)
-			addedCustomisations = append(addedCustomisations, customisationItemModel.ID)
-
+	var customisation []mappers.CustomisationItem
+	err := json.Unmarshal([]byte(productForm.Customisation), &customisation)
+	if err != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	if len(customisation) > 0 {
+		for _, customisationItem := range customisation {
+			customisationModel.ID = uuid.NewV4().String()
+			customisationModel.Name = customisationItem.Name
+			customisationModel.Description = customisationItem.Description
+			customisationModel.CreatedAt = time.Now()
+			customisationModel.Price = customisationItem.Price
+			customisationModel.Active = true
+			customisationModel.ProductId = productModel.ID
+			_, productError = customisations.Add(customisationModel)
 			if productError != nil {
-				for _, customisationId := range addedCustomisations {
-					customisation.DeleteById(customisationModel.ID)
-					customisations.DeleteById(customisationId)
-				}
-				logger.Error("couldnot add customisation item for product "+productForm.Id, productError.Error())
+				customisations.DeleteByProductId(productModel.ID)
+				logger.Error("couldnot add customisation for product "+productForm.Id, productError.Error())
 				c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 				c.Abort()
 				return
@@ -153,7 +143,7 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	productModel.Highlight = productForm.Highlight
 	productModel.Description = productForm.Description
 	productModel.Tags = tagArray
-	_, err := product.Add(productModel)
+	_, err = product.Add(productModel)
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {

@@ -40,6 +40,17 @@ func (category Category) DeleteById(id string) (returnModel CategoryModel, err e
 	return returnModel, err
 }
 
+func (category Category) DeleteByBranchId(branchId string) (returnModel CategoryModel, err error) {
+
+	err = config.GetDB().Where("branch_id=?", branchId).Delete(&returnModel).Error
+
+	if err != nil {
+		return CategoryModel{}, err
+	}
+
+	return returnModel, err
+}
+
 func (category Category) Get(id string) (categoryModel CategoryModel, err error) {
 
 	err = config.GetDB().Where("id=?", id).First(&categoryModel).Error

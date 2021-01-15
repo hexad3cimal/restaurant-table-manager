@@ -34,8 +34,5 @@ var tagModel models.TagModel
 var orderItem = new(models.OrderItem)
 var orderItemModel models.OrderItemModel
 
-var customisation = new(models.Customisation)
-var customisationModel models.CustomisationModel
-
 var customisations = new(models.Customisations)
-var customisationItemModel models.CustomisationsModel
+var customisationModel models.CustomisationsModel
