@@ -25,8 +25,8 @@ type ProductModel struct {
 	UpdatedAt      time.Time             `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt      time.Time             `db:"created_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	Tags           []TagModel            `gorm:"many2many:product_tags;" json:"tags"`
-	Catergory      CategoryModel         ` json:"catergory"`
-	Customisations []CustomisationsModel ` json:"customisation"`
+	Catergory      CategoryModel         `json:"catergory"`
+	Customisations []CustomisationsModel `gorm:"ForeignKey:ProductId" json:"customisation"`
 }
 
 type Product struct{}
@@ -37,7 +37,11 @@ func (product Product) Add(productModel ProductModel) (returnModel ProductModel,
 	if err != nil {
 		return ProductModel{}, err
 	}
-
+	err = config.GetDB().Model(&productModel).Association("Customisations").Append(productModel.Customisations).Error
+	if err != nil {
+		config.GetDB().Where("id=?", productModel.ID).Delete(&returnModel)
+		return ProductModel{}, err
+	}
 	return productModel, err
 }
 
@@ -71,9 +75,9 @@ func (product Product) GetById(id string) (productModel ProductModel, err error)
 	return productModel, err
 }
 
-func (product Product) GetByName(name string) (productModel ProductModel, err error) {
+func (product Product) GetByNameAndBranchId(name string, branchId string) (productModel ProductModel, err error) {
 
-	err = config.GetDB().Where("name_lower=?", name).Where("active=?", true).First(&productModel).Error
+	err = config.GetDB().Where("name_lower=?", name).Where("branch_id=?", branchId).Where("active=?", true).First(&productModel).Error
 	if err != nil {
 
 		return ProductModel{}, err
@@ -95,7 +99,7 @@ func (product Product) GetProductForOrg(ID string, orgId string) (productModel P
 
 func (product Product) GetProductsOfBranch(branchId string) (productModels []ProductModel, err error) {
 
-	err = config.GetDB().Preload("Tags").Where("branch_id=?", branchId).Where("active=?", true).Find(&productModels).Error
+	err = config.GetDB().Preload("Customisations").Preload("Tags").Where("branch_id=?", branchId).Where("active=?", true).Find(&productModels).Error
 	if err != nil {
 
 		return []ProductModel{}, err
@@ -106,7 +110,7 @@ func (product Product) GetProductsOfBranch(branchId string) (productModels []Pro
 
 func (product Product) GetProductsOfOrg(orgId string) (productModels []ProductModel, err error) {
 
-	err = config.GetDB().Preload("Tags").Where("org_id=?", orgId).Where("active=?", true).Find(&productModels).Error
+	err = config.GetDB().Preload("Customisations").Preload("Tags").Where("org_id=?", orgId).Where("active=?", true).Find(&productModels).Error
 	if err != nil {
 
 		return []ProductModel{}, err
@@ -116,7 +120,7 @@ func (product Product) GetProductsOfOrg(orgId string) (productModels []ProductMo
 }
 
 func (product Product) DeleteById(id string) (productModel ProductModel, err error) {
-	err = config.GetDB().Model(&ProductModel{}).Where("id=?", id).Where("active=?", true).Update("active", false).Association("Tags").Clear().Error
+	err = config.GetDB().Model(&ProductModel{}).Where("id=?", id).Where("active=?", true).Update("active", false).Error
 	if err != nil {
 		return ProductModel{}, err
 	}

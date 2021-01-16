@@ -24,4 +24,5 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 	gorm.io/datatypes v1.0.0
+	gorm.io/gorm v1.20.5
 )

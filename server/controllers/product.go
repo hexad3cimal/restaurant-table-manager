@@ -21,7 +21,8 @@ type ProductController struct{}
 func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	var productForm mappers.ProductForm
 	var productError error
-
+	var customisation []mappers.CustomisationItem
+	var customisationsSlice []models.CustomisationsModel
 	if c.ShouldBind(&productForm) != nil {
 		logger.Error("invalid product form ", c.ShouldBind(&productForm).Error())
 
@@ -81,9 +82,8 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	productModel.Quantity = productForm.Quantity
 	productModel.Price = productForm.Price
 	productModel.CategoryId = productForm.Category
-	var customisation []mappers.CustomisationItem
-	err := json.Unmarshal([]byte(productForm.Customisation), &customisation)
-	if err != nil {
+	productError = json.Unmarshal([]byte(productForm.Customisation), &customisation)
+	if productError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -97,14 +97,15 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 			customisationModel.Price = customisationItem.Price
 			customisationModel.Active = true
 			customisationModel.ProductId = productModel.ID
-			_, productError = customisations.Add(customisationModel)
-			if productError != nil {
-				customisations.DeleteByProductId(productModel.ID)
-				logger.Error("couldnot add customisation for product "+productForm.Id, productError.Error())
-				c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-				c.Abort()
-				return
-			}
+			customisationsSlice = append(customisationsSlice, customisationModel)
+			// _, productError = customisations.Add(customisationModel)
+			// if productError != nil {
+			// 	customisations.DeleteByProductId(productModel.ID)
+			// 	logger.Error("couldnot add customisation for product "+productForm.Id, productError.Error())
+			// 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			// 	c.Abort()
+			// 	return
+			// }
 		}
 	}
 	tags := strings.Split(productForm.Tags, ",")
@@ -143,8 +144,10 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	productModel.Highlight = productForm.Highlight
 	productModel.Description = productForm.Description
 	productModel.Tags = tagArray
-	_, err = product.Add(productModel)
-	if err == nil {
+	productModel.Customisations = customisationsSlice
+	productModel.Active = true
+	_, productError = product.Add(productModel)
+	if productError == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -277,9 +280,34 @@ func (ctrl ProductController) GetTopProducts(c *gin.Context) {
 
 func (ctrl ProductController) ValidateProduct(c *gin.Context) {
 	productName, gotproductName := c.GetQuery("productName")
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
 
 	if gotproductName == true {
-		_, getProductError := product.GetByName(strings.ToLower(productName))
+		userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
+		var branchId string
+		var gotBranchId bool
+
+		if getRoleError != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		if userRoleName == "admin" {
+			branchId, gotBranchId = c.GetQuery("branchId")
+			if !gotBranchId {
+				c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+				c.Abort()
+				return
+			}
+		} else {
+			branchId = tokenModel.BranchId
+		}
+		_, getProductError := product.GetByNameAndBranchId(strings.ToLower(productName), branchId)
 		if getProductError != nil {
 			if errors.Is(getProductError, gorm.ErrRecordNotFound) {
 				c.JSON(http.StatusOK, gin.H{"data": true})
@@ -319,7 +347,13 @@ func (ctrl ProductController) Delete(c *gin.Context) {
 	productId, gotProductId := c.GetQuery("id")
 
 	if gotProductId {
-		_, _ = product.DeleteById(productId)
+		_, deleteProductError := product.DeleteById(productId)
+		if deleteProductError == nil {
+			_, deleteCustomisationsError := customisations.DeleteByProductId(productId)
+			if deleteCustomisationsError != nil {
+				logger.Error("Delete customisations failed for product ", productId, deleteCustomisationsError.Error())
+			}
+		}
 		c.JSON(http.StatusAccepted, gin.H{"message": "success"})
 		c.Abort()
 		return

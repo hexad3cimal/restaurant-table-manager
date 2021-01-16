@@ -18,7 +18,7 @@ type OrderItemModel struct {
 	KitchenId      string                `db:"kitchen_id" json:"kitchenId"`
 	KitchenName    string                `db:"kitchen_name" json:"kitchenName"`
 	Status         string                `db:"status" json:"status"`
-	Customisations []CustomisationsModel `json:"customisations"`
+	Customisations []CustomisationsModel `gorm:"ForeignKey:OrderItemId" json:"customisations"`
 	UpdatedAt      time.Time             `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 	CreatedAt      time.Time             `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
 }

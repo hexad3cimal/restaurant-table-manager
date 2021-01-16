@@ -78,16 +78,19 @@ const AddProduct = () => {
   };
 
   const customisationEdit = (customisation) => {
-    setCustomisationItem(customisation)
-    setCustomisations(customisations.filter(item=> {
-      return customisation.title !== item.title}))
-
-  }
+    setCustomisationItem(customisation);
+    setCustomisations(
+      customisations.filter((item) => {
+        return customisation.title !== item.title;
+      })
+    );
+  };
 
   const customisationDelete = (customisation) => {
-    setCustomisations(customisations.filter(item=> (customisation.title !== item.title)))
-   
-  }
+    setCustomisations(
+      customisations.filter((item) => customisation.title !== item.title)
+    );
+  };
   useEffect(() => {
     if (productState.selectedProduct) {
       const productClone = Object.assign({}, productState.selectedProduct);
@@ -95,6 +98,13 @@ const AddProduct = () => {
         (productClone.tags && productClone.tags.map((tag) => tag.name)) || "";
       setTag(productClone.tags);
       setProduct(productClone);
+      setCustomisations(
+        productClone.customisation.map((item) => ({
+          title: item.name,
+          itemDescription: item.description,
+          itemPrice: item.price,
+        })) || []
+      );
     }
   }, [productState.selectedProduct]);
 
@@ -209,9 +219,10 @@ const AddProduct = () => {
         },
         [])[0];
 
+        values.edit = Boolean(product.id)
         values.file = image;
         values.tags = tag;
-        values.customisations = JSON.stringify(customisations)
+        values.customisations = JSON.stringify(customisations);
         const form = new FormData();
         for (let value in values) {
           form.append(value, values[value]);
@@ -488,7 +499,11 @@ const AddProduct = () => {
                   </Box>
                 )}
                 <Grid item md={12} xs={12}>
-                  <CustomisationList onEdit={customisationEdit} onDelete={customisationDelete} list={customisations} />
+                  <CustomisationList
+                    onEdit={customisationEdit}
+                    onDelete={customisationDelete}
+                    list={customisations}
+                  />
                 </Grid>
               </Grid>
             </CardContent>
