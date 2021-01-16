@@ -14,7 +14,7 @@ import Page from "../../components/Page";
 import { useDispatch, useSelector } from "react-redux";
 import { register, hideAlert } from "../../actions";
 import Toast from "../../modules/toast";
-import { isFormValid, remoteValidate } from "../../modules/helpers";
+import {  remoteValidate } from "../../modules/helpers";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -88,7 +88,7 @@ const RegisterView = () => {
     },
     name: {
       required: true,
-      errorMessages: { required: "Full name is Required" },
+      errorMessages: { required: "Org name is Required" },
     },
   };
   const validate = async (values) => {
@@ -168,7 +168,7 @@ const RegisterView = () => {
                   error={Boolean(touched.name && errors.name)}
                   fullWidth
                   helperText={touched.name && errors.name}
-                  label="Fullname"
+                  label="Org name"
                   margin="normal"
                   name="name"
                   onBlur={handleBlur}
@@ -232,7 +232,6 @@ const RegisterView = () => {
                 <Box my={2}>
                   <Button
                     color="primary"
-                    disabled={!isFormValid(errors, touched)}
                     fullWidth
                     size="large"
                     type="submit"

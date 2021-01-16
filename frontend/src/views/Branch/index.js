@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Button, Container, makeStyles, Typography } from "@material-ui/core";
+import { Box, Button, Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 
 import Page from "../../components/Page";
@@ -43,15 +43,17 @@ const Branch = () => {
             <AddBranch />
           </Box>
         ) : (
-          <Box mt={3}>
+          <Grid container md={12} xs={12} mt={3}>
             <Toolbar />
             {branches.length && userState.user.role==='admin' ? (
+              <Grid item  md={12} xs={12}>
               <Results branches={branchState && branchState.branches} />
+              </Grid>
             ) : <div></div>}
             {!branches.length && userState.user.role==='admin' ? (<Typography   onClick={() => dispatch(initiateBranchAdd(true))} style={{margin:'1rem'}} variant="h4">No branches added yet please <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
             Add branch
           </Button></Typography>): <div></div>}
-          </Box>
+          </Grid>
         )}
       </Container>
     </Page>

@@ -179,7 +179,12 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 	}
 	if userRoleName == "manager" {
 		orders = order.GetOrdersOfBranch(tokenModel.BranchId)
-
+	}
+	if userRoleName == "kitchen" {
+		orders = order.GetOpenOrdersOfKitchen(tokenModel.UserId)
+	}
+	if userRoleName == "table" {
+		orders = order.GetByTableId(tokenModel.UserId)
 	}
 	if error == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": orders})

@@ -1,11 +1,12 @@
 package mappers
 
 type Product struct {
-	ProductId   string `json:"id" binding:"required"`
-	ProductName string `json:"name" binding:"required"`
-	KitchenId   string `json:"kitchenId" binding:"required"`
-	KitchenName string `json:"kitchenName" binding:"required"`
-	Quantity    int32  `json:"quantity" binding:"required"`
+	ProductId      string   `json:"id" binding:"required"`
+	ProductName    string   `json:"name" binding:"required"`
+	KitchenId      string   `json:"kitchenId" binding:"required"`
+	KitchenName    string   `json:"kitchenName" binding:"required"`
+	Quantity       int32    `json:"quantity" binding:"required"`
+	Customisations []string `json:"customisations"`
 }
 
 type OrderForm struct {

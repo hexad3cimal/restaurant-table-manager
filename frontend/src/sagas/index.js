@@ -6,10 +6,11 @@ import product from './product';
 import order from './order';
 import kitchen from './kitchen';
 import tag from './tag';
+import category from './category';
 
 /**
  * rootSaga
  */
 export default function* root() {
-  yield all([fork(user), fork(table), fork(branch), fork(product), fork(order), fork(kitchen), fork(tag)]);
+  yield all([fork(user), fork(table), fork(branch), fork(product), fork(order), fork(kitchen), fork(tag), fork(category)]);
 }

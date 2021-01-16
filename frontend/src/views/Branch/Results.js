@@ -22,7 +22,7 @@ import { useDispatch } from "react-redux";
 import { deleteBranch, getBranches, hideAlert, initiateBranchAdd, setBranch } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {overflowX:'scroll'},
 }));
 
 const Results = ({ branches }) => {

@@ -80,3 +80,10 @@ func (order Order) GetOrdersOfBranch(branchId string) (orderModels []OrderModel)
 
 	return orderModels
 }
+
+func (order Order) GetOpenOrdersOfKitchen(kitchenId string) (orderModels []OrderModel) {
+
+	config.GetDB().Where("kitchen_id=?", kitchenId).Where("status!=?", "complete").Find(&orderModels)
+
+	return orderModels
+}

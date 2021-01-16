@@ -17,8 +17,8 @@ import {
   TextField,
   InputAdornment,
   SvgIcon,
-  Container,
   Button,
+  Grid
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,7 +31,7 @@ import {
 } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {overflowX:'overflow'},
   avatar: {
     marginRight: theme.spacing(2),
   },
@@ -95,9 +95,9 @@ const ProductList = () => {
     setTableRows(filteredProducts.slice(0, limit));
   }, [filteredProducts]);
   return (
-    <Page className={classes.root} title="Products">
+    <Page title="Products">
       {products.length ? (
-        <Container maxWidth={false}>
+        <Grid item xs={12} maxWidth={false}>
           <Box mt={3}>
             <Card className={classes.root}>
               <Box mt={3}>
@@ -191,7 +191,7 @@ const ProductList = () => {
               />
             </Card>
           </Box>
-        </Container>
+        </Grid>
       ) : (
         <Typography style={{ margin: "1rem" }} variant="h4">
           No products added yet please

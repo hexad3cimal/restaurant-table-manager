@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Container, makeStyles } from '@material-ui/core';
+import { Box, Container, Grid, makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Page from '../../components/Page';
@@ -32,11 +32,13 @@ const Products = () => {
             <AddProduct />
           </Box>
         ) : (
+          <Grid container xs={12}>
           <Box mt={3}>
             <Toolbar />
 
             <ProductList products={productState.products || []} />
           </Box>
+          </Grid>
         )}
       </Container>
     </Page>

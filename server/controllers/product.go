@@ -98,14 +98,6 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 			customisationModel.Active = true
 			customisationModel.ProductId = productModel.ID
 			customisationsSlice = append(customisationsSlice, customisationModel)
-			// _, productError = customisations.Add(customisationModel)
-			// if productError != nil {
-			// 	customisations.DeleteByProductId(productModel.ID)
-			// 	logger.Error("couldnot add customisation for product "+productForm.Id, productError.Error())
-			// 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			// 	c.Abort()
-			// 	return
-			// }
 		}
 	}
 	tags := strings.Split(productForm.Tags, ",")
@@ -113,22 +105,23 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	var tagArray []models.TagModel
 	var tagError error
 	for _, tagName := range tags {
-		tagM, _ := tag.GetByNameAndBranchId(strings.ToLower(tagName), productForm.BranchId)
-		if tagM.ID == "" {
-			tagModel.ID = uuid.NewV4().String()
-			tagModel.Name = tagName
-			tagModel.NameLower = strings.ToLower(tagName)
-			tagModel.OrgId = tokenModel.OrgId
-			tagModel.BranchId = productForm.BranchId
-			tagModel.Active = true
-			tagModel, tagError = tag.Add(tagModel)
-			addedTags = append(addedTags, tagName)
-			tagArray = append(tagArray, tagModel)
+		if tagName != "" {
+			tagM, _ := tag.GetByNameAndBranchId(strings.ToLower(tagName), productForm.BranchId)
+			if tagM.ID == "" {
+				tagModel.ID = uuid.NewV4().String()
+				tagModel.Name = tagName
+				tagModel.NameLower = strings.ToLower(tagName)
+				tagModel.OrgId = tokenModel.OrgId
+				tagModel.BranchId = productForm.BranchId
+				tagModel.Active = true
+				tagModel, tagError = tag.Add(tagModel)
+				addedTags = append(addedTags, tagName)
+				tagArray = append(tagArray, tagModel)
 
-		} else {
-			tagArray = append(tagArray, tagM)
+			} else {
+				tagArray = append(tagArray, tagM)
+			}
 		}
-
 	}
 	if tagError != nil {
 		for _, tagName := range addedTags {
@@ -195,6 +188,8 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 	var error error
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("getTokenError failed for GetProducts ", getTokenError.Error())
+
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -202,6 +197,7 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 	userRoleName, getRoleError := helpers.GetRoleName(tokenModel.UserId, tokenModel.OrgId)
 
 	if getRoleError != nil {
+		logger.Error("Get role failed for GetProducts ", getRoleError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -211,6 +207,8 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 		products, error = product.GetProductsOfOrg(tokenModel.OrgId)
 
 		if error != nil {
+			logger.Error("GetProductsOfOrg failed for GetProducts ", error.Error())
+
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
 			return
@@ -293,6 +291,7 @@ func (ctrl ProductController) ValidateProduct(c *gin.Context) {
 		var gotBranchId bool
 
 		if getRoleError != nil {
+			logger.Error("GetRoleName failed for ValidateProduct ", getRoleError.Error())
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
 			return

@@ -1,31 +1,8 @@
-// import React from 'react';
-// const rotate = keyframes`
-//   0% {
-//     transform: rotate(0deg);
-//   }
-//   100% {
-//     transform: rotate(360deg);
-//   }
-// `;
+import React from 'react';
 
-// const Loader = styled.div`
-//   display: inline-block;
-//   width: 40px;
-//   height: 40px;
-//   &:after {
-//     content: ' ';
-//     display: block;
-//     width: 30px;
-//     height: 30px;
-//     margin: 1px;
-//     border-radius: 50%;
-//     border: 5px solid #fff;
-//     border-color: #000 transparent #fff transparent;
-//     animation: ${rotate} 1.2s linear infinite;
-//   }
-// `;
+import CircularProgress from '@material-ui/core/CircularProgress';
+const  Loader = () => {
+return <div style={{display:'flex',flexDirection:'column',width:'100%',minHeight:'100vh', justifyContent:'center', alignItems:'center'}}><CircularProgress />  </div>
+}
 
-const Loader = () => `
-  <div>Loading</>
-  `;
 export default Loader;

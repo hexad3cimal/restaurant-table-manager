@@ -59,7 +59,7 @@ func isAdminMiddleware() gin.HandlerFunc {
 
 func InitRouter() {
 
-	router := gin.New()
+	router := gin.Default()
 	router.Use(CORS())
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))

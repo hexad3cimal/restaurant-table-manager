@@ -111,6 +111,19 @@ export const ActionTypes = keyMirror({
   TAG_GET_SIMILAR: undefined,
   TAG_GET_SIMILAR_SUCCESS: undefined,
   TAG_GET_SIMILAR_FAILURE: undefined,
+  CATEGORY_ADD_INITIATE: undefined,
+  CATEGORY_ADD: undefined,
+  CATEGORY_ADD_SUCCESS: undefined,
+  CATEGORY_ADD_FAILURE: undefined,
+  CATEGORY_GET: undefined,
+  CATEGORY_GET_SUCCESS: undefined,
+  CATEGORY_GET_FAILURE: undefined,
+  CATEGORIES_GET: undefined,
+  CATEGORIES_GET_SUCCESS: undefined,
+  CATEGORIES_GET_FAILURE: undefined,
+  CATEGORY_DELETE: undefined,
+  CATEGORY_DELETE_SUCCESS: undefined,
+  CATEGORY_DELETE_FAILURE: undefined,
 });
 
 /**

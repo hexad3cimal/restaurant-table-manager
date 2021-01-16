@@ -25,12 +25,15 @@ import {
 } from "../../actions";
 import { remoteValidate } from "../../modules/helpers";
 import CustomisationList from "./CustomisationList";
+import Toast from "../../modules/toast";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
   const branchState = useSelector((state) => state.branch);
   const kitchenState = useSelector((state) => state.kitchen);
   const productState = useSelector((state) => state.product);
+  const userState = useSelector((state) => state.user)|| {};
+const user = userState && userState.user || {}
   const [addCustomisation, setAddCustomisation] = useState(false);
   const [customisations, setCustomisations] = useState([]);
   const [image, setImage] = useState(null);
@@ -156,6 +159,9 @@ const AddProduct = () => {
             formErrors.current[value]
           ) {
             let url = `${errorRules[value].url}=${values[value]}`;
+            if(!values.branchId &&  user.role === 'admin')Toast({message: 'Branch should be selected for product name validation'})
+            user.role === 'admin' ? url =  `${url}&branchId=${values.branchId}` : url =`${url}`  ;
+
             if (product.id) {
               url = `${url}&id=${product.id}`;
             }
@@ -394,7 +400,7 @@ const AddProduct = () => {
                     )}
                   />
                 </Grid>
-                <Grid item md={2} xs={2}>
+                <Grid item md={2} xs={6}>
                   <input
                     accept="image/*"
                     type="file"
@@ -411,7 +417,7 @@ const AddProduct = () => {
                     {image ? image.name : "Upload Pic"}
                   </Button>
                 </Grid>
-                {addCustomisation ? (
+                {addCustomisation || customisations.length ? (
                   <Grid
                     container
                     alignItems="flex-end"
@@ -498,13 +504,15 @@ const AddProduct = () => {
                     </Button>
                   </Box>
                 )}
-                <Grid item md={12} xs={12}>
-                  <CustomisationList
-                    onEdit={customisationEdit}
-                    onDelete={customisationDelete}
-                    list={customisations}
-                  />
-                </Grid>
+              {
+                addCustomisation || customisations.length ? <Grid item md={12} xs={12}>
+                <CustomisationList
+                  onEdit={customisationEdit}
+                  onDelete={customisationDelete}
+                  list={customisations}
+                />
+              </Grid> : <span></span>
+              } 
               </Grid>
             </CardContent>
             <Divider />
