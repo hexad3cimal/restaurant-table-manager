@@ -7,12 +7,6 @@ import {
   Card,
   CardContent,
   FormControl,
-  //Button,
-  //Card,
-  //CardContent,
-  //Divider,
-  //Container,
-  //CardHeader,
   Grid,
   InputAdornment,
   InputLabel,
@@ -21,7 +15,6 @@ import {
   Select,
   SvgIcon,
   TextField,
-  // TextField,
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
 
@@ -39,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "1rem",
     justifyContent: "space-between",
   },
+  button:{
+    width:'9rem'
+  }
 }));
 
 const Order = ({ className, table}) => {
@@ -49,7 +45,6 @@ const Order = ({ className, table}) => {
   const sortBy = useRef('');
   const searchBy = useRef('');
 
-  // const tableState = useSelector((state) => state.table);
   const branchState = useSelector((state) => state.branch);
   const topProductsOfBranch = (branchState && branchState.topProducts) || [];
   const productsInState = (productState && productState.products) || [];
@@ -173,7 +168,7 @@ const Order = ({ className, table}) => {
           })}
         </Grid>
       </Grid>
-      <Grid style={{ marginTop: "1rem" }} lg={4}>
+      <Grid style={{ marginTop: "5rem" }} lg={4}>
         <Cart />
       </Grid>
     </Grid>

@@ -33,7 +33,7 @@ const AddProduct = () => {
   const kitchenState = useSelector((state) => state.kitchen);
   const productState = useSelector((state) => state.product);
   const userState = useSelector((state) => state.user)|| {};
-const user = userState && userState.user || {}
+  const user = userState && userState.user || {}
   const [addCustomisation, setAddCustomisation] = useState(false);
   const [customisations, setCustomisations] = useState([]);
   const [image, setImage] = useState(null);

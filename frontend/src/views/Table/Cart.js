@@ -45,6 +45,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.4rem",
     padding: "1rem",
   },
+  cartTitleMobile: {
+    color: theme.palette.text.primary,
+    fontSize: "1rem",
+    padding: "1rem",
+  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
   },
@@ -121,11 +126,9 @@ const Cart = () => {
             aria-controls="panel1c-content"
             id="panel1c-header"
           >
-            <div className={classes.column}>
-              <Typography className={classes.cartTitle}>
+              <Typography className={classes.cartTitleMobile}>
                 Items in your cart
               </Typography>
-            </div>
           </AccordionSummary>
           <AccordionDetails className={classes.details}>
             <Card
