@@ -35,24 +35,28 @@ export default {
         const product = draft.selectedProducts.find((p) => {
           return payload.id === p.id;
         });
-        if (product) {
+        if(product) {
           draft.selectedProducts = draft.selectedProducts.map((p) => {
            if(p.id === product.id){p.quantity = p.quantity + 1;
-            p.cost = parseInt(p.quantity) * parseInt(payload.price)
+            p.cost = p.cost + parseInt(payload.price)
+            p.cost = p.cost+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
           }
+          p.customisations=payload.customisations
             return p;
           });
         } else {
           payload.cost = payload.price
+          payload.cost =  parseInt(payload.cost)+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
           draft.selectedProducts = [...draft.selectedProducts, payload];
         }
       },
       [ActionTypes.ORDER_REMOVE_PRODUCT]: (draft, { payload }) => {
+        console.log(payload)
         draft.selectedProducts  = draft.selectedProducts.filter((p) => {
           if(payload.id === p.id){
             p.quantity =  p.quantity-1
             if(p.quantity){
-              p.cost = parseInt(p.quantity) * parseInt(payload.price)
+              p.cost = parseInt(p.cost) - payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
               return true
             }
             return false

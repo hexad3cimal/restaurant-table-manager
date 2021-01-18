@@ -65,41 +65,52 @@ const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order) || {};
   const selectedProducts = orderState.selectedProducts || [];
-  const selectectedCustomisations = useRef([]);
+  const selectedCustomisations = useRef([]);
   const [enableCustomisation, setCustomisationStatus] = useState(false);
+  const orderedProduct = useRef({})
   let selectedProduct = selectedProducts.find((p) => {
     return p.id === product.id;
   });
 
   const onAdd = (product) => {
- 
-    const productClone = Object.assign({}, product);
-    productClone.quantity = 1;
-    productClone.customisations = selectectedCustomisations.current
-    console.log(parseInt(productClone.price)+selectectedCustomisations.current.reduce((a, b) => {
-      if(b.ProductId === product.id)
-        return a + parseInt(b.price)
-        else return 0
-    }, 0))
-    productClone.price = parseInt(productClone.price)+selectectedCustomisations.current.reduce((a, b) => {
-      return a+ parseInt(b.price)
-    }, 0)
-    dispatch(addProductToOrder(productClone));
+   const productClone = Object.assign({},product)
+   productClone.quantity =1;
+  orderedProduct.current = productClone
+  if(productClone.customisation.length)setCustomisationStatus(true)
+  else{
+    onFinalAdd()
+  }
   };
 
+  const onFinalAdd = () =>{
+    orderedProduct.current.customisations = selectedCustomisations.current
+    dispatch(addProductToOrder(orderedProduct.current));
+    orderedProduct.current= {}
+    selectedCustomisations.current = []
+    setCustomisationStatus(false)
+  }
   const onRemove = (product) => {
     dispatch(removeProductFromOrder(product));
   };
   const onCusmisationSelect = (customisation, requiredChange) => {
     if (requiredChange === "add") {
-        selectectedCustomisations.current = [...selectectedCustomisations.current,customisation];
-    } else {
-       selectectedCustomisations.current.splice(selectectedCustomisations.current.findIndex(e=>e.id===customisation.id),1)
+      selectedCustomisations.current = [...selectedCustomisations.current,customisation];
+    } else if (requiredChange === "remove"){
+      selectedCustomisations.current = selectedCustomisations.current.filter(e=>e.id!==customisation.id)
     }
   };
 
   return (
     <AttentionSeeker effect="pulse">
+        {enableCustomisation ? 
+           <CustomisationList
+             selected={selectedCustomisations.current}
+             customisations={product.customisation}
+             onDone={onFinalAdd}
+             onSelect={onCusmisationSelect}
+           />
+           :
+         
       <Card className={classes.productCard}>
         <CardContent className={classes.productCardContent}>
           {product.image && (
@@ -112,24 +123,7 @@ const ProductCard = ({ product }) => {
           <Typography gutterBottom className={classes.productName}>
             {product.name}
           </Typography>
-          {product.customisation.length && !enableCustomisation ? (
-            <Button
-            variant="contained"
-              className={classes.customisationButton}
-              onClick={() => {
-                setCustomisationStatus(!enableCustomisation);
-              }}
-            >
-              Click here for customisations
-            </Button>
-          ) : (
-            <CustomisationList
-              selected={selectectedCustomisations.current}
-              customisations={product.customisation}
-              onDone={setCustomisationStatus}
-              onSelect={onCusmisationSelect}
-            />
-          )}
+        
           <Typography className={classes.price}>Rs {product.price}</Typography>
           <Typography className={classes.description}>
             {product.description}
@@ -175,6 +169,7 @@ const ProductCard = ({ product }) => {
           </Grid>
         </Box>
       </Card>
+}
     </AttentionSeeker>
   );
 };

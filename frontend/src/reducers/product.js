@@ -83,7 +83,6 @@ export default {
       [ActionTypes.PRODUCTS_GET_FAILURE]: (draft, { payload }) => {
         draft.status = STATUS.ERROR;
         draft.add =false;
-
         draft.error = payload;
         draft.products = [];
       }
