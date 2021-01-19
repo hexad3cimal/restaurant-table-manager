@@ -33,26 +33,40 @@ export default {
       },
       [ActionTypes.ORDER_ADD_PRODUCT]: (draft, { payload }) => {
         const product = draft.selectedProducts.find((p) => {
-          return payload.id === p.id;
+          return p[payload.id]
         });
         if(product) {
           draft.selectedProducts = draft.selectedProducts.map((p) => {
-           if(p.id === product.id){p.quantity = p.quantity + 1;
-            p.cost = p.cost + parseInt(payload.price)
-            p.cost = p.cost+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
+           if(p[product.id]){
+            let productFound =false
+            p[product.id].items = p[product.id].items.map( item => {
+              if(JSON.stringify(payload.customisations) === JSON.stringify(item.customisations))
+                  payload.quantity = item.quantity
+              if(JSON.stringify(item)===JSON.stringify(payload)){
+                productFound =true
+                item.quantity =item.quantity+1
+              }
+              return item
+            })
+
+            p[product.id].quantity = p[product.id].quantity + 1;
+            p[product.id].cost = p[product.id].cost + parseInt(payload.price)
+            p[product.id].cost = p[product.id].cost+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
+           
+            if(!productFound)p[product.id].items.push(payload)
+          
           }
           p.customisations=payload.customisations
             return p;
           });
         } else {
-          payload.cost = payload.price
-          payload.cost =  parseInt(payload.cost)+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
-          draft.selectedProducts = [...draft.selectedProducts, payload];
+        const cost =  parseInt(payload.price)+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
+          draft.selectedProducts = [...draft.selectedProducts, {[payload.id]:{items:[payload]},...payload,cost:cost}];
         }
       },
       [ActionTypes.ORDER_REMOVE_PRODUCT]: (draft, { payload }) => {
         console.log(payload)
-        draft.selectedProducts  = draft.selectedProducts.filter((p) => {
+        draft.selectedProducts  = draft.selectedProducts[payload.id]['items'].filter((p) => {
           if(payload.id === p.id){
             p.quantity =  p.quantity-1
             if(p.quantity){

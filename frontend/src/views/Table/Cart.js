@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors.green,
   },
   orderBox: {
-    display: 'flex',
-    justifyContent: 'space-between'
+    display: "flex",
+    justifyContent: "space-between",
   },
   icon: {
     verticalAlign: "bottom",
@@ -93,6 +93,12 @@ const Cart = () => {
   const orderState = useSelector((state) => state.order) || {};
   const tableState = useSelector((state) => state.table) || {};
   const selectedProducts = orderState.selectedProducts || [];
+  const orderedProducts =
+    selectedProducts
+      .map((product) => product[Object.keys(product)[0]]["items"])
+      .reduce((product1, product2) => product1.concat(product2), []) || [];
+
+  console.log("orderedproducts", orderedProducts);
   const classes = useStyles();
   let totalCost = 0;
   selectedProducts.forEach((p) => {
@@ -102,11 +108,11 @@ const Cart = () => {
     }
   });
   const placeOrder = () => {
-    const order = {}
-    order.tableId = tableState.selectedTable.id
+    const order = {};
+    order.tableId = tableState.selectedTable.id;
     order.products = selectedProducts;
-    order.price = totalCost.toString()
-    order.status= "ordered"
+    order.price = totalCost.toString();
+    order.status = "ordered";
     dispatch(addOrder(order));
   };
   const renderCart = () => {
@@ -126,9 +132,9 @@ const Cart = () => {
             aria-controls="panel1c-content"
             id="panel1c-header"
           >
-              <Typography className={classes.cartTitleMobile}>
-                Items in your cart
-              </Typography>
+            <Typography className={classes.cartTitleMobile}>
+              Items in your cart
+            </Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.details}>
             <Card
@@ -181,7 +187,7 @@ const Cart = () => {
               </Typography>
             </Box>
           )}
-          {selectedProducts.map((item) => {
+          {orderedProducts.map((item) => {
             return <CartItem key={item.id} item={item} />;
           })}
         </Card>
