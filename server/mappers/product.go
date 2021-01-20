@@ -3,9 +3,9 @@ package mappers
 import "mime/multipart"
 
 type CustomisationItem struct {
-	Name        string `json:"title"`
-	Description string `json:"itemDescription"`
-	Price       string `json:"itemPrice"`
+	Name        string  `json:"title"`
+	Description string  `json:"itemDescription"`
+	Price       float32 `json:"itemPrice"`
 }
 
 type ProductForm struct {
@@ -20,7 +20,7 @@ type ProductForm struct {
 	Description   string                `form:"description"`
 	Tags          string                `form:"tags"`
 	Image         *multipart.FileHeader `form:"file"  binding:"omitempty"`
-	Price         string                `form:"price" binding:"required"`
+	Price         float32               `form:"price" binding:"required"`
 	Category      string                `form:"category"`
 	Quantity      int                   `form:"quantity"`
 	Discount      int                   `form:"discount"`

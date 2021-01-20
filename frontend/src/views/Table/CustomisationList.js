@@ -48,9 +48,7 @@ export default function CustomisationList({customisations, onSelect, onDone, sel
   },[selected])
 
   return (
-    <List className={classes.root}
-    s
-      >
+    <List className={classes.root}>
       {customisations.map((customisation) => {
         const labelId = `checkbox-list-label-${customisation.id}`;
 

@@ -12,6 +12,7 @@ export const orderState = {
   selectedProducts: [],
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   order: handleActions(
     {
@@ -40,37 +41,35 @@ export default {
            if(p[product.id]){
             let productFound =false
             p[product.id].items = p[product.id].items.map( item => {
+              delete item['cost']
               if(JSON.stringify(payload.customisations) === JSON.stringify(item.customisations))
                   payload.quantity = item.quantity
               if(JSON.stringify(item)===JSON.stringify(payload)){
                 productFound =true
                 item.quantity =item.quantity+1
               }
+              item.cost=item.quantity*payload.price
               return item
             })
-
-            p[product.id].quantity = p[product.id].quantity + 1;
-            p[product.id].cost = p[product.id].cost + parseInt(payload.price)
-            p[product.id].cost = p[product.id].cost+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
-           
+            p.quantity = p.quantity + 1;
+            p.cost = p.cost + payload.customisations.reduce((a,b)=>(a+b.price),0)
+            payload.cost = payload.price + payload.customisations.reduce((a,b)=>(a+b.price),0)
             if(!productFound)p[product.id].items.push(payload)
-          
           }
-          p.customisations=payload.customisations
             return p;
           });
         } else {
-        const cost =  parseInt(payload.price)+ payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
+           const cost =  payload.price + parseInt(payload.customisations.reduce((a,b)=>(a+b.price),0))
+          payload.cost = cost
           draft.selectedProducts = [...draft.selectedProducts, {[payload.id]:{items:[payload]},...payload,cost:cost}];
         }
       },
       [ActionTypes.ORDER_REMOVE_PRODUCT]: (draft, { payload }) => {
-        console.log(payload)
         draft.selectedProducts  = draft.selectedProducts[payload.id]['items'].filter((p) => {
           if(payload.id === p.id){
             p.quantity =  p.quantity-1
             if(p.quantity){
-              p.cost = parseInt(p.cost) - payload.customisations.reduce((a,b)=>(a+parseInt(b.price)),0)
+              p.cost = p.cost - payload.customisations.reduce((a,b)=>(a+b.price),0)
               return true
             }
             return false

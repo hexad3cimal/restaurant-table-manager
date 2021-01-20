@@ -16,7 +16,7 @@ type ProductModel struct {
 	Name           string                `db:"name" json:"name"`
 	NameLower      string                `db:"name_lower" json:"name_lower"`
 	Quantity       int                   `db:"quantity" json:"quantity"`
-	Price          string                `db:"price" json:"price"`
+	Price          float32               `db:"price" json:"price"`
 	Discount       int                   `db:"discount" json:"discount"`
 	Description    string                `db:"description" json:"description"`
 	Image          string                `db:"image" json:"image"`

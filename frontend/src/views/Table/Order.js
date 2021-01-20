@@ -101,7 +101,7 @@ const Order = ({ className, table}) => {
 
   return (
     <Grid container>
-      <Grid lg={7} style={{ margin: "1rem" }}>
+      <Grid item lg={7} style={{ margin: "1rem" }}>
         <Box>
           <Card style={{ marginBottom: "1rem" }}>
             <CardContent>
@@ -159,16 +159,16 @@ const Order = ({ className, table}) => {
         <Grid
           style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
         >
-          {products.map((p, i) => {
-            return (
-              <Grid lg={6} xs={12}>
-                <ProductCard key={p.id} product={p} />
+          {products.map((p, index) => 
+            (
+              <Grid item   key={p.id+index} lg={6} xs={12}>
+                <ProductCard product={p} />
               </Grid>
-            );
-          })}
+            )
+          )}
         </Grid>
       </Grid>
-      <Grid style={{ marginTop: "5rem" }} lg={4}>
+      <Grid item style={{ marginTop: "5rem" }} lg={4}>
         <Cart />
       </Grid>
     </Grid>

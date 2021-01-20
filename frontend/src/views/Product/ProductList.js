@@ -18,7 +18,6 @@ import {
   InputAdornment,
   SvgIcon,
   Button,
-  Grid
 } from "@material-ui/core";
 import { Search as SearchIcon } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,10 +30,18 @@ import {
 } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
-  root: {overflowX:'overflow'},
+  root: {overflowX:'scroll'},
   avatar: {
     marginRight: theme.spacing(2),
   },
+  action:{
+    display:'flex',
+    flexDirection:'column'
+  },
+  actionButton:{
+    width:'10rem',
+    marginBottom:'.7rem'
+  }
 }));
 
 const ProductList = () => {
@@ -97,7 +104,6 @@ const ProductList = () => {
   return (
     <Page title="Products">
       {products.length ? (
-        <Grid item xs={12} maxWidth={false}>
           <Box mt={3}>
             <Card className={classes.root}>
               <Box mt={3}>
@@ -157,17 +163,20 @@ const ProductList = () => {
                             {product.tags &&
                               product.tags.map((tag) => tag.name).join(",")}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className={classes.action}>
                             <Button
                               variant="contained"
+                              size="small"
                               onClick={() => onEdit(product)}
+                              className={classes.actionButton}
                             >
                               Edit
                             </Button>
                             <Button
                               variant="contained"
+                              size="small"
                               onClick={() => onDelete(product)}
-                              style={{ margin: "1rem" }}
+                              className={classes.actionButton}
                             >
                               Delete
                             </Button>
@@ -191,7 +200,6 @@ const ProductList = () => {
               />
             </Card>
           </Box>
-        </Grid>
       ) : (
         <Typography style={{ margin: "1rem" }} variant="h4">
           No products added yet please

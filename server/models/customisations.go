@@ -11,7 +11,7 @@ type CustomisationsModel struct {
 	ProductId       string    `db:"product_id" json:"productId`
 	OrderItemId     string    `db:"order_item_id" json:"orderItemId`
 	Description     string    `db:"description" json:"description"`
-	Price           string    `db:"price" json:"price"`
+	Price           float32   `db:"price" json:"price"`
 	Image           string    `db:"image" json:"image"`
 	Active          bool      `db:"active" json:"-" sql:"DEFAULT:true"`
 	Name            string    `db:"name" json:"name"`

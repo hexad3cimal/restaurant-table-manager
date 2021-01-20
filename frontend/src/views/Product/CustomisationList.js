@@ -12,22 +12,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CustomisationList({ list , onEdit, onDelete }) {
+export default function CustomisationList({ list, onEdit, onDelete }) {
   const classes = useStyles();
   return (
-    <Grid xs={12}>
+    <Grid item xs={12}>
       <List
         component="nav"
         aria-labelledby="customisations-list"
         subheader={
-          <ListSubheader component="div" id="customisations-list-subheader">
+          <ListSubheader component="div">
             Customisations
           </ListSubheader>
         }
         className={classes.root}
       >
         {list.map((item) => (
-          <Customisation onEdit = {onEdit} onDelete={onDelete} item={item} />
+          <Customisation key={item.id} onEdit={onEdit} onDelete={onDelete} item={item} />
         ))}
       </List>
     </Grid>

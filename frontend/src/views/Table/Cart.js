@@ -98,20 +98,19 @@ const Cart = () => {
       .map((product) => product[Object.keys(product)[0]]["items"])
       .reduce((product1, product2) => product1.concat(product2), []) || [];
 
-  console.log("orderedproducts", orderedProducts);
   const classes = useStyles();
   let totalCost = 0;
   selectedProducts.forEach((p) => {
-    if (p.cost > p.price) totalCost = totalCost + parseInt(p.cost);
+    if (p.quantity > 1) totalCost = totalCost + p.customisations.reduce((a,b)=>(a+b.price),0) + p.price * p.quantity;
     else {
-      totalCost = totalCost + parseInt(p.price);
+      totalCost = totalCost + p.price + p.customisations.reduce((a,b)=>(a+b.price),0);
     }
   });
   const placeOrder = () => {
     const order = {};
     order.tableId = tableState.selectedTable.id;
     order.products = selectedProducts;
-    order.price = totalCost.toString();
+    order.price = totalCost;
     order.status = "ordered";
     dispatch(addOrder(order));
   };
@@ -144,8 +143,8 @@ const Cart = () => {
                 width: "100%",
               }}
             >
-              {selectedProducts.map((item) => {
-                return <CartItem key={item.id} item={item} />;
+              {selectedProducts.map((item,index) => {
+                return <CartItem key={item.id+index} item={item} />;
               })}
             </Card>
           </AccordionDetails>
@@ -187,12 +186,12 @@ const Cart = () => {
               </Typography>
             </Box>
           )}
-          {orderedProducts.map((item) => {
-            return <CartItem key={item.id} item={item} />;
+          {orderedProducts.map((item,index) => {
+            return <CartItem key={item.id+index} item={item} />;
           })}
         </Card>
         {selectedProducts.length > 0 ? (
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Fade>
               <Card>
                 <CardContent>

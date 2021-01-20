@@ -28,9 +28,9 @@ const useStyles = makeStyles((theme) => ({
   },
   customisationButton: {
     fontSize: ".6rem",
-    width:'13rem',
-    lineHeight:'.1rem',
-    marginBottom:'1rem'
+    width: "13rem",
+    lineHeight: ".1rem",
+    marginBottom: "1rem",
   },
   productName: {
     color: theme.palette.text.primary,
@@ -41,8 +41,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors.white,
   },
   productCardContent: {
-    display:'flex',
-    flexDirection:'column',
+    display: "flex",
+    flexDirection: "column",
   },
   price: {
     color: theme.palette.text.primary,
@@ -67,109 +67,117 @@ const ProductCard = ({ product }) => {
   const selectedProducts = orderState.selectedProducts || [];
   const selectedCustomisations = useRef([]);
   const [enableCustomisation, setCustomisationStatus] = useState(false);
-  const orderedProduct = useRef({})
-  let selectedProduct = selectedProducts.find((p) => {
-    return p.id === product.id;
-  });
+  const orderedProduct = useRef({});
+  let selectedProduct =
+    selectedProducts.find((p) => {
+      return p.id === product.id;
+    }) || {};
 
   const onAdd = (product) => {
-   const productClone = Object.assign({},product)
-   productClone.quantity =1;
-  orderedProduct.current = productClone
-  if(productClone.customisation.length)setCustomisationStatus(true)
-  else{
-    onFinalAdd()
-  }
+    const productClone = Object.assign({}, product);
+    productClone.quantity = 1;
+    productClone.price = product.price;
+    orderedProduct.current = productClone;
+    if (productClone.customisation.length) setCustomisationStatus(true);
+    else {
+      onFinalAdd();
+    }
   };
 
-  const onFinalAdd = () =>{
-    orderedProduct.current.customisations = selectedCustomisations.current
+  const onFinalAdd = () => {
+    orderedProduct.current.customisations = selectedCustomisations.current;
     dispatch(addProductToOrder(orderedProduct.current));
-    orderedProduct.current= {}
-    selectedCustomisations.current = []
-    setCustomisationStatus(false)
-  }
+    orderedProduct.current = {};
+    selectedCustomisations.current = [];
+    setCustomisationStatus(false);
+  };
   const onRemove = (product) => {
     dispatch(removeProductFromOrder(product));
   };
   const onCusmisationSelect = (customisation, requiredChange) => {
     if (requiredChange === "add") {
-      selectedCustomisations.current = [...selectedCustomisations.current,customisation];
-    } else if (requiredChange === "remove"){
-      selectedCustomisations.current = selectedCustomisations.current.filter(e=>e.id!==customisation.id)
+      selectedCustomisations.current = [
+        ...selectedCustomisations.current,
+        customisation,
+      ];
+    } else if (requiredChange === "remove") {
+      selectedCustomisations.current = selectedCustomisations.current.filter(
+        (e) => e.id !== customisation.id
+      );
     }
   };
 
   return (
     <AttentionSeeker effect="pulse">
-        {enableCustomisation ? 
-           <CustomisationList
-             selected={selectedCustomisations.current}
-             customisations={product.customisation}
-             onDone={onFinalAdd}
-             onSelect={onCusmisationSelect}
-           />
-           :
-         
-      <Card className={classes.productCard}>
-        <CardContent className={classes.productCardContent}>
-          {product.image && (
-            <CardMedia
-              image={product.image}
-              title={product.name}
-              className={classes.media}
-            />
-          )}
-          <Typography gutterBottom className={classes.productName}>
-            {product.name}
-          </Typography>
-        
-          <Typography className={classes.price}>Rs {product.price}</Typography>
-          <Typography className={classes.description}>
-            {product.description}
-          </Typography>
-        </CardContent>
-        <Divider />
-        <Box p={2}>
-          <Grid container justify="space-between" spacing={2}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                onAdd(product);
-              }}
-              className={classes.button}
-              endIcon={<ControlPointIcon className={classes.removeButton} />}
-            >
-              Add
-            </Button>
-
-            <Typography
-              align="center"
-              color="textPrimary"
-              gutterBottom
-              style={{ fontSize: "1rem" }}
-            >
-              {selectedProduct && selectedProduct.quantity + " Nos"}
+      {enableCustomisation ? (
+        <CustomisationList
+          selected={selectedCustomisations.current}
+          customisations={product.customisation}
+          onDone={onFinalAdd}
+          onSelect={onCusmisationSelect}
+        />
+      ) : (
+        <Card className={classes.productCard}>
+          <CardContent className={classes.productCardContent}>
+            {product.image && (
+              <CardMedia
+                image={product.image}
+                title={product.name}
+                className={classes.media}
+              />
+            )}
+            <Typography gutterBottom className={classes.productName}>
+              {product.name}
             </Typography>
 
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                onRemove(product);
-              }}
-              className={classes.button}
-              endIcon={
-                <IndeterminateCheckBoxIcon className={classes.addButton} />
-              }
-            >
-              Remove
-            </Button>
-          </Grid>
-        </Box>
-      </Card>
-}
+            <Typography className={classes.price}>
+              Rs {product.price}
+            </Typography>
+            <Typography className={classes.description}>
+              {product.description}
+            </Typography>
+          </CardContent>
+          <Divider />
+          <Box p={2}>
+            <Grid container justify="space-between" spacing={2}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  onAdd(product);
+                }}
+                className={classes.button}
+                endIcon={<ControlPointIcon className={classes.removeButton} />}
+              >
+                Add
+              </Button>
+
+              <Typography
+                align="center"
+                color="textPrimary"
+                gutterBottom
+                style={{ fontSize: "1rem" }}
+              >
+                {((selectedProduct && selectedProduct.quantity) || 0) + " Nos"}
+              </Typography>
+
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  onRemove(product);
+                }}
+                className={classes.button}
+                endIcon={
+                  <IndeterminateCheckBoxIcon className={classes.addButton} />
+                }
+              >
+                Remove
+              </Button>
+            </Grid>
+          </Box>
+        </Card>
+      )}
     </AttentionSeeker>
   );
 };

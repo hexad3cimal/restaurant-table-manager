@@ -22,10 +22,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: ".7rem",
   },
   addButton: {
-    fill: theme.colors.red
+    fill: theme.colors.red,
   },
   removeButton: {
-    fill: theme.colors.green
+    fill: theme.colors.green,
   },
 }));
 
@@ -43,18 +43,19 @@ const CartItem = ({ item }) => {
   };
 
   return (
-    <Grid xs={12}>
+    <Grid item xs={12}>
       <Fade>
         <Card>
-          <CardContent style={{padding: 'unset'}}>
+          <CardContent style={{ padding: "unset" }}>
             <Box p={2}>
               <Grid container justify="space-around" spacing={2}>
-                <Grid xs={3}>
+                <Grid item xs={3}>
                   <Typography gutterBottom>{item.name}</Typography>
                 </Grid>
                 <Grid
                   style={{ display: "flex", flexDirection: "column" }}
                   xs={3}
+                  item
                 >
                   <Chip
                     size="small"
@@ -80,7 +81,7 @@ const CartItem = ({ item }) => {
                     className={classes.cartItems}
                   />
                 </Grid>
-                <Grid xs={3}>
+                <Grid item xs={3}>
                   <Typography gutterBottom variant="h5">
                     $ {item.cost}
                   </Typography>
