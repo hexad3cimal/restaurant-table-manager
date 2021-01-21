@@ -32,8 +32,8 @@ const AddProduct = () => {
   const branchState = useSelector((state) => state.branch);
   const kitchenState = useSelector((state) => state.kitchen);
   const productState = useSelector((state) => state.product);
-  const userState = useSelector((state) => state.user)|| {};
-  const user = userState && userState.user || {}
+  const userState = useSelector((state) => state.user) || {};
+  const user = (userState && userState.user) || {};
   const [addCustomisation, setAddCustomisation] = useState(false);
   const [customisations, setCustomisations] = useState([]);
   const [image, setImage] = useState(null);
@@ -159,8 +159,14 @@ const AddProduct = () => {
             formErrors.current[value]
           ) {
             let url = `${errorRules[value].url}=${values[value]}`;
-            if(!values.branchId &&  user.role === 'admin')Toast({message: 'Branch should be selected for product name validation'})
-            user.role === 'admin' ? url =  `${url}&branchId=${values.branchId}` : url =`${url}`  ;
+            if (!values.branchId && user.role === "admin")
+              Toast({
+                message:
+                  "Branch should be selected for product name validation",
+              });
+            user.role === "admin"
+              ? (url = `${url}&branchId=${values.branchId}`)
+              : (url = `${url}`);
 
             if (product.id) {
               url = `${url}&id=${product.id}`;
@@ -225,7 +231,7 @@ const AddProduct = () => {
         },
         [])[0];
 
-        values.edit = Boolean(product.id)
+        values.edit = Boolean(product.id);
         values.file = image;
         values.tags = tag;
         values.customisations = JSON.stringify(customisations);
@@ -277,6 +283,7 @@ const AddProduct = () => {
                     onChange={handleChange}
                     value={values.price}
                     variant="outlined"
+                    type="number"
                   />
                 </Grid>
                 <Grid item md={2} xs={4}>
@@ -420,83 +427,79 @@ const AddProduct = () => {
                 {addCustomisation || customisations.length ? (
                   <Grid
                     container
-                    alignItems="flex-end"
+                    md={12}
+                    xs={12}
                     spacing={2}
-                    item
-                    md={10}
-                    xs={10}
+                    justify='flex-end'
                   >
-                    <Grid container md={12} spacing={2} xs={12}>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          error={Boolean(
-                            touched.customisation && errors.customisation
-                          )}
-                          fullWidth
-                          label="Item title"
-                          margin="normal"
-                          name="title"
-                          onBlur={handleBlur}
-                          onChange={(event) => {
-                            onCustomisationItemChange(event);
-                          }}
-                          value={customisationItem.title}
-                          variant="outlined"
-                        />{" "}
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          error={Boolean(
-                            touched.customisation && errors.customisation
-                          )}
-                          fullWidth
-                          label="Item price"
-                          margin="normal"
-                          name="itemPrice"
-                          onBlur={handleBlur}
-                          onChange={(event) => {
-                            onCustomisationItemChange(event);
-                          }}
-                          value={customisationItem.itemPrice}
-                          variant="outlined"
-                        />{" "}
-                      </Grid>
-                      <Grid item md={12} xs={12}>
-                        <TextField
-                          fullWidth
-                          helperText={
-                            touched.customisation && errors.customisation
-                          }
-                          label="Item description"
-                          margin="normal"
-                          name="itemDescription"
-                          onBlur={handleBlur}
-                          onChange={(event) => {
-                            onCustomisationItemChange(event);
-                          }}
-                          value={customisationItem.itemDescription}
-                          variant="outlined"
-                        />{" "}
-                      </Grid>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        error={Boolean(
+                          touched.customisation && errors.customisation
+                        )}
+                        fullWidth
+                        label="Item title"
+                        margin="normal"
+                        name="title"
+                        onBlur={handleBlur}
+                        onChange={(event) => {
+                          onCustomisationItemChange(event);
+                        }}
+                        value={customisationItem.title}
+                        variant="outlined"
+                      />{" "}
                     </Grid>
-
-                    <Button
-                      variant={"contained"}
-                      color="primary"
-                      margin="normal"
-                      onClick={() => {
-                        customisationAdd();
-                      }}
-                    >
-                      Add
-                    </Button>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        error={Boolean(
+                          touched.customisation && errors.customisation
+                        )}
+                        fullWidth
+                        label="Item price"
+                        margin="normal"
+                        name="itemPrice"
+                        onBlur={handleBlur}
+                        onChange={(event) => {
+                          onCustomisationItemChange(event);
+                        }}
+                        value={customisationItem.itemPrice}
+                        variant="outlined"
+                      />{" "}
+                    </Grid>
+                    <Grid item md={12} xs={12}>
+                      <TextField
+                        fullWidth
+                        helperText={
+                          touched.customisation && errors.customisation
+                        }
+                        label="Item description"
+                        margin="normal"
+                        name="itemDescription"
+                        onBlur={handleBlur}
+                        onChange={(event) => {
+                          onCustomisationItemChange(event);
+                        }}
+                        value={customisationItem.itemDescription}
+                        variant="outlined"
+                      />{" "}
+                    </Grid>
+                    <Box m={2}>
+                      <Button
+                        variant={"contained"}
+                        color="primary"
+                        onClick={() => {
+                          customisationAdd();
+                        }}
+                      >
+                        Add
+                      </Button>
+                      </Box>
                   </Grid>
                 ) : (
                   <Box pt={2}>
                     <Button
                       variant={"contained"}
                       color="primary"
-                      margin="normal"
                       size="small"
                       onClick={() => setAddCustomisation(!addCustomisation)}
                     >
@@ -504,15 +507,17 @@ const AddProduct = () => {
                     </Button>
                   </Box>
                 )}
-              {
-                addCustomisation || customisations.length ? <Grid item md={12} xs={12}>
-                <CustomisationList
-                  onEdit={customisationEdit}
-                  onDelete={customisationDelete}
-                  list={customisations}
-                />
-              </Grid> : <span></span>
-              } 
+                {customisations.length ? (
+                  <Grid item md={12} xs={12}>
+                    <CustomisationList
+                      onEdit={customisationEdit}
+                      onDelete={customisationDelete}
+                      list={customisations}
+                    />
+                  </Grid>
+                ) : (
+                  <span></span>
+                )}
               </Grid>
             </CardContent>
             <Divider />

@@ -58,8 +58,9 @@ const Order = ({ className, table}) => {
   };
 
   const sortItems = (sort) => {
-    let productsClone = productsInState.slice(0);
+    let productsClone = products.slice(0);
     sortBy.current = sort;
+   if(productsClone.length >1){
     if (searchBy.current) {
       productsClone = productsClone.filter((product) => {
         return product.name
@@ -71,20 +72,22 @@ const Order = ({ className, table}) => {
       case "ascending":
         setProducts(
           productsClone.sort((prod1, prod2) =>
-            prod1.price.localeCompare(prod2.price, { numeric: true })
+            prod1.price - prod2.price
           )
         );
         break;
       case "descending":
         setProducts(
           productsClone.sort((prod1, prod2) =>
-            prod2.price.localeCompare(prod1.price, { numeric: true })
+            prod2.price - prod1.price
           )
         );
         break;
       default:
         break;
     }
+   }
+   
   };
 
   const handleTopProductsClick = () => {
@@ -97,6 +100,7 @@ const Order = ({ className, table}) => {
 
   useEffect(() => {
     handleSearch("");
+   setProducts(productsInState)
   }, [productsInState]);
 
   return (

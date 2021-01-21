@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   productCard: {
     margin: ".5rem",
     backgroundColor: theme.colors.white,
+    '&::hover': {
+    boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
+    }
   },
   productCardContent: {
     display: "flex",
@@ -109,16 +112,17 @@ const ProductCard = ({ product }) => {
 
   return (
     <AttentionSeeker effect="pulse">
-      {enableCustomisation ? (
+      
+        <Card className={classes.productCard}>
+          <CardContent className={classes.productCardContent}>
+          {enableCustomisation ? (
         <CustomisationList
           selected={selectedCustomisations.current}
           customisations={product.customisation}
           onDone={onFinalAdd}
           onSelect={onCusmisationSelect}
         />
-      ) : (
-        <Card className={classes.productCard}>
-          <CardContent className={classes.productCardContent}>
+      ) : (<Box>
             {product.image && (
               <CardMedia
                 image={product.image}
@@ -136,10 +140,11 @@ const ProductCard = ({ product }) => {
             <Typography className={classes.description}>
               {product.description}
             </Typography>
+            </Box>)}
           </CardContent>
           <Divider />
           <Box p={2}>
-            <Grid container justify="space-between" spacing={2}>
+          {!enableCustomisation ? (   <Grid container justify="space-between" spacing={2}>
               <Button
                 variant="outlined"
                 color="primary"
@@ -174,10 +179,9 @@ const ProductCard = ({ product }) => {
               >
                 Remove
               </Button>
-            </Grid>
+            </Grid> ): null}
           </Box>
         </Card>
-      )}
     </AttentionSeeker>
   );
 };

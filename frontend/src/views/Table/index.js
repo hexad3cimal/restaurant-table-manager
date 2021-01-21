@@ -40,7 +40,7 @@ const TableView = () => {
   }, []);
   return (
     <Page className={classes.root} title="Tables">
-      <Container maxWidth={false}>
+      <Container maxWidth={true}>
         {tableState && tableState.add ? (
           <Box mt={3}>
             <AddTable />
