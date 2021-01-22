@@ -34,47 +34,72 @@ export default {
       },
       [ActionTypes.ORDER_ADD_PRODUCT]: (draft, { payload }) => {
         const product = draft.selectedProducts.find((p) => {
-          return p[payload.id]
+          return p[payload.id];
         });
-        if(product) {
+        if (product) {
           draft.selectedProducts = draft.selectedProducts.map((p) => {
-           if(p[product.id]){
-            let productFound =false
-            p[product.id].items = p[product.id].items.map( item => {
-              delete item['cost']
-              if(JSON.stringify(payload.customisations) === JSON.stringify(item.customisations))
-                  payload.quantity = item.quantity
-              if(JSON.stringify(item)===JSON.stringify(payload)){
-                productFound =true
-                item.quantity =item.quantity+1
-              }
-              item.cost=item.quantity*payload.price
-              return item
-            })
-            p.quantity = p.quantity + 1;
-            p.cost = p.cost + payload.customisations.reduce((a,b)=>(a+b.price),0)
-            payload.cost = payload.price + payload.customisations.reduce((a,b)=>(a+b.price),0)
-            if(!productFound)p[product.id].items.push(payload)
-          }
+            if (p[product.id]) {
+              let productFound = false;
+              p[product.id].items = p[product.id].items.map((item) => {
+                const cost = item.cost
+                   delete item["cost"]  
+                   delete payload["cost"]
+                const customisationsEqual =
+                  JSON.stringify(payload.customisations) ===
+                  JSON.stringify(item.customisations);
+                if (customisationsEqual) payload.quantity = item.quantity;
+                if (JSON.stringify(item) === JSON.stringify(payload)) {
+                  productFound = true;
+                  item.quantity = item.quantity + 1;
+                    item.cost =
+                      item.quantity *
+                      (payload.price +
+                        payload.customisations.reduce(
+                          (a, b) => a + b.price,
+                          0
+                        ));
+                }else{
+                  item.cost =cost
+                }
+                return item;
+              });
+              p.quantity = p.quantity + 1;
+              p.cost =
+                p.cost +
+                payload.customisations.reduce((a, b) => a + b.price, 0);
+              payload.cost =
+                payload.price +
+                payload.customisations.reduce((a, b) => a + b.price, 0);
+              if (!productFound) p[product.id].items.push(payload);
+            }
             return p;
           });
         } else {
-           const cost =  payload.price + parseInt(payload.customisations.reduce((a,b)=>(a+b.price),0))
-          payload.cost = cost
-          draft.selectedProducts = [...draft.selectedProducts, {[payload.id]:{items:[payload]},...payload,cost:cost}];
+          const cost =
+            payload.price +
+            parseInt(payload.customisations.reduce((a, b) => a + b.price, 0));
+          payload.cost = cost;
+          draft.selectedProducts = [
+            ...draft.selectedProducts,
+            { [payload.id]: { items: [payload] }, ...payload, cost: cost },
+          ];
         }
       },
       [ActionTypes.ORDER_REMOVE_PRODUCT]: (draft, { payload }) => {
-        draft.selectedProducts  = draft.selectedProducts[payload.id]['items'].filter((p) => {
-          if(payload.id === p.id){
-            p.quantity =  p.quantity-1
-            if(p.quantity){
-              p.cost = p.cost - payload.customisations.reduce((a,b)=>(a+b.price),0)
-              return true
+        draft.selectedProducts = draft.selectedProducts[payload.id][
+          "items"
+        ].filter((p) => {
+          if (payload.id === p.id) {
+            p.quantity = p.quantity - 1;
+            if (p.quantity) {
+              p.cost =
+                p.cost -
+                payload.customisations.reduce((a, b) => a + b.price, 0);
+              return true;
             }
-            return false
-          }else{
-            return true
+            return false;
+          } else {
+            return true;
           }
         });
       },
