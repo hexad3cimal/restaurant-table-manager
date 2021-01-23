@@ -22,11 +22,6 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: 256,
     },
   },
-  contentContainer: {
-    display: "flex",
-    flex: "1 1 auto",
-    overflow: "hidden",
-  },
   content: {
     flex: "1 1 auto",
     height: "100%",
@@ -51,11 +46,9 @@ const DashboardLayout = () => {
         openMobile={isMobileNavOpen}
       />
       <div className={classes.wrapper}>
-        <div className={classes.contentContainer}>
           <div className={classes.content}>
             <Outlet />
           </div>
-        </div>
       </div>
     </div>
   );

@@ -34,14 +34,16 @@ export default {
       },
       [ActionTypes.ORDER_ADD_PRODUCT]: (draft, { payload }) => {
         const product = draft.selectedProducts.find((p) => {
-          return p[payload.id];
+          return p.id === payload.id;
         });
         if (product) {
           draft.selectedProducts = draft.selectedProducts.map((p) => {
-            if (p[product.id]) {
+            if (p.id === payload.id) {
+
               let productFound = false;
-              p[product.id].items = p[product.id].items.map((item) => {
-                const cost = item.cost
+              p.items = p.items.map((item) => {
+                if(item.customisations.length)p.isCustomisationsThere=true
+                  const cost = item.cost
                    delete item["cost"]  
                    delete payload["cost"]
                 const customisationsEqual =
@@ -70,38 +72,48 @@ export default {
               payload.cost =
                 payload.price +
                 payload.customisations.reduce((a, b) => a + b.price, 0);
-              if (!productFound) p[product.id].items.push(payload);
+              if (!productFound) p.items.push(payload);
             }
             return p;
           });
+          
         } else {
-          const cost =
-            payload.price +
-            parseInt(payload.customisations.reduce((a, b) => a + b.price, 0));
-          payload.cost = cost;
+          payload.cost = payload.price +
+          parseInt(payload.customisations.reduce((a, b) => a + b.price, 0));;
           draft.selectedProducts = [
             ...draft.selectedProducts,
-            { [payload.id]: { items: [payload] }, ...payload, cost: cost },
+            {   ...payload, items: [payload], cost: payload.cost
+            },
           ];
         }
       },
       [ActionTypes.ORDER_REMOVE_PRODUCT]: (draft, { payload }) => {
-        draft.selectedProducts = draft.selectedProducts[payload.id][
-          "items"
-        ].filter((p) => {
-          if (payload.id === p.id) {
-            p.quantity = p.quantity - 1;
-            if (p.quantity) {
-              p.cost =
-                p.cost -
-                payload.customisations.reduce((a, b) => a + b.price, 0);
-              return true;
+        draft.selectedProducts = draft.selectedProducts.filter( product => {
+          if(product.id === payload.id){
+            product[
+              "items"
+            ] = product[
+                "items"
+              ].filter((item) => {
+                if (JSON.stringify(payload.customisations) === JSON.stringify(item.customisations)) {
+                  product['quantity'] =  product['quantity'] - 1
+                  product['cost'] =  product['cost'] - (payload.price +
+                  payload.customisations.reduce((a, b) => a + b.price, 0));
+                  item.quantity = item.quantity - 1;
+                  if (!item.quantity)
+                        return false
+                    item.cost =
+                    item.cost - (payload.price +
+                      payload.customisations.reduce((a, b) => a + b.price, 0));
+                    return true;
+                  
+                } else {
+                  return true;
+                }
+              });
             }
-            return false;
-          } else {
-            return true;
-          }
-        });
+            return product['quantity'] !== 0
+        })
       },
       [ActionTypes.ORDER_EDIT]: (draft) => {
         draft.status = STATUS.RUNNING;

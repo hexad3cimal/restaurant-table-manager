@@ -17,6 +17,7 @@ import { addProductToOrder, removeProductFromOrder } from "../../actions";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import IndeterminateCheckBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 import CustomisationList from "./CustomisationList";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -37,11 +38,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.6rem",
   },
   productCard: {
-    margin: ".5rem",
     backgroundColor: theme.colors.white,
-    '&::hover': {
-    boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
-    }
+    marginBottom: ".7rem",
+    "&:hover": {
+      boxShadow:
+        "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+    },
+  },
+  focused: {
+    backgroundColor: "#f1faee",
   },
   productCardContent: {
     display: "flex",
@@ -112,39 +117,41 @@ const ProductCard = ({ product }) => {
 
   return (
     <AttentionSeeker effect="pulse">
-      
-        <Card className={classes.productCard}>
-          <CardContent className={classes.productCardContent}>
+      <Card className={enableCustomisation ? clsx(classes.productCard , classes.focused) : classes.productCard}>
+        <CardContent className={classes.productCardContent}>
           {enableCustomisation ? (
-        <CustomisationList
-          selected={selectedCustomisations.current}
-          customisations={product.customisation}
-          onDone={onFinalAdd}
-          onSelect={onCusmisationSelect}
-        />
-      ) : (<Box>
-            {product.image && (
-              <CardMedia
-                image={product.image}
-                title={product.name}
-                className={classes.media}
-              />
-            )}
-            <Typography gutterBottom className={classes.productName}>
-              {product.name}
-            </Typography>
+            <CustomisationList
+              selected={selectedCustomisations.current}
+              customisations={product.customisation}
+              onDone={onFinalAdd}
+              onSelect={onCusmisationSelect}
+            />
+          ) : (
+            <Box>
+              {product.image && (
+                <CardMedia
+                  image={product.image}
+                  title={product.name}
+                  className={classes.media}
+                />
+              )}
+              <Typography gutterBottom className={classes.productName}>
+                {product.name}
+              </Typography>
 
-            <Typography className={classes.price}>
-              Rs {product.price}
-            </Typography>
-            <Typography className={classes.description}>
-              {product.description}
-            </Typography>
-            </Box>)}
-          </CardContent>
-          <Divider />
-          <Box p={2}>
-          {!enableCustomisation ? (   <Grid container justify="space-between" spacing={2}>
+              <Typography className={classes.price}>
+                Rs {product.price}
+              </Typography>
+              <Typography className={classes.description}>
+                {product.description}
+              </Typography>
+            </Box>
+          )}
+        </CardContent>
+        <Divider />
+        <Box p={2}>
+          {!enableCustomisation ? (
+            <Grid container justify="space-between" spacing={2}>
               <Button
                 variant="outlined"
                 color="primary"
@@ -179,9 +186,10 @@ const ProductCard = ({ product }) => {
               >
                 Remove
               </Button>
-            </Grid> ): null}
-          </Box>
-        </Card>
+            </Grid>
+          ) : null}
+        </Box>
+      </Card>
     </AttentionSeeker>
   );
 };

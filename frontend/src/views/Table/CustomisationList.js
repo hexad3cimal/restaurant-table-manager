@@ -11,7 +11,6 @@ import { Box, Button } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    backgroundColor: theme.palette.background.paper,
     display:'flex',
     flexDirection:'column',
   },
@@ -19,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
     display:'flex',
     flexDirection:'row',
     justifyContent:'flex-end'
+  },
+  button:{
+    backgroundColor: theme.colors.red,
   }
 }));
 
@@ -49,6 +51,8 @@ export default function CustomisationList({customisations, onSelect, onDone, sel
 
   return (
     <List className={classes.root}>
+                  <ListItemText  primary={"Available addons"} />
+
       {customisations.map((customisation) => {
         const labelId = `checkbox-list-label-${customisation.id}`;
 
@@ -64,7 +68,6 @@ export default function CustomisationList({customisations, onSelect, onDone, sel
               />
             </ListItemIcon>
             <ListItemText primary={customisation.name} />
-            <ListItemText  primary={customisation.description} />
             <ListItemSecondaryAction>
             <ListItemText  primary={customisation.price} />
             </ListItemSecondaryAction>
@@ -72,7 +75,7 @@ export default function CustomisationList({customisations, onSelect, onDone, sel
         );
       })}
       <Box className={classes.buttonBox}>
-      <Button onClick={()=>{onDone(false)}}variant="contained">Done</Button>
+      <Button className={classes.button} onClick={()=>{onDone(false)}} variant="contained">Add to cart</Button>
       </Box>
     </List>
   );

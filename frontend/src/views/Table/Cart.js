@@ -95,13 +95,12 @@ const Cart = () => {
   const selectedProducts = orderState.selectedProducts || [];
   const orderedProducts =
     selectedProducts
-      .map((product) => product[Object.keys(product)[0]]["items"])
+      .map((product) => product["items"])
       .reduce((product1, product2) => product1.concat(product2), []) || [];
-
   const classes = useStyles();
   let totalCost = 0;
-  selectedProducts.forEach((p) => {
-    if (p.quantity > 1) totalCost = totalCost + p.customisations.reduce((a,b)=>(a+b.price),0) + p.price * p.quantity;
+  orderedProducts.forEach((p) => {
+    if (p.quantity > 1) totalCost = totalCost + (p.customisations.reduce((a,b)=>(a+b.price),0) + p.price) * p.quantity;
     else {
       totalCost = totalCost + p.price + p.customisations.reduce((a,b)=>(a+b.price),0);
     }

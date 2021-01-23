@@ -104,8 +104,8 @@ const Order = ({ className, table}) => {
   }, [productsInState]);
 
   return (
-    <Grid container>
-      <Grid item lg={7} style={{ margin: "1rem" }}>
+    <Grid container maxWidth={true}>
+      <Grid style={{ marginRight: "1rem" }} item lg={7}>
         <Box>
           <Card style={{ marginBottom: "1rem" }}>
             <CardContent>
