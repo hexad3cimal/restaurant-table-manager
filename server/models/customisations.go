@@ -42,7 +42,7 @@ func (category Customisations) DeleteById(id string) (returnModel Customisations
 	return returnModel, err
 }
 
-func (category Customisations) Get(id string) (customisationsModel CustomisationsModel, err error) {
+func (category Customisations) GetById(id string) (customisationsModel CustomisationsModel, err error) {
 
 	err = config.GetDB().Where("id=?", id).First(&customisationsModel).Error
 	if err != nil {

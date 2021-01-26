@@ -12,7 +12,7 @@ type OrderModel struct {
 	TableId    string    `db:"table_id" json:"tableId"`
 	BranchId   string    `db:"branch_id" json:"branchId"`
 	BranchName string    `db:"branch_name" json:"branchName"`
-	Price      string    `db:"price" json:"price"`
+	Price      float32   `db:"price" json:"price"`
 	Note       string    `db:"note" json:"note"`
 	Status     string    `db:"status" json:"status"`
 	UpdatedAt  time.Time `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`

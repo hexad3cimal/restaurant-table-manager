@@ -99,16 +99,31 @@ const Cart = () => {
       .reduce((product1, product2) => product1.concat(product2), []) || [];
   const classes = useStyles();
   let totalCost = 0;
-  orderedProducts.forEach((p) => {
-    if (p.quantity > 1) totalCost = totalCost + (p.customisations.reduce((a,b)=>(a+b.price),0) + p.price) * p.quantity;
+  orderedProducts.forEach((product) => {
+    const productTotalPrice =
+      product.customisations.reduce(
+        (customisation1, customisation2) =>
+          customisation1 + customisation2.price,
+        0
+      ) + product.price;
+    if (product.quantity > 1)
+      totalCost = totalCost + productTotalPrice * product.quantity;
     else {
-      totalCost = totalCost + p.price + p.customisations.reduce((a,b)=>(a+b.price),0);
+      totalCost = totalCost + productTotalPrice;
     }
   });
   const placeOrder = () => {
     const order = {};
+    let productsInOrder  = orderedProducts.slice(0)
+    productsInOrder = productsInOrder.map(product =>{
+      let productClone = Object.assign({},product)
+      productClone.customisations = product.customisations.map(customisation=>{
+          return customisation.id
+        })
+      return productClone
+    })
     order.tableId = tableState.selectedTable.id;
-    order.products = selectedProducts;
+    order.products = productsInOrder;
     order.price = totalCost;
     order.status = "ordered";
     dispatch(addOrder(order));
@@ -142,8 +157,8 @@ const Cart = () => {
                 width: "100%",
               }}
             >
-              {selectedProducts.map((item,index) => {
-                return <CartItem key={item.id+index} item={item} />;
+              {orderedProducts.map((item, index) => {
+                return <CartItem key={item.id + index} item={item} />;
               })}
             </Card>
           </AccordionDetails>
@@ -185,8 +200,8 @@ const Cart = () => {
               </Typography>
             </Box>
           )}
-          {orderedProducts.map((item,index) => {
-            return <CartItem key={item.id+index} item={item} />;
+          {orderedProducts.map((item, index) => {
+            return <CartItem key={item.id + index} item={item} />;
           })}
         </Card>
         {selectedProducts.length > 0 ? (

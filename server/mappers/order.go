@@ -12,7 +12,7 @@ type Product struct {
 type OrderForm struct {
 	Products []Product `json:"products" binding:"required"`
 	TableId  string    `json:"tableId" binding:"required"`
-	Status   string    `json:"status" binding:"required"`
-	Price    string    `json:"price" binding:"required"`
+	Status   string    `json:"status"`
+	Price    float32   `json:"price" binding:"required"`
 	Notes    string    `json:"notes"`
 }

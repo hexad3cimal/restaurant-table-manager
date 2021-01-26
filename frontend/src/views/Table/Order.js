@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Order = ({ className, table}) => {
+const Order = () => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const productState = useSelector((state) => state.product);

@@ -17,6 +17,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	var orderForm mappers.OrderForm
 
 	if c.ShouldBindJSON(&orderForm) != nil {
+		logger.Error(c.ShouldBindJSON(&orderForm))
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
 		c.Abort()
 		return
@@ -62,7 +63,14 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	if err == nil {
 		var orderItemAddError error
 		for _, productMapper := range orderForm.Products {
-
+			var customisationsArray []models.CustomisationsModel
+			for _, customisationId := range productMapper.Customisations {
+				customisation, getCustomisationError := customisations.GetById(customisationId)
+				if getCustomisationError != nil {
+					logger.Error("customisation doesnt exist for table", orderModel.TableId)
+				}
+				customisationsArray = append(customisationsArray, customisation)
+			}
 			orderItemModel.ID = uuid.NewV4().String()
 			orderItemModel.CreatedAt = time.Now()
 			orderItemModel.OrgId = tokenModel.OrgId
@@ -76,6 +84,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 			orderItemModel.KitchenName = productMapper.KitchenName
 			orderItemModel.TableId = table.ID
 			orderItemModel.OrderId = addedOrder.ID
+			orderItemModel.Customisations = customisationsArray
 
 			_, orderItemAddError = orderItem.Add(orderItemModel)
 			if orderItemAddError == nil {
