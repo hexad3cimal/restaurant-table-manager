@@ -59,47 +59,52 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 	orderModel.RefCode = helpers.GetString()
 
+	var orderItemsArray []models.OrderItemModel
+	for _, productMapper := range orderForm.Products {
+		var customisationsArray []models.CustomisationsModel
+		for _, customisationId := range productMapper.Customisations {
+			customisation, getCustomisationError := customisations.GetById(customisationId)
+			if getCustomisationError != nil {
+				logger.Error("customisation doesnt exist for table", orderModel.TableId)
+			}
+			customisationsArray = append(customisationsArray, customisation)
+		}
+		orderItemModel.ID = uuid.NewV4().String()
+		orderItemModel.CreatedAt = time.Now()
+		orderItemModel.OrgId = tokenModel.OrgId
+		orderItemModel.BranchId = table.BranchId
+		orderItemModel.BranchName = table.BranchName
+		orderItemModel.Status = orderForm.Status
+		orderItemModel.ProductId = productMapper.ProductId
+		orderItemModel.ProductName = productMapper.ProductName
+		orderItemModel.Quantity = productMapper.Quantity
+		orderItemModel.KitchenId = productMapper.KitchenId
+		orderItemModel.KitchenName = productMapper.KitchenName
+		orderItemModel.TableId = table.ID
+		orderItemModel.Customisations = customisationsArray
+
+		orderItemsArray = append(orderItemsArray, orderItemModel)
+		// _, orderItemAddError = orderItem.Add(orderItemModel)
+		// if orderItemAddError == nil {
+
+		// 	helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderItemModel}, orderItemModel.KitchenId)
+		// }
+	}
+	// if orderItemAddError != nil {
+	// 	orderItem.DeleteByOrderId(orderModel.ID)
+	// 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+	// 	c.Abort()
+	// 	return
+
+	// }
+	orderModel.OrderItems = orderItemsArray
 	addedOrder, err := order.Add(orderModel)
+
 	if err == nil {
-		var orderItemAddError error
-		for _, productMapper := range orderForm.Products {
-			var customisationsArray []models.CustomisationsModel
-			for _, customisationId := range productMapper.Customisations {
-				customisation, getCustomisationError := customisations.GetById(customisationId)
-				if getCustomisationError != nil {
-					logger.Error("customisation doesnt exist for table", orderModel.TableId)
-				}
-				customisationsArray = append(customisationsArray, customisation)
-			}
-			orderItemModel.ID = uuid.NewV4().String()
-			orderItemModel.CreatedAt = time.Now()
-			orderItemModel.OrgId = tokenModel.OrgId
-			orderItemModel.BranchId = table.BranchId
-			orderItemModel.BranchName = table.BranchName
-			orderItemModel.Status = orderForm.Status
-			orderItemModel.ProductId = productMapper.ProductId
-			orderItemModel.ProductName = productMapper.ProductName
-			orderItemModel.Quantity = productMapper.Quantity
-			orderItemModel.KitchenId = productMapper.KitchenId
-			orderItemModel.KitchenName = productMapper.KitchenName
-			orderItemModel.TableId = table.ID
-			orderItemModel.OrderId = addedOrder.ID
-			orderItemModel.Customisations = customisationsArray
 
-			_, orderItemAddError = orderItem.Add(orderItemModel)
-			if orderItemAddError == nil {
-
-				helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderItemModel}, orderItemModel.KitchenId)
-			}
+		for _, orderItem := range orderItemsArray {
+			helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderItem}, orderItem.KitchenId)
 		}
-		if orderItemAddError != nil {
-			order.DeleteById(orderModel.ID)
-			orderItem.DeleteByOrderId(orderModel.ID)
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-
 		managerRole, rolesGetError := role.GetRoleByNameAndOrgId("manager", tokenModel.OrgId)
 		if rolesGetError != nil {
 			order.DeleteById(orderModel.ID)
@@ -121,7 +126,9 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
-		logger.Error("Crreate order failed: " + err.Error())
+		logger.Error("Create order failed: " + err.Error())
+		order.DeleteById(addedOrder.ID)
+		orderItem.DeleteByOrderId(orderModel.ID)
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
 }
