@@ -5,6 +5,7 @@ type Product struct {
 	ProductName    string   `json:"name" binding:"required"`
 	KitchenId      string   `json:"kitchenId" binding:"required"`
 	KitchenName    string   `json:"kitchenName" binding:"required"`
+	Price          float32  `json:"price" binding:"required"`
 	Quantity       int32    `json:"quantity" binding:"required"`
 	Customisations []string `json:"customisations"`
 }

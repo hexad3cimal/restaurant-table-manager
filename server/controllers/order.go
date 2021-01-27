@@ -82,21 +82,11 @@ func (ctrl OrderController) Add(c *gin.Context) {
 		orderItemModel.KitchenName = productMapper.KitchenName
 		orderItemModel.TableId = table.ID
 		orderItemModel.Customisations = customisationsArray
-
+		orderItemModel.Price = productMapper.Price
 		orderItemsArray = append(orderItemsArray, orderItemModel)
-		// _, orderItemAddError = orderItem.Add(orderItemModel)
-		// if orderItemAddError == nil {
 
-		// 	helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderItemModel}, orderItemModel.KitchenId)
-		// }
 	}
-	// if orderItemAddError != nil {
-	// 	orderItem.DeleteByOrderId(orderModel.ID)
-	// 	c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-	// 	c.Abort()
-	// 	return
 
-	// }
 	orderModel.OrderItems = orderItemsArray
 	addedOrder, err := order.Add(orderModel)
 
