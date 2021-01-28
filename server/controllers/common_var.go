@@ -36,3 +36,5 @@ var orderItemModel models.OrderItemModel
 
 var customisations = new(models.Customisations)
 var customisationModel models.CustomisationsModel
+
+var dashboard = new(models.DashBoard)

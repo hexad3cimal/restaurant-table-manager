@@ -7,6 +7,8 @@ import order from './order';
 import kitchen from './kitchen'
 import tag from './tag'
 import category from './category'
+import dashboard from './dashboard'
+
 export default {
   ...user,
   ...app,
@@ -16,5 +18,6 @@ export default {
   ...order,
   ...kitchen,
   ...tag,
-  ...category
+  ...category,
+  ...dashboard
 };

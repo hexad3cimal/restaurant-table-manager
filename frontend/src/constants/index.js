@@ -124,6 +124,9 @@ export const ActionTypes = keyMirror({
   CATEGORY_DELETE: undefined,
   CATEGORY_DELETE_SUCCESS: undefined,
   CATEGORY_DELETE_FAILURE: undefined,
+  DASHBOARD_STATS_GET: undefined,
+  DASHBOARD_STATS_GET_SUCCESS: undefined,
+  DASHBOARD_STATS_GET_FAILURE: undefined,
 });
 
 /**

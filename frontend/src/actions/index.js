@@ -7,3 +7,4 @@ export * from './order';
 export * from './kitchen';
 export * from './tag';
 export * from './category';
+export * from './dashboard'

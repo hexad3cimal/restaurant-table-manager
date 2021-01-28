@@ -15,8 +15,6 @@ import (
 type TableController struct{}
 
 func (ctrl TableController) AddOrEdit(c *gin.Context) {
-	logger.Info("iniside edit")
-
 	var tableForm mappers.TableForm
 	var userGetError error
 	if c.ShouldBindJSON(&tableForm) != nil {

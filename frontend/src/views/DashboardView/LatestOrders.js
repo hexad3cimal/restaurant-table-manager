@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import moment from "moment";
 import PerfectScrollbar from "react-perfect-scrollbar";
-import PropTypes from "prop-types";
 import {
   Box,
   Button,
@@ -226,10 +225,6 @@ const LatestOrders = () => {
       )}
     </Card>
   );
-};
-
-LatestOrders.propTypes = {
-  className: PropTypes.string,
 };
 
 export default LatestOrders;

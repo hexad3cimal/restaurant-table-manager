@@ -107,6 +107,9 @@ func InitRouter() {
 		catergory := new(controllers.CategoryController)
 		v1.GET("/catergory", AuthMiddleware(), catergory.GetCategories)
 
+		dashboard := new(controllers.DashBoardController)
+		v1.GET("/dashboard/stats", AuthMiddleware(), dashboard.GetStats)
+
 		order := new(controllers.OrderController)
 		v1.POST("/order", AuthMiddleware(), order.Add)
 		v1.GET("/order", AuthMiddleware(), order.GetOrdersOfTable)

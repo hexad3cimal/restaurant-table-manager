@@ -1,6 +1,4 @@
 import React from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import {
   Avatar,
   Box,
@@ -32,13 +30,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Budget = ({ className, ...rest }) => {
+const Orders = () => {
   const classes = useStyles();
 
   return (
     <Card
-      className={clsx(classes.root, className)}
-      {...rest}
     >
       <CardContent>
         <Grid
@@ -52,8 +48,7 @@ const Budget = ({ className, ...rest }) => {
               gutterBottom
               variant="h6"
             >
-              BUDGET
-            </Typography>
+Total Orders            </Typography>
             <Typography
               color="textPrimary"
               variant="h3"
@@ -90,9 +85,4 @@ const Budget = ({ className, ...rest }) => {
     </Card>
   );
 };
-
-Budget.propTypes = {
-  className: PropTypes.string
-};
-
-export default Budget;
+export default Orders;
