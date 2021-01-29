@@ -26,6 +26,14 @@ const useStyles = makeStyles((theme) => ({
   button: {
     border: "1px solid black",
     color: theme.palette.text.primary,
+    "&:hover": {
+      color: "green",
+      "& .MuiButton-endIcon": {
+        fill: "black",
+        transform: "translateX(3px)",
+        transition: "all 0.2s ease",
+      },
+    },
   },
   customisationButton: {
     fontSize: ".6rem",
@@ -36,9 +44,10 @@ const useStyles = makeStyles((theme) => ({
   productName: {
     color: theme.palette.text.primary,
     fontSize: "1.6rem",
+    fontWeight: "750",
+    lineHeight: "1.8rem",
   },
   productCard: {
-    backgroundColor: theme.colors.white,
     marginBottom: ".7rem",
     "&:hover": {
       boxShadow:
@@ -117,7 +126,13 @@ const ProductCard = ({ product }) => {
 
   return (
     <AttentionSeeker effect="pulse">
-      <Card className={enableCustomisation ? clsx(classes.productCard , classes.focused) : classes.productCard}>
+      <Card
+        className={
+          enableCustomisation
+            ? clsx(classes.productCard, classes.focused)
+            : classes.productCard
+        }
+      >
         <CardContent className={classes.productCardContent}>
           {enableCustomisation ? (
             <CustomisationList

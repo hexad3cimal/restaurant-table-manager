@@ -1,14 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { isMobile } from "react-device-detect";
 import {
-  Accordion,
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   Divider,
   Grid,
@@ -22,6 +20,7 @@ import { Fade } from "react-awesome-reveal";
 import CartItem from "./CartItem";
 import { addOrder } from "../../actions";
 import { Plus } from "react-feather";
+import { green } from "@material-ui/core/colors";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -44,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.primary,
     fontSize: "1.4rem",
     padding: "1rem",
+    fontWeight: 800,
   },
   cartTitleMobile: {
     color: theme.palette.text.primary,
@@ -93,6 +93,7 @@ const Cart = () => {
   const orderState = useSelector((state) => state.order) || {};
   const tableState = useSelector((state) => state.table) || {};
   const selectedProducts = orderState.selectedProducts || [];
+  const [cartClicked, setCartClicked] = useState(false);
   const orderedProducts =
     selectedProducts
       .map((product) => product["items"])
@@ -114,14 +115,16 @@ const Cart = () => {
   });
   const placeOrder = () => {
     const order = {};
-    let productsInOrder  = orderedProducts.slice(0)
-    productsInOrder = productsInOrder.map(product =>{
-      let productClone = Object.assign({},product)
-      productClone.customisations = product.customisations.map(customisation=>{
-          return customisation.id
-        })
-      return productClone
-    })
+    let productsInOrder = orderedProducts.slice(0);
+    productsInOrder = productsInOrder.map((product) => {
+      let productClone = Object.assign({}, product);
+      productClone.customisations = product.customisations.map(
+        (customisation) => {
+          return customisation.id;
+        }
+      );
+      return productClone;
+    });
     order.tableId = tableState.selectedTable.id;
     order.products = productsInOrder;
     order.price = totalCost;
@@ -131,56 +134,75 @@ const Cart = () => {
   const renderCart = () => {
     if (isMobile) {
       return (
-        <Accordion
-          style={{
-            bottom: "0",
-            position: "fixed",
-            width: "90%",
-            maxHeight: "70vh",
-            overflow: "scroll",
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1c-content"
-            id="panel1c-header"
-          >
-            <Typography className={classes.cartTitleMobile}>
-              Items in your cart
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails className={classes.details}>
+        <Grid container justify="center" fullWidth={true}>
+          {cartClicked ? (
             <Card
               style={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
+                bottom: "0",
+                position: "fixed",
+                width: "90%",
+                maxHeight: "70vh",
+                overflow: "scroll",
               }}
             >
-              {orderedProducts.map((item, index) => {
-                return <CartItem key={item.id + index} item={item} />;
-              })}
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon  onClick={() => {
+                  setCartClicked(!cartClicked);
+                }} />}
+              >
+                <Typography className={classes.cartTitleMobile}>
+                  Items in your cart
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails className={classes.details}>
+                <Card
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                  }}
+                >
+                  {orderedProducts.map((item, index) => {
+                    return <CartItem key={item.id + index} item={item} />;
+                  })}
+                </Card>
+              </AccordionDetails>
+              <Divider />
+              <AccordionActions>
+                <Button className={classes.orderButton} size="small">
+                  Checkout
+                </Button>
+              </AccordionActions>
             </Card>
-          </AccordionDetails>
-          <Divider />
-          <AccordionActions>
-            <Button className={classes.orderButton} size="small">
-              Checkout
+          ) : (
+            <Button
+              style={{
+                bottom: "0",
+                position: "fixed",
+                background: green[500],
+                margin:'1rem'
+              }}
+              variant="contained"
+              onClick={() => {
+                setCartClicked(!cartClicked);
+              }}
+            >
+              Cart
             </Button>
-          </AccordionActions>
-        </Accordion>
+          )}
+        </Grid>
       );
     }
 
     return (
-      <Fade>
-        <Card
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "20vh",
-          }}
-        >
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "20vh",
+          width:'30%'
+        }}
+      >
           <Typography gutterBottom className={classes.cartTitle} component="h2">
             Items in your cart
           </Typography>
@@ -203,11 +225,10 @@ const Cart = () => {
           {orderedProducts.map((item, index) => {
             return <CartItem key={item.id + index} item={item} />;
           })}
-        </Card>
-        {selectedProducts.length > 0 ? (
-          <Grid item xs={12}>
-            <Fade>
-              <Card>
+          <Divider />
+          {selectedProducts.length > 0 ? (
+            <Grid item xs={12}>
+              <Fade>
                 <CardContent>
                   <Box className={classes.orderBox}>
                     <Typography gutterBottom variant="h5">
@@ -226,14 +247,12 @@ const Cart = () => {
                     </Button>
                   </Box>
                 </CardContent>
-                <CardActions></CardActions>
-              </Card>
-            </Fade>
-          </Grid>
-        ) : (
-          <div></div>
-        )}
-      </Fade>
+              </Fade>
+            </Grid>
+          ) : (
+            <div></div>
+          )}
+      </Box>
     );
   };
 

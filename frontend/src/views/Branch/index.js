@@ -10,7 +10,6 @@ import AddBranch from "./AddBranch";
 import Toast from "../../modules/toast";
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.background.dark,
     minHeight: "100vh",
     paddingBottom: theme.spacing(3),
     paddingTop: theme.spacing(3),

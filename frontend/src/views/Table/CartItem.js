@@ -5,7 +5,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Chip,
   Grid,
   makeStyles,
   Typography,
@@ -23,9 +22,22 @@ const useStyles = makeStyles((theme) => ({
   },
   addButton: {
     fill: theme.colors.red,
+    '&:hover':{
+      fill:'black',
+    },
+    cursor: 'pointer'
   },
   removeButton: {
     fill: theme.colors.green,
+    '&:hover':{
+      fill:'black'
+    },
+    cursor: 'pointer'
+  },
+  actionsCard: {
+    display: "flex",
+    padding: ".5rem",
+    background: "#eae9e92b",
   },
 }));
 
@@ -48,38 +60,31 @@ const CartItem = ({ item }) => {
         <Card>
           <CardContent style={{ padding: "unset" }}>
             <Box p={2}>
-              <Grid container justify="space-around" spacing={2}>
-                <Grid item xs={3}>
+              <Grid container justify="space-between" spacing={1}>
+                <Grid item xs={5}>
                   <Typography gutterBottom>{item.name}</Typography>
                 </Grid>
                 <Grid
-                  style={{ display: "flex", flexDirection: "column" }}
-                  xs={3}
+                  xs={4}
                   item
                 >
-                  <Chip
-                    size="small"
-                    icon={<ControlPointIcon className={classes.addButton} />}
-                    label="Add"
-                    onClick={() => onAdd(item)}
-                    className={classes.cartItems}
-                  />
-
-                  <Typography
-                    className={classes.cartItems}
-                    variant="h5"
-                    align="center"
-                  >
-                    {item.quantity} Nos
-                  </Typography>
-
-                  <Chip
-                    size="small"
-                    icon={<RemoveIcon className={classes.removeButton} />}
-                    label="Remove"
-                    onClick={() => onRemove(item)}
-                    className={classes.cartItems}
-                  />
+                  <Card className={classes.actionsCard}>
+                    <ControlPointIcon
+                      onClick={() => onAdd(item)}
+                      className={classes.addButton}
+                    />
+                    <Typography
+                      className={classes.cartItems}
+                      variant="h5"
+                      align="center"
+                    >
+                      {item.quantity}
+                    </Typography>
+                    <RemoveIcon
+                      onClick={() => onRemove(item)}
+                      className={classes.removeButton}
+                    />
+                  </Card>
                 </Grid>
                 <Grid item xs={3}>
                   <Typography gutterBottom variant="h5">
