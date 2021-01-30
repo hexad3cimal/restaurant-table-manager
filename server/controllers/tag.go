@@ -26,6 +26,7 @@ func (ctrl TagController) Add(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -50,6 +51,7 @@ func (ctrl TagController) GetTags(c *gin.Context) {
 	var error error
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return

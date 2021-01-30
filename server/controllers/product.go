@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"table-booking/config"
 	"table-booking/helpers"
@@ -32,12 +33,15 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	}
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
 
 	if !helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId) {
+		logger.Error("not an admin or manager  ", tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId)
+
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -84,6 +88,8 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	productModel.CategoryId = productForm.Category
 	productError = json.Unmarshal([]byte(productForm.Customisation), &customisation)
 	if productError != nil {
+		logger.Error("add product failed " + productError.Error())
+
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -94,7 +100,8 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 			customisationModel.Name = customisationItem.Name
 			customisationModel.Description = customisationItem.Description
 			customisationModel.CreatedAt = time.Now()
-			customisationModel.Price = customisationItem.Price
+			price, _ := strconv.ParseFloat(customisationItem.Price, 32)
+			customisationModel.Price = float32(price)
 			customisationModel.Active = true
 			customisationModel.ProductId = productModel.ID
 			customisationsSlice = append(customisationsSlice, customisationModel)
@@ -143,6 +150,7 @@ func (ctrl ProductController) AddOrEdit(c *gin.Context) {
 	if productError == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
+		logger.Error("add product failed " + productError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
 }
@@ -152,6 +160,7 @@ func (ctrl ProductController) GetProductsOfBranch(c *gin.Context) {
 	branchId, gotValue := c.GetQuery("branchId")
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -188,6 +197,7 @@ func (ctrl ProductController) GetProducts(c *gin.Context) {
 	var error error
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		logger.Error("getTokenError failed for GetProducts ", getTokenError.Error())
 
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
@@ -236,6 +246,7 @@ func (ctrl ProductController) GetTopProducts(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -280,6 +291,7 @@ func (ctrl ProductController) ValidateProduct(c *gin.Context) {
 	productName, gotproductName := c.GetQuery("productName")
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -334,6 +346,7 @@ func (ctrl ProductController) ValidateProduct(c *gin.Context) {
 func (ctrl ProductController) Delete(c *gin.Context) {
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return

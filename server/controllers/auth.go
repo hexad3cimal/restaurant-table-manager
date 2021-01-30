@@ -74,7 +74,8 @@ func (ctl AuthController) Refresh(c *gin.Context) {
 	}
 	oldTokenModel, getTokenError := token.GetTokenById(tokenId)
 	if getTokenError != nil {
-		logger.Error(getTokenError)
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
+
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 		c.Abort()
 		return

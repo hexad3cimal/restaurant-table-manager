@@ -16,7 +16,7 @@ var tokenModel models.TokenModel
 func IsAdmin(accessUUID string) (isAdmin bool) {
 	tokenModel, getTokenError := token.GetTokenById(accessUUID)
 	if getTokenError != nil {
-
+		logger.Error("invalid access uuid ", accessUUID)
 		return false
 	}
 	userObject, getUserError := user.GetUserById(tokenModel.UserId)

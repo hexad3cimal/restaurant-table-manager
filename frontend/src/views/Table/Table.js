@@ -15,9 +15,13 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Table
+  Table,
+  IconButton,
+  Collapse
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Order from './Order';
 import { getOrderByTableId, getProducts, initiateOrderAdd } from '../../actions';
 
@@ -33,10 +37,19 @@ const useStyles = makeStyles(() => ({
 const TableView = ({ className, ...rest }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const orderState = useSelector(state => state.order);
+  const orderState = useSelector(state => state.order) || {};
   const tableState = useSelector(state => state.table);
   const table= tableState && tableState.selectedTable || {}
+  const orders = orderState.orders || []
+  const activeOrders = orders.map( (order) => {
+    return order.orderItems
+  }).reduce( (item1,item2) => {return item1.concat(item2)},[])
 
+  const [openRowProductId, setOpenRowProductId] = React.useState({ id: null });
+  const toggleProductRow = (item) => {
+    if (openRowProductId === item.id) setOpenRowProductId(null);
+    else setOpenRowProductId(item.id);
+  };
   useEffect(()=>{
     if(table.id){
       dispatch(getOrderByTableId(table.id))
@@ -67,25 +80,95 @@ const TableView = ({ className, ...rest }) => {
               <TableRow>
                 <TableCell>Product</TableCell>
                 <TableCell>Quantity</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Addons</TableCell>
                 <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {orderState && orderState.orders.map(order => (
+              {activeOrders.map(order => (
                 <TableRow
                   hover
                   key={order.id}
                 >
-                 
                   <TableCell>
                     <Box alignItems="center" display="flex">
-              
                       <Typography color="textPrimary" variant="body1">
                         {order.productName}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{order.note}</TableCell>
+                  <TableCell>{order.quantity}</TableCell>
+                  <TableCell>{order.price}</TableCell>
+                  <TableCell>
+                                    <IconButton
+                                      aria-label="expand row"
+                                      size="small"
+                                      onClick={() => toggleProductRow(order)}
+                                    >
+                                      {openRowProductId === order.id ? (
+                                        <KeyboardArrowUpIcon />
+                                      ) : (
+                                        <KeyboardArrowDownIcon />
+                                      )}
+                                    </IconButton>{" "}
+                                    Addons
+                                    <Collapse
+                                      in={openRowProductId === order.id}
+                                      timeout="auto"
+                                      unmountOnExit
+                                    >
+                                      <Box margin={1}>
+                                        <Typography
+                                          variant="h6"
+                                          gutterBottom
+                                          component="div"
+                                        >
+                                          Customisations
+                                        </Typography>
+                                        <Table
+                                          size="small"
+                                          aria-label="purchases"
+                                        >
+                                          <TableHead>
+                                            <TableRow>
+                                              <TableCell>Name</TableCell>
+                                              <TableCell align="right">
+                                                Amount
+                                              </TableCell>
+                                            </TableRow>
+                                          </TableHead>
+                                          <TableBody>
+                                            {order.customisations.length ? (
+                                              order.customisations.map(
+                                                (item) => (
+                                                  <TableRow key={item.id}>
+                                                    <TableCell
+                                                      component="th"
+                                                      scope="row"
+                                                    >
+                                                      {item.name}
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                      {item.price}
+                                                    </TableCell>
+                                                  </TableRow>
+                                                )
+                                              )
+                                            ) : (
+                                              <Typography
+                                                variant="h6"
+                                                gutterBottom
+                                                component="div"
+                                              >
+                                                No Customisations added
+                                              </Typography>
+                                            )}
+                                          </TableBody>
+                                        </Table>
+                                      </Box>
+                                    </Collapse>
+                                  </TableCell>
                   <TableCell>{order.status}</TableCell>
                 </TableRow>
               ))}

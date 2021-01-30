@@ -7,6 +7,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Box, Button } from '@material-ui/core';
+import { green } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,14 +18,17 @@ const useStyles = makeStyles((theme) => ({
   buttonBox:{
     display:'flex',
     flexDirection:'row',
-    justifyContent:'flex-end'
+    justifyContent:'space-between'
   },
-  button:{
+  backButton:{
     backgroundColor: theme.colors.red,
+  },
+  addButton:{
+    backgroundColor: green[500],
   }
 }));
 
-export default function CustomisationList({customisations, onSelect, onDone, selected}) {
+export default function CustomisationList({customisations, onSelect, onDone, onCancel, selected}) {
   const classes = useStyles();
   const [checked, setChecked] = React.useState([0]);
 
@@ -75,7 +79,10 @@ export default function CustomisationList({customisations, onSelect, onDone, sel
         );
       })}
       <Box className={classes.buttonBox}>
-      <Button className={classes.button} onClick={()=>{onDone(false)}} variant="contained">Add to cart</Button>
+      <Button className={classes.backButton} onClick={()=>{onCancel()}} variant="contained">Go back</Button>
+
+      <Button className={classes.addButton} onClick={()=>{onDone(false)}} variant="contained">Add to cart</Button>
+
       </Box>
     </List>
   );

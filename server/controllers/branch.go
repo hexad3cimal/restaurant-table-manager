@@ -17,6 +17,7 @@ type BranchController struct{}
 func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -143,6 +144,7 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 func (ctrl BranchController) Delete(c *gin.Context) {
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -168,6 +170,7 @@ func (ctrl BranchController) Delete(c *gin.Context) {
 func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -184,6 +187,7 @@ func (ctrl BranchController) GetBranchesOfOrg(c *gin.Context) {
 func (ctrl BranchController) GetBranches(c *gin.Context) {
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return

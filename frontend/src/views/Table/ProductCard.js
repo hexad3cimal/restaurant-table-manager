@@ -109,7 +109,9 @@ const ProductCard = ({ product }) => {
     setCustomisationStatus(false);
   };
   const onRemove = (product) => {
-    dispatch(removeProductFromOrder(product));
+    const productClone = Object.assign({}, product);
+    productClone.customisations = [];
+    dispatch(removeProductFromOrder(productClone));
   };
   const onCusmisationSelect = (customisation, requiredChange) => {
     if (requiredChange === "add") {
@@ -139,6 +141,7 @@ const ProductCard = ({ product }) => {
               selected={selectedCustomisations.current}
               customisations={product.customisation}
               onDone={onFinalAdd}
+              onCancel={()=>{setCustomisationStatus(false)}}
               onSelect={onCusmisationSelect}
             />
           ) : (

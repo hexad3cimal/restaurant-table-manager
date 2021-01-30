@@ -47,6 +47,7 @@ const CartItem = ({ item }) => {
   const onAdd = (product) => {
     const productClone = Object.assign({}, product);
     productClone.quantity = 1;
+    productClone.cartItemPanel = true;
     dispatch(addProductToOrder(productClone));
   };
 

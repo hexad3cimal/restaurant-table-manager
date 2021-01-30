@@ -33,6 +33,11 @@ export default {
         draft.new = true;
       },
       [ActionTypes.ORDER_ADD_PRODUCT]: (draft, { payload }) => {
+       if(!payload.cartItemPanel) payload.name = payload.name + payload.customisations.reduce(
+          (a, b) => a + " + "+ b.name,
+          ""
+        );
+        delete payload.cartItemPanel
         const product = draft.selectedProducts.find((p) => {
           return p.id === payload.id;
         });
@@ -79,7 +84,8 @@ export default {
           
         } else {
           payload.cost = payload.price +
-          parseInt(payload.customisations.reduce((a, b) => a + b.price, 0));;
+          payload.customisations.reduce((a, b) => a + b.price, 0);
+    
           draft.selectedProducts = [
             ...draft.selectedProducts,
             {   ...payload, items: [payload], cost: payload.cost

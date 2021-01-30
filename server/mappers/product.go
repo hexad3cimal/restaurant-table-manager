@@ -3,9 +3,9 @@ package mappers
 import "mime/multipart"
 
 type CustomisationItem struct {
-	Name        string  `json:"title"`
-	Description string  `json:"itemDescription"`
-	Price       float32 `json:"itemPrice"`
+	Name        string `json:"title"`
+	Description string `json:"itemDescription"`
+	Price       string `json:"itemPrice"`
 }
 
 type ProductForm struct {

@@ -25,6 +25,7 @@ func (ctrl OrderController) Add(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		logger.Error("Get tokenmodel failed " + getTokenError.Error())
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
@@ -127,6 +128,7 @@ func (ctrl OrderController) GetOrdersOfTable(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
@@ -166,6 +168,7 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
