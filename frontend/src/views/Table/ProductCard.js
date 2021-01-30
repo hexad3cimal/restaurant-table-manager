@@ -10,6 +10,7 @@ import {
   CardMedia,
   makeStyles,
   Button,
+  Grow,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { AttentionSeeker } from "react-awesome-reveal";
@@ -137,13 +138,14 @@ const ProductCard = ({ product }) => {
       >
         <CardContent className={classes.productCardContent}>
           {enableCustomisation ? (
+            <Grow in={true}>
             <CustomisationList
               selected={selectedCustomisations.current}
               customisations={product.customisation}
               onDone={onFinalAdd}
               onCancel={()=>{setCustomisationStatus(false)}}
               onSelect={onCusmisationSelect}
-            />
+            /></Grow>
           ) : (
             <Box>
               {product.image && (

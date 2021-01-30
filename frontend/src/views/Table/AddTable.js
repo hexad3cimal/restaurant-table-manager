@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import clsx from "clsx";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { getBranches, addTable, initiateTableAdd, selectedTable as setSelectedTable } from "../../actions";
@@ -13,18 +12,13 @@ import {
   Divider,
   Grid,
   TextField,
-  makeStyles,
 } from "@material-ui/core";
 
 import { Formik } from "formik";
 import { remoteValidate } from "../../modules/helpers";
 
-const useStyles = makeStyles(() => ({
-  root: {},
-}));
 
-const AddTable = ({ className, edit }) => {
-  const classes = useStyles();
+const AddTable = () => {
   const dispatch = useDispatch();
   const branchState = useSelector((state) => state.branch);
   const tableState = useSelector((state) => state.table);
@@ -56,8 +50,8 @@ const AddTable = ({ className, edit }) => {
   },[user])
 
   useEffect(() => {
-    if (edit) setTable({ ...selectedTable });
-  }, [edit]);
+    selectedTable && setTable({ ...selectedTable });
+  }, [selectedTable]);
 
   useEffect(() => {
     dispatch(getBranches());
@@ -169,7 +163,7 @@ const AddTable = ({ className, edit }) => {
           }
           return branchNameArray;
         }, [])[0];
-        if (edit) {
+        if (table.id) {
           values.edit = true;
           values.id = table.id;
           dispatch(addTable(values));
@@ -190,9 +184,6 @@ const AddTable = ({ className, edit }) => {
       }) => (
         <form
           onSubmit={handleSubmit}
-          autoComplete="off"
-          noValidate
-          className={clsx(classes.root, className)}
         >
           <Card>
             <CardHeader  title={table.id ? "Edit table" : "Add table"} />
