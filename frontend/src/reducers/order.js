@@ -16,8 +16,8 @@ export const orderState = {
 export default {
   order: handleActions(
     {
-      [ActionTypes.ORDER_ADD_INITIATE]: (draft) => {
-        draft.add = true;
+      [ActionTypes.ORDER_ADD_INITIATE]: (draft, { payload }) => {
+        draft.add = payload;
       },
       [ActionTypes.ORDER_ADD]: (draft) => {
         draft.status = STATUS.RUNNING;

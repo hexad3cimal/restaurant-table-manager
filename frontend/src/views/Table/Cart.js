@@ -18,9 +18,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Fade } from "react-awesome-reveal";
 
 import CartItem from "./CartItem";
-import { addOrder } from "../../actions";
+import { addOrder, initiateOrderAdd } from "../../actions";
 import { Plus } from "react-feather";
-import { green } from "@material-ui/core/colors";
+import { green, red } from "@material-ui/core/colors";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.primary,
     fontSize: "1rem",
     padding: "1rem",
+    fontWeight: 800,
+
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -113,6 +115,9 @@ const Cart = () => {
       totalCost = totalCost + productTotalPrice;
     }
   });
+  const goBack = ()=>{
+    dispatch(initiateOrderAdd(false))
+  }
   const placeOrder = () => {
     const order = {};
     let productsInOrder = orderedProducts.slice(0);
@@ -168,17 +173,40 @@ const Cart = () => {
                 </Card>
               </AccordionDetails>
               <Divider />
-              <AccordionActions>
-                <Button className={classes.orderButton} size="small">
-                  Checkout
-                </Button>
+              <AccordionActions style={{display:'flex', justifyContent:'space-between'}}>
+              <Typography gutterBottom variant="h5">
+                      Total Cost: {totalCost}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        placeOrder();
+                      }}
+                      disabled={!selectedProducts.length}
+                      className={classes.orderButton}
+                      endIcon={<Plus />}
+                    >
+                      Place Order
+                    </Button>
               </AccordionActions>
             </Card>
           ) : (
+            <Box style={{display:'flex', justifyContent:'center',  bottom: "0",
+            position: "fixed"}}>
+              <Button
+              style={{
+                background: red[500],
+                margin:'1rem'
+              }}
+              variant="contained"
+              onClick={() => {
+                goBack();
+              }}
+            >
+              Go back
+            </Button>
             <Button
               style={{
-                bottom: "0",
-                position: "fixed",
                 background: green[500],
                 margin:'1rem'
               }}
@@ -189,6 +217,8 @@ const Cart = () => {
             >
               Cart
             </Button>
+            
+            </Box>
           )}
         </Grid>
       );

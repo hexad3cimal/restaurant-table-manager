@@ -63,7 +63,7 @@ const CartItem = ({ item }) => {
             <Box p={2}>
               <Grid container justify="space-between" spacing={1}>
                 <Grid item xs={5}>
-                  <Typography gutterBottom>{item.name}</Typography>
+                  <Typography noWrap>{item.name}</Typography>
                 </Grid>
                 <Grid
                   xs={4}
