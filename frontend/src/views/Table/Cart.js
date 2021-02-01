@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1rem",
     padding: "1rem",
     fontWeight: 800,
-
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
