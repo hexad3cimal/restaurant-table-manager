@@ -114,6 +114,7 @@ func InitRouter() {
 		v1.POST("/order", AuthMiddleware(), order.Add)
 		v1.GET("/order", AuthMiddleware(), order.GetOrdersOfTable)
 		v1.GET("/orders", AuthMiddleware(), order.GetOrders)
+		v1.PUT("/order/item", AuthMiddleware(), order.UpdateOrderItem)
 
 		kitchen := new(controllers.KitchenController)
 		v1.POST("/kitchen", AuthMiddleware(), kitchen.AddOrEdit)

@@ -17,3 +17,8 @@ type OrderForm struct {
 	Price    float32   `json:"price" binding:"required"`
 	Notes    string    `json:"notes"`
 }
+
+type OrderItem struct {
+	Id     string `json:"id" binding:"required"`
+	Status string `json:"status" binding:"required"`
+}

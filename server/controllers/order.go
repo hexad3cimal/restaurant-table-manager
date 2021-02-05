@@ -92,7 +92,6 @@ func (ctrl OrderController) Add(c *gin.Context) {
 	addedOrder, err := order.Add(orderModel)
 
 	if err == nil {
-
 		for _, orderItem := range orderItemsArray {
 			helpers.EmitToSpecificClient(helpers.GetHub(), helpers.SocketEventStruct{EventName: "message", EventPayload: orderItem}, orderItem.KitchenId)
 		}
@@ -189,16 +188,66 @@ func (ctrl OrderController) GetOrders(c *gin.Context) {
 	if userRoleName == "manager" {
 		orders = order.GetOrdersOfBranch(tokenModel.BranchId)
 	}
-	if userRoleName == "kitchen" {
-		orders = order.GetOpenOrdersOfKitchen(tokenModel.UserId)
-	}
+
 	if userRoleName == "table" {
 		orders = order.GetByTableId(tokenModel.UserId)
+	}
+
+	if userRoleName == "kitchen" {
+		ordersItems := orderItem.GetOrderItemsOfKitchen(tokenModel.UserId)
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": ordersItems})
+		c.Abort()
+		return
 	}
 	if error == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": orders})
 	} else {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 	}
+
+}
+
+func (ctrl OrderController) UpdateOrderItem(c *gin.Context) {
+
+	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
+	if getTokenError != nil {
+		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	var orderItemMapper mappers.OrderItem
+
+	if c.ShouldBindJSON(&orderItemMapper) != nil {
+		logger.Error(c.ShouldBindJSON(&orderItemMapper))
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
+		c.Abort()
+		return
+	}
+
+	isUserAssociatedWithBranch := false
+	isManagerOrAdmin := helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId)
+	if !isManagerOrAdmin {
+		isUserAssociatedWithBranch = helpers.IsUserReallyAssociatedWithBranch(tokenModel.UserId, tokenModel.BranchId, tokenModel.OrgId)
+	}
+
+	if isManagerOrAdmin || isUserAssociatedWithBranch {
+		orderItemModel, getItemModelError := orderItem.Get(orderItemMapper.Id)
+		if getItemModelError != nil {
+			logger.Error(getItemModelError.Error())
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		orderItemModel.Status = orderItemMapper.Status
+		_, orderItemEditError := orderItem.AddOrEdit(orderItemModel)
+		if orderItemEditError != nil {
+			logger.Error("order item status upload failed" + orderItemEditError.Error())
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
 
 }

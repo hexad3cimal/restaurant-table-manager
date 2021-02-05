@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardHeader,
-  Chip,
   Divider,
   Table,
   TableBody,
@@ -72,7 +71,6 @@ const LatestOrders = () => {
                       </TableSortLabel>
                     </Tooltip>
                   </TableCell>
-                  <TableCell>Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -108,6 +106,7 @@ const LatestOrders = () => {
                                 <TableCell>Name</TableCell>
                                 <TableCell>Quantity</TableCell>
                                 <TableCell>Amount</TableCell>
+                                <TableCell>Status</TableCell>
                                 <TableCell>Customisations</TableCell>
                               </TableRow>
                             </TableHead>
@@ -119,6 +118,7 @@ const LatestOrders = () => {
                                   </TableCell>
                                   <TableCell>{item.quantity}</TableCell>
                                   <TableCell>{item.price}</TableCell>
+                                  <TableCell>{item.status}</TableCell>
                                   <TableCell>
                                     <IconButton
                                       aria-label="expand row"
@@ -198,9 +198,6 @@ const LatestOrders = () => {
                     <TableCell>{order.price}</TableCell>
                     <TableCell>
                       {moment(order.CreatedAt).format("DD/MM/YYYY")}
-                    </TableCell>
-                    <TableCell>
-                      <Chip color="primary" label={order.status} size="small" />
                     </TableCell>
                   </TableRow>
                 ))}

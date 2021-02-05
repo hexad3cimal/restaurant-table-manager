@@ -15,6 +15,7 @@ const TableDetailedView = lazy(() => import('./views/Table/Table'));
 const TableDashboard = lazy(() => import('./views/TableView'));
 
 const KitchenView = lazy(() => import('./views/Kitchen'));
+const KitchenDashboard = lazy(() => import('./views/KitchenView'));
 
 const ProductView = lazy(() => import('./views/Product'));
 
@@ -25,15 +26,16 @@ const routes = isLoggedIn => [
     children: [
       // { path: 'account', element: <AccountView /> },
       // { path: 'customers', element: <CustomerListView /> },
-      { path: 'dashboard', element: <DashboardView /> },
-      { path: 'branch', element: <BranchView /> },
+      { path: '/dashboard', element: <DashboardView /> },
+      { path: '/main/branch', element: <BranchView /> },
       {
-        path: 'table',
+        path: '/main/table',
         element: <TableView />
             },
-      { path: 'product', element: <ProductView /> },
-      { path: 'kitchen', element: <KitchenView /> },
-      { path: 'table-details', element: <TableDetailedView /> },
+      { path: '/main/product', element: <ProductView /> },
+      { path: '/main/kitchen', element: <KitchenView /> },
+      { path: '/kitchen', element: <KitchenDashboard /> },
+      { path: '/main/table-details', element: <TableDetailedView /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },

@@ -58,7 +58,7 @@ const LoginView = () => {
         return;
       }
       if(user.user.role === 'kitchen'){
-        navigate('/kitchen', { replace: true });
+        navigate('/app/kitchen', { replace: true });
         return;
       }
       navigate('/app/dashboard', { replace: true });

@@ -26,7 +26,7 @@ type OrderItemModel struct {
 
 type OrderItem struct{}
 
-func (order OrderItem) Add(orderItemModel OrderItemModel) (returnModel OrderItemModel, err error) {
+func (order OrderItem) AddOrEdit(orderItemModel OrderItemModel) (returnModel OrderItemModel, err error) {
 
 	err = config.GetDB().Save(&orderItemModel).Error
 	if err != nil {
@@ -89,6 +89,13 @@ func (order OrderItem) GetOrdersOfOrg(orgId string) (orderItemModels []OrderItem
 func (order OrderItem) GetOrdersOfBranch(branchId string) (orderItemModels []OrderItemModel) {
 
 	config.GetDB().Where("branch_id=?", branchId).Find(&orderItemModels)
+
+	return orderItemModels
+}
+
+func (order OrderItem) GetOrderItemsOfKitchen(kitchenId string) (orderItemModels []OrderItemModel) {
+
+	config.GetDB().Where("kitchen_id=?", kitchenId).Preload("Customisations").Find(&orderItemModels)
 
 	return orderItemModels
 }
