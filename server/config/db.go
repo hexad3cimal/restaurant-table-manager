@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	_ "github.com/lib/pq"
 
 	"github.com/jinzhu/gorm"
@@ -13,13 +11,12 @@ var log = InitLogger()
 
 func InitDB() {
 	db, err := gorm.Open("postgres", "host="+GetConfig().Db.Host+" port="+GetConfig().Db.Port+" user="+GetConfig().Db.UserName+" dbname="+GetConfig().Db.Name+" password="+GetConfig().Db.Password)
-	if err == nil {
-		db.DB().SetMaxIdleConns(10)
-		db.LogMode(true)
-		DB = db
+	if err != nil {
+		panic(err)
 	}
-	fmt.Println(err)
-
+	db.DB().SetMaxIdleConns(10)
+	db.LogMode(true)
+	DB = db
 }
 
 func GetDB() *gorm.DB {

@@ -64,7 +64,7 @@ func InitRouter() {
 	router.Use(generateContextId())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	router.Use(static.Serve("/", static.LocalFile("../frontend/public", true)))
+	router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
 
 	v1 := router.Group("/v1/api")
 	{
