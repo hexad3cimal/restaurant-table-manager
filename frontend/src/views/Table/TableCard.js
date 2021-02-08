@@ -42,7 +42,7 @@ const TableCard = ({ table }) => {
   const selectedTableFromState = (tableState && tableState.selectedTable) || {};
   const onClick = (table) => {
     dispatch(selectedTable(table));
-    navigate("/app/table-details", { replace: true });
+    navigate("/app/main/table-details", { replace: true });
   };
   const onEdit = (table) => {
     dispatch(selectedTable(table));

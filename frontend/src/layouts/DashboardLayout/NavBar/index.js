@@ -28,25 +28,25 @@ const items = [
     roles:['admin','manager']
   },
   {
-    href: '/app/branch',
+    href: '/app/main/branch',
     icon: UsersIcon,
     title: 'Branch',
     roles:['admin']
   },
   {
-    href: '/app/table',
+    href: '/app/main/table',
     icon: ShoppingBagIcon,
     title: 'Table',
     roles:['admin','manager']
   },
   {
-    href: '/app/product',
+    href: '/app/main/product',
     icon: UserIcon,
     title: 'Product',
     roles:['admin','manager']
   },
   {
-    href: '/app/kitchen',
+    href: '/app/main/kitchen',
     icon: UserIcon,
     title: 'Kitchen',
     roles:['admin','manager']
