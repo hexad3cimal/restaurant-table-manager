@@ -20,8 +20,8 @@ type OrderItemModel struct {
 	Status         string                `db:"status" json:"status"`
 	Price          float32               `db:"price" json:"price"`
 	Customisations []CustomisationsModel `gorm:"many2many:order_item_customisations;" json:"customisations"`
-	UpdatedAt      time.Time             `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
-	CreatedAt      time.Time             `db:"updated_at" json:"-" sql:"DEFAULT:current_timestamp"`
+	UpdatedAt      time.Time             `db:"updated_at" json:"updatedAt" sql:"DEFAULT:current_timestamp"`
+	CreatedAt      time.Time             `db:"created_at" json:"createdAt" sql:"DEFAULT:current_timestamp"`
 }
 
 type OrderItem struct{}
@@ -95,7 +95,7 @@ func (order OrderItem) GetOrdersOfBranch(branchId string) (orderItemModels []Ord
 
 func (order OrderItem) GetOrderItemsOfKitchen(kitchenId string) (orderItemModels []OrderItemModel) {
 
-	config.GetDB().Where("kitchen_id=?", kitchenId).Preload("Customisations").Find(&orderItemModels)
+	config.GetDB().Where("kitchen_id=?", kitchenId).Preload("Customisations").Order("updated_at asc").Where("status !=?", "complete").Find(&orderItemModels)
 
 	return orderItemModels
 }

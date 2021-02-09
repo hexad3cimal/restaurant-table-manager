@@ -27,10 +27,19 @@ export default {
         draft.error = payload;
       },
       [ActionTypes.ORDER_ADD_SUCCESS]: (draft) => {
-        draft.isAuthenticated = true;
         draft.status = STATUS.IDLE;
         draft.add = false;
         draft.new = true;
+      },
+      [ActionTypes.ORDER_UPDATE]: (draft) => {
+        draft.status = STATUS.RUNNING;
+      },
+      [ActionTypes.ORDER_UPDATE_FAILURE]: (draft, { payload }) => {
+        draft.status = STATUS.ERROR;
+        draft.error = payload;
+      },
+      [ActionTypes.ORDER_UPDATE_SUCCESS]: (draft) => {
+        draft.status = STATUS.IDLE;
       },
       [ActionTypes.ORDER_ADD_PRODUCT]: (draft, { payload }) => {
        if(!payload.cartItemPanel) payload.name = payload.name + payload.customisations.reduce(

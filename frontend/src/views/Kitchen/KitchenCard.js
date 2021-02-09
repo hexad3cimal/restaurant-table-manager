@@ -24,7 +24,7 @@ const KitchenCard = ({ kitchen }) => {
   
   const onClick = (kitchen) =>{
     dispatch(setKitchenInState(kitchen))
-    navigate("/app/kitchen-details", { replace: true })
+    navigate("/app/kitchen", { replace: true })
   }
   const onEdit = (kitchen) =>{
     dispatch(setKitchenInState(kitchen))

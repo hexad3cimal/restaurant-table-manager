@@ -84,7 +84,7 @@ func (order Order) GetOrdersOfBranch(branchId string) (orderModels []OrderModel)
 
 func (order Order) GetOpenOrdersOfKitchen(kitchenId string) (orderModels []OrderModel) {
 
-	config.GetDB().Where("kitchen_id=?", kitchenId).Preload("OrderItems").Preload("OrderItems.Customisations").Where("status!=?", "complete").Find(&orderModels)
+	config.GetDB().Where("kitchen_id=?", kitchenId).Preload("OrderItems").Preload("OrderItems.Customisations").Where("status !=?", "complete").Find(&orderModels)
 
 	return orderModels
 }

@@ -42,6 +42,42 @@ export function* add({ payload }) {
 }
 
 /**
+ * Update order item
+ */
+export function* update({ payload }) {
+  try {
+    yield request(`${window.restAppConfig.api}order/item`, {
+      method: "PUT",
+      payload,
+    });
+    yield all([
+      yield put({
+        type: ActionTypes.ORDER_UPDATE_SUCCESS,
+      }),
+      yield put({
+        type: ActionTypes.ORDERS_GET,
+      }),
+      yield put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: `Updated  order  successfully!`,
+      }),
+    ]);
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.ORDER_UPDATE_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: "Could not update order,please retry",
+      }),
+    ]);
+  }
+}
+
+/**
  * Get order details by id
  */
 export function* getById({ id }) {
@@ -133,6 +169,7 @@ export function* getOrders() {
  */
 export default function* root() {
   yield all([
+    takeLatest(ActionTypes.ORDER_UPDATE, update),
     takeLatest(ActionTypes.ORDER_ADD, add),
     takeLatest(ActionTypes.ORDER_GET, getById),
     takeLatest(ActionTypes.ORDER_GET_BY_TABLE_ID, getByTableId),
