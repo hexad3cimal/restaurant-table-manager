@@ -12,6 +12,8 @@ import {
   makeStyles,
   Grid,
 } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Page from '../../components/Page';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, hideAlert } from '../../actions';
@@ -37,6 +39,11 @@ const useStyles = makeStyles(theme => ({
   loginBox: {
     height: '100%',
     marginTop: theme.spacing(10)
+  },
+  loginIcon :{
+    width: '1rem !important',
+    height: 'unset !important',
+    color: 'white'
   }
 }));
 
@@ -144,6 +151,7 @@ const LoginView = () => {
                     type="submit"
                     variant="contained"
                     data-testid="label"
+                    endIcon={user.status === 'loading' ? <CircularProgress className={classes.loginIcon} /> : <ArrowForwardIosIcon className={classes.loginIcon} />}
                   >
                     Sign in now
                   </Button>
