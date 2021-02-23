@@ -3,15 +3,16 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import {
-  Box,
-  Button,
-  Container,
-  Link,
-  TextField,
-  Typography,
-  makeStyles,
-  Grid,
+  makeStyles
 } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Link from '@material-ui/core/Link';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Page from '../../components/Page';
@@ -41,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(10)
   },
   loginIcon :{
-    width: '1rem !important',
+    width: '1.2rem !important',
     height: 'unset !important',
     color: 'white'
   }

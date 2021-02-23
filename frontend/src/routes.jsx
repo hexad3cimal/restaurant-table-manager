@@ -30,8 +30,6 @@ const routes = (isLoggedIn) => [
       <Navigate to="/404" />
     ),
     children: [
-      // { path: 'account', element: <AccountView /> },
-      // { path: 'customers', element: <CustomerListView /> },
       { path: "/dashboard", element: <DashboardView /> },
       {
         path: "main",

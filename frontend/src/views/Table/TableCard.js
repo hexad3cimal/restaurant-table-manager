@@ -92,7 +92,7 @@ const TableCard = ({ table }) => {
           </Box>
           <Divider />
           <Box p={2}>
-            <Grid container justify="space-between" spacing={2}>
+            <Grid container justify="space-between">
               <Button
                 onClick={() => {
                   onClick(table);

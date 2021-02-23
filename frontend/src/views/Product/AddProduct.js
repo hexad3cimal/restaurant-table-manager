@@ -2,17 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Grid,
-  TextField,
-  Chip,
-} from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
+import Card from "@material-ui/core/Card";
+import Divider from "@material-ui/core/Divider";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import Chip from "@material-ui/core/Chip";
+import Typography from "@material-ui/core/Chip";
 
 import { Formik } from "formik";
 import {
@@ -22,6 +21,7 @@ import {
   getKitchens,
   initiateProductAdd,
   setProductInState,
+  hideAlert,
 } from "../../actions";
 import { remoteValidate } from "../../modules/helpers";
 import CustomisationList from "./CustomisationList";
@@ -68,6 +68,11 @@ const AddProduct = () => {
     edit: false,
   });
   const customisationAdd = () => {
+    if(!customisationItem.itemPrice || !customisationItem.title){
+      Toast({ message: 'Please fill in the required fields for customisations' });
+      return
+    } 
+
     setCustomisations([...customisations, customisationItem]);
     setCustomisationItem({
       title: "",
@@ -82,6 +87,7 @@ const AddProduct = () => {
 
   const customisationEdit = (customisation) => {
     setCustomisationItem(customisation);
+    setAddCustomisation(!addCustomisation);
     setCustomisations(
       customisations.filter((item) => {
         return customisation.title !== item.title;
@@ -146,6 +152,12 @@ const AddProduct = () => {
     dispatch(setProductInState({}));
   };
 
+  const appState = useSelector(state => state.app);
+
+  if (appState.alert.show) {
+    Toast({ message: appState.alert.message });
+    dispatch(hideAlert());
+  }
   const validate = async (values) => {
     const errors = {};
     for (let value in values) {
@@ -425,13 +437,10 @@ const AddProduct = () => {
                   </Button>
                 </Grid>
                 {addCustomisation || customisations.length ? (
-                  <Grid
-                    container
-                    md={12}
-                    xs={12}
-                    spacing={2}
-                    justify='flex-end'
-                  >
+                  <Grid container md={12} xs={12} direction="row">
+                    <Grid item md={12} xs={12}>
+                      <Typography variant="h5">Customisations</Typography>
+                    </Grid>
                     <Grid item md={6} xs={12}>
                       <TextField
                         error={Boolean(
@@ -493,7 +502,7 @@ const AddProduct = () => {
                       >
                         Add
                       </Button>
-                      </Box>
+                    </Box>
                   </Grid>
                 ) : (
                   <Box pt={2}>

@@ -10,6 +10,8 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Page from "../../components/Page";
 import { useDispatch, useSelector } from "react-redux";
 import { register, hideAlert } from "../../actions";
@@ -89,6 +91,11 @@ const RegisterView = () => {
       required: true,
       errorMessages: { required: "Org name is Required" },
     },
+    registerIcon :{
+      width: '1.2rem !important',
+      height: 'unset !important',
+      color: 'white'
+    }
   };
   const validate = async (values) => {
     const errors = {};
@@ -235,6 +242,7 @@ const RegisterView = () => {
                     size="large"
                     type="submit"
                     variant="contained"
+                    endIcon={user.status === 'loading' ? <CircularProgress className={classes.registerIcon} /> : <ArrowForwardIosIcon className={classes.registerIcon} />}
                   >
                     Sign up now
                   </Button>

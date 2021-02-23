@@ -11,7 +11,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Search as SearchIcon } from 'react-feather';
 import Page from '../../components/Page';
 import TableCard from './TableCard';
-import { initiateTableAdd } from '../../actions';
+import { initiateTableAdd, selectedTable } from '../../actions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,7 +30,9 @@ const TableList = ({tables}) => {
   const [filteredTables, setTables]= useState([])
   const dispatch = useDispatch();
 
-  useEffect(()=>{setTables(tables)},[tables])
+  useEffect(()=>{setTables(tables)
+    dispatch(selectedTable({}))
+  },[tables])
   const onSearch = (value)=>{
     setTables(tables.filter(table=>{
       return table.name.toLowerCase().includes(value)
