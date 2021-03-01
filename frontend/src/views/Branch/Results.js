@@ -74,7 +74,7 @@ const Results = ({ branches }) => {
         </Card>
       </Box>
       <PerfectScrollbar>
-        <Box minWidth={1050}>
+        <Box>
           <Table>
             <TableHead>
               <TableRow>

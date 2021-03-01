@@ -45,6 +45,11 @@ const useStyles = makeStyles(theme => ({
     width: '1.2rem !important',
     height: 'unset !important',
     color: 'white'
+  },
+  link: {
+    fontSize :"1rem",
+    fontWeight:"600",
+    marginLeft:".2rem"
   }
 }));
 
@@ -159,7 +164,7 @@ const LoginView = () => {
                 </Box>
                 <Typography color="textSecondary" variant="body1">
                   Don&apos;t have an account?{' '}
-                  <Link component={RouterLink} to="/register" variant="h6">
+                  <Link component={RouterLink} to="/register" className={classes.link}>
                     Sign up
                   </Link>
                 </Typography>

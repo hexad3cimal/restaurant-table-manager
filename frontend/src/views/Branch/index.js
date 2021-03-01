@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Page from "../../components/Page";
 import Results from "./Results";
-import Toolbar from "./Toolbar";
 import { getBranches, hideAlert, initiateBranchAdd } from "../../actions";
 import AddBranch from "./AddBranch";
 import Toast from "../../modules/toast";
@@ -42,14 +41,13 @@ const Branch = () => {
             <AddBranch />
           </Box>
         ) : (
-          <Grid container md={12} xs={12} mt={3}>
-            <Toolbar />
+          <Grid container mt={3}>
             {branches.length && userState.user.role==='admin' ? (
               <Grid item  md={12} xs={12}>
               <Results branches={branchState && branchState.branches} />
               </Grid>
             ) : <div></div>}
-            {!branches.length && userState.user.role==='admin' ? (<Typography   onClick={() => dispatch(initiateBranchAdd(true))} style={{margin:'1rem'}} variant="h4">No branches added yet please <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
+            {!branches.length && userState.user.role==='admin' ? (<Typography style={{margin:'1rem'}} variant="h4">No branches added yet please <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
             Add branch
           </Button></Typography>): <div></div>}
           </Grid>

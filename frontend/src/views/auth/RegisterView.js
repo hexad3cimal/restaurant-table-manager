@@ -2,27 +2,32 @@ import React, { useRef } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import {
-  Box,
-  Button,
-  Container,
-  Link,
-  TextField,
-  Typography,
   makeStyles,
 } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import Link from "@material-ui/core/Link";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Page from "../../components/Page";
 import { useDispatch, useSelector } from "react-redux";
 import { register, hideAlert } from "../../actions";
 import Toast from "../../modules/toast";
-import {  remoteValidate } from "../../modules/helpers";
+import { remoteValidate } from "../../modules/helpers";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
     paddingBottom: theme.spacing(3),
     paddingTop: theme.spacing(3),
   },
+  link: {
+    fontSize: "1rem",
+    fontWeight: "600",
+    marginLeft: ".5rem"
+  }
 }));
 
 const RegisterView = () => {
@@ -46,8 +51,6 @@ const RegisterView = () => {
 
     if (user.registered) navigate("/login");
   }
-
-  
 
   const errorRules = {
     newEmail: {
@@ -91,7 +94,7 @@ const RegisterView = () => {
       required: true,
       errorMessages: { required: "Org name is Required" },
     },
-    registerIcon :{
+    registerIcon: {
       width: '1.2rem !important',
       height: 'unset !important',
       color: 'white'
@@ -130,6 +133,7 @@ const RegisterView = () => {
     formValues.current = values;
     return errors;
   };
+
   return (
     <Page className={classes.root} title="Register">
       <Box display="flex" height="100%" justifyContent="center">
@@ -153,7 +157,6 @@ const RegisterView = () => {
               handleBlur,
               handleChange,
               handleSubmit,
-              isSubmitting,
               touched,
               values,
             }) => (
@@ -249,7 +252,7 @@ const RegisterView = () => {
                 </Box>
                 <Typography color="textSecondary" variant="body1">
                   Have an account?
-                  <Link component={RouterLink} to="/login" variant="h6">
+                  <Link component={RouterLink} to="/login" className={classes.link}>
                     Sign in
                   </Link>
                 </Typography>

@@ -70,7 +70,7 @@ const AddBranch = () => {
       },
     },
     newPassword: {
-      required: branch.id ? false: true,
+      required: true,
       regex: passwordRegex,
       errorMessages: {
         required: "Password is Required",
@@ -79,7 +79,7 @@ const AddBranch = () => {
       },
     },
     passwordConfirm: {
-      required: formValues.current.newPassword.length>0 ? false: true,
+      required: true,
       compareWith: "newPassword",
       errorMessages: {
         required: "Please confirm the password",
@@ -99,7 +99,14 @@ const AddBranch = () => {
   
   const validate = async (values) => {
     const errors = {};
-    for (let value in values) {
+    if(branch.id && !formValues.current.newPassword.length){
+      errorRules['newPassword'].required = false;
+      errorRules['passwordConfirm'].required = false;
+    }else if(formValues.current.newPassword.length){
+      errorRules['newPassword'].required = true;
+      errorRules['passwordConfirm'].required = true;
+    }
+    for (let value in errorRules) {
       if(errorRules[value] && errorRules[value].required){
         if (!values[value]) {
           errors[value] = errorRules[value]["errorMessages"]["required"];
@@ -133,9 +140,8 @@ const AddBranch = () => {
       }
    
     }
-
     formErrors.current = errors;
-    formValues.current = {...formValues.current,values};
+    formValues.current = {...formValues.current,...values};
     return errors;
   };
 
@@ -235,9 +241,9 @@ const AddBranch = () => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    error={Boolean(touched.passwordConfirm && errors.passwordConfirm)}
+                    error={Boolean(values.newPassword  && errors.passwordConfirm)}
                     fullWidth
-                    helperText={touched.passwordConfirm && errors.passwordConfirm}
+                    helperText={values.newPassword && errors.passwordConfirm}
                     label="Confirm Password"
                     margin="normal"
                     name="passwordConfirm"

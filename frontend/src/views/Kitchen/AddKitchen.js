@@ -166,7 +166,7 @@ const AddKitchen = () => {
       }) => (
         <form onSubmit={handleSubmit} autoComplete="off" noValidate>
           <Card>
-            <CardHeader subheader="Add new Kitchen" title="Add Kitchen" />
+            <CardHeader title={kitchen.id? "Edit Kitchen" : "Add new kitchen"} />
             <Divider />
             <CardContent>
               <Grid container spacing={3}>
@@ -258,7 +258,7 @@ const AddKitchen = () => {
                 Go back
               </Button>
               <Button color="primary" type="submit"  disabled={isSubmitting} variant="contained">
-                {kitchen.id ? 'Update Branch' : 'Add Branch'}
+                {kitchen.id ? 'Update Kitchen' : 'Add Kitchen'}
               </Button>
             </Box>
           </Card>

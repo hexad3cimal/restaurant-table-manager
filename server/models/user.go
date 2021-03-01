@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"strings"
 	"table-booking/config"
 	"table-booking/mappers"
 
@@ -39,7 +40,7 @@ type User struct {
 
 func (m User) Login(form mappers.LoginForm) (user UserModel, err error) {
 
-	config.GetDB().Where("user_name=?", form.UserName).Where("active=?", true).Preload("Role").First(&user)
+	config.GetDB().Where("user_name_lower_case=?", strings.ToLower(form.UserName)).Where("active=?", true).Preload("Role").First(&user)
 
 	bytePassword := []byte(form.Password)
 	byteHashedPassword := []byte(user.Password)
