@@ -57,7 +57,7 @@ const KitchenList = () => {
           <Box mt={3}>
             <Card>
               <CardContent>
-                <Box maxWidth={500}>
+                <Box>
                   <TextField
                     fullWidth
                     InputProps={{

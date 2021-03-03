@@ -24,8 +24,8 @@ const AddTable = () => {
   const tableState = useSelector((state) => state.table);
   const user = useSelector(state => state.user) || {}
 
-  const selectedTable = (tableState && tableState.selectedTable) || {};
-  const branches = (branchState && branchState.branches) || [];
+  const selectedTable = tableState && tableState.selectedTable|| {};
+  const branches = branchState && branchState.branches || [];
   const formErrors = useRef({});
   const formValues = useRef({newPassword:''});
   const passwordRegex = new RegExp(
@@ -44,13 +44,13 @@ const AddTable = () => {
   });
 
   useEffect(()=>{
-    if(!branchState.selectedBranch){
+    if(!selectedTable.id && user){
       setTable({...table ,userName:user.user.name.split(" ").join("")+"-table-"})
     }
   },[user])
 
   useEffect(() => {
-    selectedTable && setTable({ ...selectedTable });
+    selectedTable.id && setTable({...selectedTable});
   }, [selectedTable]);
 
   useEffect(() => {

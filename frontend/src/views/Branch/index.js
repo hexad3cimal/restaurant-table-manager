@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Page from "../../components/Page";
 import Results from "./Results";
-import { getBranches, hideAlert, initiateBranchAdd } from "../../actions";
+import { getBranches, hideAlert, initiateBranchAdd, setBranch } from "../../actions";
 import AddBranch from "./AddBranch";
 import Toast from "../../modules/toast";
 const useStyles = makeStyles((theme) => ({
@@ -32,10 +32,17 @@ const Branch = () => {
   }
   useEffect(() => {
     dispatch(getBranches());
+    dispatch(setBranch({}))
   }, []);
   return (
     <Page className={classes.root} title="Branches">
       <Container maxWidth={false}>
+      <Box display="flex" justifyContent="flex-end" style={{margin:'1rem'}}>
+        <Button onClick={()=> dispatch(initiateBranchAdd(true))} color="primary" variant="contained">
+          Add branch
+        </Button>
+      </Box>
+
         {branchState && branchState.add ? (
           <Box mt={3}>
             <AddBranch />
