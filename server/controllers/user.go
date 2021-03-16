@@ -4,9 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"table-booking/helpers"
 	"table-booking/mappers"
-	"table-booking/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -68,9 +66,15 @@ func (ctrl UserController) Login(c *gin.Context) {
 		//Add token to db with required details
 		_, tokenAddError := token.Add(tokenModel)
 		if tokenAddError == nil {
+			firstLogin := false
+			if loggedInUser.FirstLogin {
+				firstLogin = true
+			}
 			c.SetCookie("token", tokenDetails.AccessToken, 60*60*23, "/", "localhost", false, true)
 			c.SetCookie("refresh-token", tokenDetails.RefreshToken, 60*60*24, "/", "localhost", false, true)
-			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name, "role": loggedInUser.Role.Name})
+			c.JSON(http.StatusOK, gin.H{"message": "User signed in", "name": loggedInUser.Name,
+				"role": loggedInUser.Role.Name, "firstLogin": firstLogin,
+				"config": loggedInUser.Config})
 			c.Abort()
 			return
 		}
@@ -131,6 +135,8 @@ func (ctrl UserController) Register(c *gin.Context) {
 	userModel.Password = hashedPassword
 	userModel.ForgotPasswordCode = uuid.NewV4().String()
 	userModel.ID = uuid.NewV4().String()
+	configModel.ID = uuid.NewV4().String()
+	userModel.Config = configModel
 	adminUser, adminUserAddErr := user.Register(userModel)
 
 	if adminUserAddErr != nil {
@@ -206,33 +212,30 @@ func (ctrl UserController) Update(c *gin.Context) {
 		return
 	}
 
-	isAdminOrManager := helpers.AdminOrManagerOfTheOrgAndBranch(tokenModel.UserId, tokenModel.OrgId, tokenModel.BranchId)
+	userModel, getUserError := user.GetUserById(tokenModel.UserId)
 
-	if !isAdminOrManager {
-		if userModel.ID != userUpdateForm.ID {
-			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
-			c.Abort()
-			return
-		}
-	}
-	var userModel models.UserModel
-	var getUserError error
-	if !isAdminOrManager {
-		userModel, getUserError = user.GetUserById(tokenModel.UserId)
-	} else {
-		userModel, getUserError = user.GetUserById(userUpdateForm.ID)
-
-	}
 	if getUserError != nil {
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 		c.Abort()
 		return
 	}
-	userModel.UserName = userUpdateForm.UserName
-	userModel.UserNameLowerCase = strings.ToLower(userUpdateForm.UserName)
-	userModel.Name = userUpdateForm.FullName
-	userModel.Email = userUpdateForm.Email
-	userModel.LoginCode = userUpdateForm.LoginCode
+	// userModel.UserName = userUpdateForm.UserName
+	// userModel.UserNameLowerCase = strings.ToLower(userUpdateForm.UserName)
+	// userModel.Name = userUpdateForm.FullName
+	// userModel.Email = userUpdateForm.Email
+	if userUpdateForm.LoginCode != "" {
+		userModel.LoginCode = userUpdateForm.LoginCode
+	}
+	if userUpdateForm.Password != "" {
+		bytePassword := []byte(userUpdateForm.Password)
+		hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+			c.Abort()
+			return
+		}
+		userModel.Password = hashedPassword
+	}
 	_, editUserErr := user.Register(userModel)
 
 	if editUserErr != nil {

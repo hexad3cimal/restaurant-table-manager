@@ -4,6 +4,8 @@ type BranchForm struct {
 	Id         string `json:"id"`
 	Name       string `json:"name" binding:"required,max=100"`
 	UserName   string `json:"newUserName" binding:"required,max=100"`
+	Tz         string `json:"tz" binding:"required"`
+	Currency   string `json:"currency" binding:"required"`
 	BranchId   string `json:"branchId"`
 	BranchName string `json:"branchName"`
 	Address    string `json:"address"`

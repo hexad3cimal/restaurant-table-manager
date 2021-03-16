@@ -15,6 +15,7 @@ import (
 type BranchController struct{}
 
 func (ctrl BranchController) AddOrEdit(c *gin.Context) {
+
 	tokenModel, getTokenError := token.GetTokenById(c.GetHeader("access_uuid"))
 	if getTokenError != nil {
 		logger.Error("invalid access uuid ", c.GetHeader("access_uuid"))
@@ -30,7 +31,16 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	if !branchForm.Edit {
+		if !helpers.IsAdmin(c.GetHeader("access_uuid")) {
+			logger.Error("Unauthorized operation by " + tokenModel.Email + " branch add")
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid request"})
+			c.Abort()
+			return
+		}
+	}
 	if !branchForm.Edit && branchForm.Password == "" {
+		logger.Error("Invalid request empty password")
 		c.JSON(http.StatusExpectationFailed, gin.H{"message": "Invalid request"})
 		c.Abort()
 		return
@@ -55,7 +65,7 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 		userModel.Locked = false
 	} else {
 		var getUserError error
-		userModel, getUserError = user.GetUserById(branchForm.Id)
+		userModel, getUserError = user.GetUserById(tokenModel.ID)
 		if getUserError != nil {
 			c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
 			c.Abort()
@@ -84,6 +94,10 @@ func (ctrl BranchController) AddOrEdit(c *gin.Context) {
 
 	userModel.Email = branchForm.Email
 
+	configModel.ID = uuid.NewV4().String()
+	configModel.Currency = branchForm.Currency
+	configModel.TimeZone = branchForm.Tz
+	userModel.Config = configModel
 	branchUserModel, userError := user.Register(userModel)
 
 	if userError != nil {

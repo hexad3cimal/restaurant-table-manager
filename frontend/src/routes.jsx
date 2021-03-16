@@ -18,6 +18,7 @@ const KitchenView = lazy(() => import("./views/Kitchen"));
 const KitchenDashboard = lazy(() => import("./views/KitchenView"));
 
 const ProductView = lazy(() => import("./views/Product"));
+const SettingsView = lazy(() => import("./views/Settings"));
 
 const routes = (isLoggedIn) => [
   {
@@ -42,7 +43,7 @@ const routes = (isLoggedIn) => [
           { path: "product", element: <ProductView /> },
           { path: "kitchen", element: <KitchenView /> },
           { path: "table-details", element: <TableDetailedView /> },
-
+          { path: "settings", element: <SettingsView /> },
         ],
       },
       { path: "/kitchen", element: <KitchenDashboard /> },

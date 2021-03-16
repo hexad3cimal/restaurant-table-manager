@@ -52,6 +52,24 @@ export default {
         draft.status = STATUS.READY;
         draft.registered = true;
       },
+      [ActionTypes.USER_EDIT]: draft => {
+        draft.status = STATUS.RUNNING;
+      },
+      [ActionTypes.USER_EDIT_FAILURE]: (draft, { payload }) => {
+        draft.status = STATUS.ERROR;
+        draft.error = payload;
+      },
+      [ActionTypes.USER_EDIT_SUCCESS]: draft => {
+        draft.status = STATUS.READY;
+      },
+      [ActionTypes.SETTINGS_EDIT_SUCCESS]: (draft, { payload }) => {
+        draft.user.settings = payload;
+        set('user',  draft.user);
+      },
+      [ActionTypes.SETTINGS_EDIT_FAILURE]: (draft, { payload }) => {
+        draft.status = STATUS.ERROR;
+        draft.error = payload;
+      }
     },
     userState,
   ),

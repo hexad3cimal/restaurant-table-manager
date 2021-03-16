@@ -43,7 +43,7 @@ func (ctrl KitchenController) AddOrEdit(c *gin.Context) {
 		return
 	}
 
-	if !kitchenForm.Edit {
+	if kitchenForm.Id == "" {
 		//get kitchen role for current organisation
 		roleModel, roleGetError := role.GetRoleByNameAndOrgId("kitchen", tokenModel.OrgId)
 		if roleGetError != nil {
@@ -82,7 +82,14 @@ func (ctrl KitchenController) AddOrEdit(c *gin.Context) {
 	userModel.Name = kitchenForm.Name
 	userModel.UserName = kitchenForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(kitchenForm.UserName)
+	config, getConfigError := configService.GetConfigByOrgId(tokenModel.BranchId)
 
+	if getConfigError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	userModel.Config = config
 	_, userError := user.Register(userModel)
 
 	if userError != nil {

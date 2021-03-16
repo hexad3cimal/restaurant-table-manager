@@ -20,6 +20,9 @@ export const ActionTypes = keyMirror({
   USER_REGISTER: undefined,
   USER_REGISTER_SUCCESS: undefined,
   USER_REGISTER_FAILURE: undefined,
+  USER_EDIT: undefined,
+  USER_EDIT_SUCCESS: undefined,
+  USER_EDIT_FAILURE: undefined,
   SHOW_ALERT: undefined,
   HIDE_ALERT: undefined,
   BRANCH_ADD_INITIATE: undefined,
@@ -130,6 +133,18 @@ export const ActionTypes = keyMirror({
   DASHBOARD_STATS_GET: undefined,
   DASHBOARD_STATS_GET_SUCCESS: undefined,
   DASHBOARD_STATS_GET_FAILURE: undefined,
+  SETTINGS_EDIT: undefined,
+  SETTINGS_EDIT_SUCCESS: undefined,
+  SETTINGS_EDIT_FAILURE: undefined,
+  GET_TIMEZONES: undefined,
+  GET_TIMEZONES_SUCCESS: undefined,
+  GET_TIMEZONES_FAILURE: undefined,
+  GET_COUNTRIES: undefined,
+  GET_COUNTRIES_SUCCESS: undefined,
+  GET_COUNTRIES_FAILURE: undefined,
+  GET_CURRENCIES: undefined,
+  GET_CURRENCIES_SUCCESS: undefined,
+  GET_CURRENCIES_FAILURE: undefined,
 });
 
 /**

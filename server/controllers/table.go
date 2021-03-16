@@ -78,7 +78,14 @@ func (ctrl TableController) AddOrEdit(c *gin.Context) {
 	userModel.Name = tableForm.TableName
 	userModel.UserName = tableForm.UserName
 	userModel.UserNameLowerCase = strings.ToLower(userModel.UserName)
+	config, getConfigError := configService.GetConfigByOrgId(tokenModel.BranchId)
 
+	if getConfigError != nil {
+		c.JSON(http.StatusExpectationFailed, gin.H{"message": "error"})
+		c.Abort()
+		return
+	}
+	userModel.Config = config
 	_, userError := user.Register(userModel)
 	if userError != nil {
 		user.DeleteById(userModel.ID)

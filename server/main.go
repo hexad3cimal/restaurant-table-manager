@@ -26,8 +26,10 @@ func main() {
 	db.AutoMigrate(&models.TagModel{})
 	db.AutoMigrate(&models.CategoryModel{})
 	db.AutoMigrate(&models.CustomisationsModel{})
+	db.AutoMigrate(&models.ConfigModel{})
 
 	//add foreign keys
 	db.Model(&models.UserModel{}).AddForeignKey("role_id", "role_models(id)", "RESTRICT", "RESTRICT")
+	db.Model(&models.UserModel{}).AddForeignKey("config_id", "config_models(id)", "RESTRICT", "RESTRICT")
 	router.InitRouter()
 }

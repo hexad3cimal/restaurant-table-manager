@@ -93,6 +93,72 @@ export function* register({ payload }) {
   }
 }
 
+/**
+ * EDIT SETTINGS
+ */
+export function* editSettings({ payload }) {
+  try {
+    yield request(`${window.restAppConfig.api}config`, {
+      method: "PUT",
+      payload,
+    });
+
+    yield all([
+      put({
+        type: ActionTypes.SETTINGS_EDIT_SUCCESS,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: "Settings edited successfully",
+      }),
+    ]);
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.SETTINGS_EDIT_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: "Error while updating, please retry",
+      }),
+    ]);
+  }
+}
+
+/**
+ * Edit code
+ */
+ export function* editUser({ payload }) {
+  try {
+    yield request(`${window.restAppConfig.api}user`, {
+      method: "PUT",
+      payload,
+    });
+    yield all([
+      yield put({
+        type: ActionTypes.USER_EDIT_SUCCESS,
+      }),
+      yield put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: `Edited ${payload.name} successfully!`,
+      }),
+    ]);
+  } catch (err) {
+    /* istanbul ignore next */
+    yield all([
+      put({
+        type: ActionTypes.USER_EDIT_FAILURE,
+        payload: err,
+      }),
+      put({
+        type: ActionTypes.SHOW_ALERT,
+        payload: "Could not update,please retry",
+      }),
+    ]);
+  }
+}
 
 /**
  * User Sagas
@@ -100,7 +166,9 @@ export function* register({ payload }) {
 export default function* root() {
   yield all([
     takeLatest(ActionTypes.USER_LOGIN, login),
+    takeLatest(ActionTypes.USER_EDIT, editUser),
     takeLatest(ActionTypes.USER_LOGOUT, logout),
     takeLatest(ActionTypes.USER_REGISTER, register),
+    takeLatest(ActionTypes.SETTINGS_EDIT, editSettings),
   ]);
 }

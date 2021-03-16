@@ -38,3 +38,6 @@ var customisations = new(models.Customisations)
 var customisationModel models.CustomisationsModel
 
 var dashboard = new(models.DashBoard)
+
+var configService = new(models.Config)
+var configModel models.ConfigModel

@@ -50,6 +50,12 @@ const items = [
     icon: UserIcon,
     title: 'Kitchen',
     roles:['admin','manager']
+  },
+  {
+    href: '/app/main/settings',
+    icon: UserIcon,
+    title: 'Settings',
+    roles:['admin','manager']
   }
 ];
 

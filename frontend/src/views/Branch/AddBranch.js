@@ -10,7 +10,7 @@ import {
   Grid,
   TextField,
 } from '@material-ui/core';
-import { addBranch, hideAlert, initiateBranchAdd, setBranch as setBranchInState } from '../../actions';
+import { addBranch, getTimezones, hideAlert, getCurrencies, initiateBranchAdd, setBranch as setBranchInState } from '../../actions';
 import { Formik } from 'formik';
 import { remoteValidate } from '../../modules/helpers';
 import Toast from '../../modules/toast';
@@ -20,10 +20,9 @@ const AddBranch = () => {
   const user = useSelector(state => state.user) || {}
   const appState = useSelector((state) => state.app) || {};
   const branchState = useSelector((state) => state.branch) || {};
-
   const formErrors = useRef({});
   const formValues = useRef({newPassword:''});
-
+  
   const [branch,setBranch] = useState({
     id:'',
     name: '',
@@ -31,6 +30,8 @@ const AddBranch = () => {
     newUserName: '',
     newPassword: '',
     passwordConfirm: '',
+    tz:'',
+    currency:'',
     email: '',
     contact: '',
     edit: false
@@ -53,12 +54,28 @@ const AddBranch = () => {
       setBranch({...branch ,newUserName:user.user.name.split(" ").join("")+"-"})
     }
   },[user])
+  useEffect(()=>{
+    if(!branchState.selectedBranch){
+      setBranch({...branch ,tz:Intl.DateTimeFormat().resolvedOptions().timeZone})
+    }
+  },[appState.tzs])
+  useEffect(()=>{
+    if(!branchState.selectedBranch){
+      setBranch({...branch ,newUserName:user.user.name.split(" ").join("")+"-"})
+    }
+ 
+  },[user])
 
   if (appState.alert.show) {
     Toast({ message: appState.alert.message });
     dispatch(hideAlert());
-
   }
+  
+
+  useEffect(()=>{
+    dispatch(getTimezones())
+    dispatch(getCurrencies())
+  },[])
   const errorRules = {
     newUserName: {
       required: true,
@@ -89,6 +106,14 @@ const AddBranch = () => {
     name: {
       required: true,
       errorMessages: { required: "Full name is Required" },
+    },
+    tz: {
+      required: true,
+      errorMessages: { required: "Timezone is Required" },
+    },
+    currency: {
+      required: true,
+      errorMessages: { required: "Currency is Required" },
     },
   };
 
@@ -254,7 +279,52 @@ const AddBranch = () => {
                     type="password"
                   />
                 </Grid>
-
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Select TimeZone"
+                    name="tz"
+                    error={Boolean(touched.tz && errors.tz)}
+                    helperText={touched.tz && errors.tz}
+                    onChange={handleChange}
+                    required
+                    select
+                    SelectProps={{ native: true }}
+                    value={values.tz}
+                    variant="outlined"
+                    shrink={values.tz}
+                  >
+                    <option key="" value=""></option>
+                    {appState.tzs.map((tz) => (
+                      <option key={tz} value={tz}>
+                        {tz}
+                      </option>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Select Currency"
+                    name="currency"
+                    error={Boolean(touched.currency && errors.currency)}
+                    helperText={touched.currency && errors.currency}
+                    onChange={handleChange}
+                    required
+                    select
+                    SelectProps={{ native: true }}
+                    value={values.currency}
+                    variant="outlined"
+                    shrink={values.currency}
+                  >
+                    <option key="" value=""></option>
+                    {appState.currencies.map((currency,index) => (
+                      <option key={currency.name+index} value={currency.symbol && currency.symbol.grapheme}>
+                        {currency.name}
+                      </option>
+                    ))}
+                  </TextField>
+                </Grid>
                 <Grid item md={12} xs={12}>
                   <TextField
                     error={Boolean(touched.address && errors.address)}

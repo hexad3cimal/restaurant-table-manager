@@ -70,6 +70,7 @@ func InitRouter() {
 	{
 		//user related routes
 		user := new(controllers.UserController)
+
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
 		v1.GET("/token/refresh", auth.Refresh)
@@ -77,6 +78,12 @@ func InitRouter() {
 		v1.GET("/user/validate", user.Validate)
 		v1.GET("/user/auth/validate", AuthMiddleware(), user.Validate)
 		v1.GET("/user/logout", AuthMiddleware(), user.Logout)
+		v1.PUT("/user", AuthMiddleware(), user.Update)
+
+		config := new(controllers.ConfigController)
+		v1.PUT("/config", AuthMiddleware(), config.Add)
+		v1.GET("/config/tzs", AuthMiddleware(), config.GetTimezones)
+		v1.GET("/config/currency", AuthMiddleware(), config.GetCurrencies)
 
 		//table related routes
 		table := new(controllers.TableController)

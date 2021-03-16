@@ -63,12 +63,12 @@ export function* editTable({ payload }) {
     /* istanbul ignore next */
     yield all([
       put({
-        type: ActionTypes.TABLE_ADD_FAILURE,
+        type: ActionTypes.TABLE_EDIT_FAILURE,
         payload: err,
       }),
       put({
         type: ActionTypes.SHOW_ALERT,
-        payload: "Could not add table,please retry",
+        payload: "Could not edit table,please retry",
       }),
     ]);
   }
